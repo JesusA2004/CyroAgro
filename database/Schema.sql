@@ -22,7 +22,7 @@ create table productos (
     name varchar(150) not null,
     description text null,
     price decimal(10,2) not null default 0.00,
-    cantidadinventario int unsigned not null default 0,
+    cantidad_inventario int unsigned not null default 0,
     created_at datetime not null default current_timestamp,
     updated_at datetime not null default current_timestamp on update current_timestamp,
     primary key (folio)
