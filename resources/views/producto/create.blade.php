@@ -1,9 +1,5 @@
 @extends('layouts.auth')
 
-@section('template_title')
-    {{ __('Registrar') }} Producto
-@endsection
-
 @section('content')
     <section class="content container-fluid">
         <div class="row">

@@ -1,8 +1,4 @@
-@extends('layouts.app')
-
-@section('template_title')
-    {{ __('Update') }} Ticket
-@endsection
+@extends('layouts.auth')
 
 @section('content')
     <section class="content container-fluid">

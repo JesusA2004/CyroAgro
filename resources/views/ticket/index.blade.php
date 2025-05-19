@@ -1,8 +1,4 @@
-@extends('layouts.app')
-
-@section('template_title')
-    Tickets
-@endsection
+@extends('layouts.auth')
 
 @section('content')
     <div class="container-fluid">

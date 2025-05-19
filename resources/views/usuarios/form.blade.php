@@ -32,11 +32,22 @@
                 name="password"
                 id="password"
                 class="form-control @error('password') is-invalid @enderror"
-                {{ isset($user) ? '' : 'required' }}>
-            @if(isset($user))
+                {{ $user->exists ? '' : 'required' }}>
+            @if($user->exists)
                 <div class="form-text">Dejar en blanco para mantener la contraseña actual</div>
             @endif
             {!! $errors->first('password', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
+        </div>
+
+        <div class="mb-3">
+            <label for="password_confirmation" class="form-label">Confirmar Contraseña</label>
+            <input
+                type="password"
+                name="password_confirmation"
+                id="password_confirmation"
+                class="form-control @error('password_confirmation') is-invalid @enderror"
+                {{ $user->exists ? '' : 'required' }}>
+            {!! $errors->first('password_confirmation', '<div class="invalid-feedback" role="alert"><strong>:message</strong></div>') !!}
         </div>
 
         <div class="mb-3">
@@ -46,10 +57,10 @@
                 id="role"
                 class="form-select @error('role') is-invalid @enderror"
                 required>
-                @foreach(['empleado','cliente','administrador'] as $role)
-                    <option value="{{ $role }}"
-                        {{ old('role', $user->role ?? '') === $role ? 'selected' : '' }}>
-                        {{ ucfirst($role) }}
+                @foreach(['empleado','cliente','administrador'] as $r)
+                    <option value="{{ $r }}"
+                        {{ old('role', $user->role ?? 'cliente') === $r ? 'selected' : '' }}>
+                        {{ ucfirst($r) }}
                     </option>
                 @endforeach
             </select>
@@ -58,12 +69,12 @@
 
     </div>
 
-    <div class="col-md-12 mt-2">
-        <button type="submit" class="btn btn-primary">
-            {{ __(key: 'Enviar') }}
+    <div class="col-md-12 mt-2 d-flex justify-content-start">
+        <button type="submit" class="btn btn-primary me-2">
+            {{ __('Enviar') }}
         </button>
         <a href="{{ route('usuarios.index') }}" class="btn btn-secondary">
-        {{ __('Cancelar') }}
+            {{ __('Cancelar') }}
         </a>
     </div>
 </div>

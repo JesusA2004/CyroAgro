@@ -1,8 +1,4 @@
-@extends('layouts.app')
-
-@section('template_title')
-    {{ $ticket->name ?? __('Show') . " " . __('Ticket') }}
-@endsection
+@extends('layouts.auth')
 
 @section('content')
     <section class="content container-fluid">
