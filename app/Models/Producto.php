@@ -6,29 +6,36 @@ use Illuminate\Database\Eloquent\Model;
 
 class Producto extends Model
 {
-    // 1) El nombre de la PK no es "id" sino "folio"
-    protected $primaryKey = 'folio';
+    // La PK ahora es 'id', ya no 'folio'
+    protected $primaryKey = 'id';
 
-    // 2) Sigue siendo autoincremental e integer
     public $incrementing = true;
     protected $keyType = 'int';
 
-    // 3) Para que el route‑model binding use `folio` en lugar de `id`
+    // Route model binding
     public function getRouteKeyName(): string
     {
-        return 'folio';
+        return 'id';
     }
 
-    // 4) Por página en tu paginación
     protected $perPage = 20;
 
-    // 5) Campos masivamente asignables (no incluyas folio aquí)
+    // Campos masivamente asignables
     protected $fillable = [
-        'sku',
-        'name',
-        'description',
-        'price',
+        'nombre',
+        'segmento',
+        'categoria',
+        'registro',
+        'contenido',
+        'presentaciones',
+        'intervalo_aplicacion',
+        'incompatibilidad',
+        'certificacion',
+        'controla',
+        'ficha_tecnica',
+        'hoja_seguridad',
+        'precio',
         'cantidad_inventario',
+        'urlFoto',
     ];
-    
 }

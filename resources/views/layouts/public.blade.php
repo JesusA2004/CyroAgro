@@ -31,9 +31,10 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarResponsive">
                 <ul class="navbar-nav text-uppercase ms-auto py-4 py-lg-0">
-                    <li class="nav-item"><a class="nav-link" href="#services">Objetivos</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#portfolio">Catalogo de productos</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#about">Sobre nosotros</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#services">Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#portfolio">Nosotros</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#about">Agroquímicos</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#about">Orgánicos</a></li>
                     <li class="nav-item"><a class="nav-link" href="#contact">Contacto</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ route('login') }}">{{ __('Iniciar sesión') }}</a></li>
                     <li class="nav-item"><a class="nav-link" href="{{ route('register') }}">{{ __('Registrar') }}</a></li>
@@ -42,27 +43,11 @@
         </div>
     </nav>
 
-    <!-- Main content -->
+    <!-- Contenido principal -->
     @yield('content')
-
-    <!-- Footer-->
-    <footer class="footer py-4">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-lg-4 text-lg-start">&copy; Your Website {{ date('Y') }}</div>
-                <div class="col-lg-4 my-3 my-lg-0 text-center">
-                    <a class="btn btn-dark btn-social mx-2" href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-                    <a class="btn btn-dark btn-social mx-2" href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
-                    <a class="btn btn-dark btn-social mx-2" href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-                </div>
-                <div class="col-lg-4 text-lg-end">
-                    <a class="link-dark text-decoration-none me-3" href="#">Privacy Policy</a>
-                    <a class="link-dark text-decoration-none" href="#">Terms of Use</a>
-                </div>
-            </div>
-        </div>
-    </footer>
-
+    <!-- Footer (opcional) -->
+    @yield('footer')
+    
     <!-- Bootstrap core JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
     <!-- Core theme JS -->

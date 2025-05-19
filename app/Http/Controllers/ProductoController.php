@@ -3,20 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\Producto;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use App\Http\Requests\ProductoRequest;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 
 class ProductoController extends Controller
 {
     /**
-     * Mostrar listado de productos.
+     * Mostrar listado de productos con paginación.
      */
     public function index(Request $request): View
     {
-        $productos = Producto::paginate();
+        $productos = Producto::orderBy('created_at', 'desc')->paginate(10);
 
         return view('producto.index', compact('productos'))
             ->with('i', ($request->input('page', 1) - 1) * $productos->perPage());
@@ -44,7 +44,7 @@ class ProductoController extends Controller
     }
 
     /**
-     * Mostrar un producto específico.
+     * Mostrar los detalles de un producto.
      */
     public function show(Producto $producto): View
     {
@@ -52,7 +52,7 @@ class ProductoController extends Controller
     }
 
     /**
-     * Formulario para editar un producto.
+     * Formulario para editar un producto existente.
      */
     public function edit(Producto $producto): View
     {
@@ -60,7 +60,7 @@ class ProductoController extends Controller
     }
 
     /**
-     * Actualizar un producto existente.
+     * Actualizar la información de un producto.
      */
     public function update(ProductoRequest $request, Producto $producto): RedirectResponse
     {

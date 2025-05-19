@@ -1,0 +1,87 @@
+/* Fondo con imagen y gradiente */
+.login-background {
+    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.9)), url('../img/bg_login.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    position: relative;
+}
+
+/* Capa intermedia */
+.overlay-black {
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 15px;
+}
+
+/* Animación de entrada */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+    animation: fadeIn 1s ease-out;
+}
+
+/* Caja del formulario */
+.login-card {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 0 25px rgba(0,0,0,0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.login-card:hover {
+    transform: scale(1.01);
+    box-shadow: 0 0 30px rgba(0,0,0,0.3);
+}
+
+/* Botón principal */
+.btn-login {
+    transition: all 0.3s ease;
+}
+
+.btn-login:hover {
+    background-color: #004080;
+    color: #fff;
+    transform: scale(1.05);
+}
+
+/* Enlace de recuperación */
+.restore-link {
+    color: #00bcd4;
+    font-weight: bold;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.restore-link:hover {
+    color: #0097a7;
+    text-decoration: underline;
+}
+
+/* Responsive ajustes */
+@media (max-width: 768px) {
+    .card-header {
+        font-size: 1.25rem;
+    }
+}
+
+.login-card {
+    color: #fff; /* Aplica blanco a textos */
+}
+
+.login-card label,
+.login-card h4,
+.login-card h5,
+.login-card .form-check-label {
+    color: #fff;
+}

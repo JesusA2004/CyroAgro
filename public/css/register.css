@@ -1,0 +1,110 @@
+/* Fondo con imagen y gradiente oscuro */
+.register-background {
+    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.9)), url('../img/bg_login.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    position: relative;
+}
+
+/* Capa oscura encima del fondo */
+.overlay-black {
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 15px;
+}
+
+/* Animación de entrada */
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-slide-in {
+    animation: slideIn 0.9s ease-out;
+}
+
+/* Tarjeta de registro */
+.register-card {
+    background: rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 0 25px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    color: #fff;
+}
+
+.register-card:hover {
+    transform: scale(1.01);
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+}
+
+/* Textos blancos */
+.register-card label,
+.register-card h4,
+.register-card h5,
+.register-card .form-check-label {
+    color: #fff;
+}
+
+/* Input styling (oscuro y con borde blanco claro) */
+.register-card .form-control {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.register-card .form-control:focus {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    box-shadow: 0 0 5px #00bcd4;
+}
+
+.register-card input::placeholder {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* Botón registrar */
+.btn-register {
+    transition: all 0.3s ease;
+    font-weight: bold;
+    letter-spacing: 0.5px;
+    color: #fff;
+}
+
+.btn-register:hover {
+    background-color: #006400;
+    color: #fff;
+    transform: scale(1.05);
+}
+
+/* Botón alternativo */
+.register-card .btn-outline-light {
+    border-color: #fff;
+    color: #fff;
+}
+
+.register-card .btn-outline-light:hover {
+    background-color: #fff;
+    color: #000;
+    transform: scale(1.05);
+}
+
+/* Responsive ajustes */
+@media (max-width: 768px) {
+    .card-header {
+        font-size: 1.25rem;
+    }
+}

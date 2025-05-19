@@ -1,29 +1,22 @@
 @extends('layouts.auth')
 
-@section('template_title')
-    {{ __('Modificar') }} Producto
-@endsection
-
 @section('content')
-    <section class="content container-fluid">
-        <div class="">
-            <div class="col-md-12">
-
-                <div class="card card-default">
-                    <div class="card-header">
-                        <span class="card-title">{{ __('Update') }} Producto</span>
-                    </div>
-                    <div class="card-body bg-white">
-                        <form method="POST" action="{{ route('productos.update', $producto->folio) }}"  role="form" enctype="multipart/form-data">
-                            {{ method_field('PATCH') }}
-                            @csrf
-
-                            @include('producto.form')
-
-                        </form>
-                    </div>
+<section class="content container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card card-default">
+                <div class="card-header">
+                    <span class="card-title">{{ isset($producto->id) ? 'Modificar' : 'Crear' }} Producto</span>
+                </div>
+                <div class="card-body bg-white">
+                    <form method="POST" action="{{ isset($producto->id) ? route('productos.update', $producto->id) : route('productos.store') }}" role="form" enctype="multipart/form-data">
+                        @csrf
+                        @if(isset($producto->id)) @method('PATCH') @endif
+                        @include('producto.form')
+                    </form>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 @endsection
