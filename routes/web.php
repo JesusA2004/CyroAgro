@@ -9,7 +9,7 @@ use App\Http\Controllers\DetalleController;
 
 // Página de login
 Route::get('/', function () {
-    return view('auth.login');
+    return view('index');
 });
 
 // Rutas de autenticación (login, register, etc.)
