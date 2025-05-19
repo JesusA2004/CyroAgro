@@ -6,6 +6,7 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\DetalleController;
+use App\Http\Controllers\UsuarioController;
 
 // Página de login
 Route::get('/', function () {
@@ -22,6 +23,8 @@ Route::middleware('auth')->group(function () {
 
     // CRUD de productos
     Route::resource('productos', ProductoController::class);
+
+    Route::resource('usuarios', UsuarioController::class);
 
     // CRUD de tickets
     Route::resource('tickets', TicketController::class);

@@ -1,7 +1,7 @@
-@extends('layouts.app')
+@extends('layouts.auth')
 
 @section('template_title')
-    {{ __('Create') }} Producto
+    {{ __('Registrar') }} Producto
 @endsection
 
 @section('content')

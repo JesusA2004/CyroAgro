@@ -1,9 +1,5 @@
 @extends('layouts.auth')
 
-@section('template_title')
-    {{ __('Modificar') }} Producto
-@endsection
-
 @section('content')
     <section class="content container-fluid">
         <div class="">
@@ -11,14 +7,14 @@
 
                 <div class="card card-default">
                     <div class="card-header">
-                        <span class="card-title">{{ __('Update') }} Producto</span>
+                        <span class="card-title">{{ __('Actualizar') }} usuario</span>
                     </div>
                     <div class="card-body bg-white">
-                        <form method="POST" action="{{ route('productos.update', $producto->folio) }}"  role="form" enctype="multipart/form-data">
+                        <form method="POST" action="{{ route('usuarios.update', $user->id) }}"  role="form" enctype="multipart/form-data">
                             {{ method_field('PATCH') }}
                             @csrf
 
-                            @include('producto.form')
+                            @include('usuarios.form')
 
                         </form>
                     </div>

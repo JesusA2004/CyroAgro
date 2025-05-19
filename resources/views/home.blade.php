@@ -1,8 +1,6 @@
 <!-- resources/views/home.blade.php -->
 @extends('layouts.auth')
 
-@section('title', 'Dashboard')
-
 @section('content')
     <main>
         <div class="container-fluid px-4">
