@@ -17,6 +17,8 @@
     <link href="https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700" rel="stylesheet" />
     <!-- Core theme CSS -->
     <link href="{{ asset('css/styles.css') }}" rel="stylesheet" />
+    <!-- Scripts -->
+    @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 </head>
 <body id="page-top">
     <!-- Navigation-->
