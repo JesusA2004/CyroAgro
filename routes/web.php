@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Collection;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\TicketController;
@@ -16,20 +17,40 @@ Route::get('/', function () {
 // Rutas de autenticación (login, register, etc.)
 Auth::routes();
 
-// Todas las rutas siguientes requieren usuario autenticado
+// Rutas protegidas (requieren usuario autenticado)
 Route::middleware('auth')->group(function () {
-    // Dashboard / Home
     Route::get('/home', [HomeController::class, 'index'])->name('home');
-
-    // CRUD de productos
     Route::resource('productos', ProductoController::class);
-
     Route::resource('usuarios', UsuarioController::class);
-
-    // CRUD de tickets
     Route::resource('tickets', TicketController::class);
-
-     // CRUD de detalles
     Route::resource('detalles', DetalleController::class);
-
 });
+
+// Rutas públicas (no requieren autenticación)
+// Hojas de Seguridad
+Route::get('/hojas-seguridad', function () {
+    // Aquí pasamos siempre la variable, aunque esté vacía
+    $hojasSeguridad = collect(); 
+
+    return view('hojasSeguridad.index', compact('hojasSeguridad'));
+})->name('hojas_seguridad.index');
+
+// Fichas Técnicas
+Route::get('/fichas-tecnicas', function () {
+    return view('fichasTecnicas.index');
+})->name('fichas_tecnicas.index');
+
+// Registros COFEPRIS
+Route::get('/registros/cofepris', function () {
+    return view('registros.cofepris');
+})->name('registros.cofepris');
+
+// Registros OMRI
+Route::get('/registros/omri', function () {
+    return view('registros.omri');
+})->name('registros.omri');
+
+// Registros OMRI
+Route::get('/index', function () {
+    return view('index');
+})->name('index');

@@ -1,0 +1,49 @@
+/* Contenedor general */
+.registros-container {
+  animation: fadeInUp 0.8s ease;
+}
+
+/* Cards de registro */
+.registro-card {
+  transition: transform 0.3s, box-shadow 0.3s;
+  border-radius: .5rem;
+  overflow: hidden;
+  background: #ffffffcc;
+}
+.registro-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+}
+
+/* Botón descargar */
+.btn-download {
+  position: relative;
+  overflow: hidden;
+}
+.btn-download::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #007bff;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s ease;
+}
+.btn-download:hover::after {
+  transform: scaleX(1);
+}
+
+/* Animación fadeInUp */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

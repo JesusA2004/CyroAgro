@@ -1,0 +1,58 @@
+/* Fondo degradado animado */
+body {
+  /* Capas de fondo: la imagen abajo, el degradado arriba */
+  background-image:
+    url('../img/bg_login.jpg'),
+    linear-gradient(-45deg, #a8e063, #56ab2f, #69d2e7, #3f87a6);
+
+  /* Tamaños para cada capa */
+  background-size:
+    cover,       /* image → cubre toda la pantalla */
+    400% 400%;   /* gradient → tamaño grande para la animación */
+
+  /* Posición inicial de cada capa */
+  background-position:
+    center center, /* image centrada */
+    0% 50%;        /* gradient empieza en 0% 50% */
+
+  background-repeat: no-repeat; /* no repetir ninguna capa */
+  animation: gradientBG 10s ease infinite;
+}
+
+@keyframes gradientBG {
+  0%   { background-position: center center,   0% 50%; }
+  50%  { background-position: center center, 100% 50%; }
+  100% { background-position: center center,   0% 50%; }
+}
+
+/* Hover cards */
+.hoja-card {
+  transition: transform 0.3s, box-shadow 0.3s;
+  border-radius: .5rem;
+  overflow: hidden;
+}
+.hoja-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+}
+
+/* Leer más con efecto suave */
+.btn-readmore {
+  position: relative;
+  overflow: hidden;
+}
+.btn-readmore::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 2px;
+  background-color: #3f87a6;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s ease;
+}
+.btn-readmore:hover::after {
+  transform: scaleX(1);
+}

@@ -11,7 +11,7 @@
             <label for="{{ $field }}" class="form-label">{{ __($label) }}</label>
             <input type="text" name="{{ $field }}" class="form-control @error($field) is-invalid @enderror" value="{{ old($field, $producto?->$field) }}">
             @error($field)
-                <div class="invalid-feedback">{{ \$message }}</div>
+                <div class="invalid-feedback">{{ $message }}</div>
             @enderror
         </div>
     @endforeach
