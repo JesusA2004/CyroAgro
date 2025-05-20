@@ -1,0 +1,84 @@
+/* Banner de encabezado */
+#contact-header {
+    background: url('../img/bannerContacto.png') center center / cover no-repeat;
+    height: 320px;
+    position: relative;
+}
+
+#contact-header .overlay {
+    background: rgba(0, 0, 0, 0.5);
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+}
+
+#contact-header .container {
+    z-index: 2;
+    animation: fadeInTop 1s ease-in-out both;
+}
+
+@keyframes fadeInTop {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Mapa responsive */
+.map-responsive {
+    overflow: hidden;
+    padding-bottom: 56.25%;
+    position: relative;
+    height: 0;
+}
+
+.map-responsive iframe {
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    border-radius: 10px;
+}
+
+/* Formulario */
+#contact-form input,
+#contact-form textarea {
+    border-radius: 0.5rem;
+    border: 1px solid #ced4da;
+    transition: box-shadow 0.3s ease;
+}
+
+#contact-form input:focus,
+#contact-form textarea:focus {
+    border-color: #198754;
+    box-shadow: 0 0 0 0.2rem rgba(25, 135, 84, 0.25);
+}
+
+/* Botón */
+#contact-form button {
+    border-radius: 30px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+#contact-form button:hover {
+    background-color: #14532d;
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Responsive ajustes */
+@media (max-width: 576px) {
+    #contact-header {
+        height: 200px;
+    }
+
+    #contact-header h1 {
+        font-size: 1.75rem;
+    }
+}

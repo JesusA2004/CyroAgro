@@ -1,15 +1,47 @@
 @extends('layouts.public')
 
-@section('title', 'Inicio')
-
 @section('content')
-    <!-- Masthead -->
-    <header class="masthead">
-        <div class="container">
-            <div class="masthead-subheading">Bienvenido a CYR AGROQUÍMICA</div>
-            <div class="masthead-heading text-uppercase">Llevamos hasta ti productos de alta calidad</div>
-            <a class="btn btn-primary btn-xl text-uppercase page-scroll" href="#services">Leer más</a>
+    <!-- Masthead con carrusel -->
+    <header class="position-relative">
+    <div id="carouselExampleDark" class="carousel carousel-dark slide" data-bs-ride="carousel">
+        <div class="carousel-indicators">
+        <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+        <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="1" aria-label="Slide 2"></button>
+        <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="2" aria-label="Slide 3"></button>
         </div>
+        <div class="carousel-inner">
+        <div class="carousel-item active" data-bs-interval="10000">
+            <img src="{{ asset('img/slides/bg_1.jpg') }}" alt="Banner"" class="d-block w-100" alt="...">
+            <div class="carousel-caption d-md-block">
+            <h5>Bienvenido a CYR AGROQUÍMICA</h5>
+            <p>Llevamos hasta ti productos de alta calidad</p>
+            <a class="btn btn-primary btn-xl text-uppercase page-scroll" href="#services">Leer más</a>
+            </div>
+        </div>
+        <div class="carousel-item" data-bs-interval="5000">
+            <img src="{{ asset('img/slides/bg_2.jpg') }}" alt="Banner"" class="d-block w-100" alt="...">
+            <div class="carousel-caption d-md-block">
+            <h5>Protección para tus cultivos</h5>
+            <p>Soluciones efectivas para el campo mexicano</p>
+            </div>
+        </div>
+        <div class="carousel-item">
+            <img src="{{ asset('img/slides/bg_3.jpg') }}" alt="Banner"" class="d-block w-100" alt="...">
+            <div class="carousel-caption d-md-block">
+            <h5>Calidad garantizada</h5>
+            <p>Productos certificados y de confianza</p>
+            </div>
+        </div>
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Anterior</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Siguiente</span>
+        </button>
+    </div>
     </header>
 
     <!-- Services (Consulta rápida) -->
@@ -96,6 +128,63 @@
         </div>
     </section>
 @endsection
+
+@push('styles')
+<style>
+    #carouselExampleDark .carousel-item img {
+        height: 100vh;
+        object-fit: cover;
+        filter: brightness(0.7);
+    }
+
+    .carousel-caption {
+        bottom: 30%;
+        z-index: 10;
+        animation: fadeInUp 1.2s ease-in-out;
+    }
+
+    .carousel-caption h5 {
+        font-size: 3rem;
+        font-weight: bold;
+        text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+        color: #fff;
+    }
+
+    .carousel-caption p {
+        font-size: 1.25rem;
+        color: #f0f0f0;
+        text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.6);
+    }
+
+    .carousel-caption a.btn {
+        margin-top: 20px;
+        padding: 12px 30px;
+        font-size: 1rem;
+        border-radius: 50px;
+        transition: all 0.4s ease;
+        background-color: #006400;
+        border: none;
+        box-shadow: 0 4px 20px rgba(0, 100, 0, 0.3);
+    }
+
+    .carousel-caption a.btn:hover {
+        background-color: #228B22;
+        transform: scale(1.05);
+        box-shadow: 0 6px 25px rgba(0, 100, 0, 0.6);
+    }
+
+    @keyframes fadeInUp {
+        0% {
+            opacity: 0;
+            transform: translateY(40px);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+@endpush
 
 @section('footer')
     @include('includes.footer')

@@ -1,18 +1,18 @@
 @section('footer')
 <link href="{{ asset('css/footer.css') }}" rel="stylesheet">
 
-<footer class="footer-section mt-5">
+<footer class="footer-section mt-5" id="contact">
     <div class="container py-5">
         <div class="row gy-4">
             <div class="col-md-4">
                 <div class="footer-widget">
                     <h5 class="widgetheading">Nuestras secciones</h5>
                     <ul class="link-list">
-                        <li><a href="index.php">Inicio</a></li>
-                        <li><a href="about.php">Nosotros</a></li>
-                        <li><a href="productos.php?Segmento_ID=1">Agroquímicos</a></li>
-                        <li><a href="productos.php?Segmento_ID=2">Orgánicos</a></li>
-                        <li><a href="contact.php">Contacto</a></li>
+                        <li><a href="{{ route('index') }}">Inicio</a></li>
+                        <li><a href="{{ route('nosotros') }}">Nosotros</a></li>
+                        <li><a href="{{ route('index') }}#portfolio">Agroquímicos</a></li>
+                        <li><a href="{{ route('index') }}#portfolio">Orgánicos</a></li>
+                        <li><a href="{{ route('contacto') }}">Contacto</a></li>
                     </ul>
                 </div>
             </div>

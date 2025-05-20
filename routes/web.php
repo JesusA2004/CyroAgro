@@ -50,7 +50,18 @@ Route::get('/registros/omri', function () {
     return view('registros.omri');
 })->name('registros.omri');
 
-// Registros OMRI
+// Ruta de index
 Route::get('/index', function () {
     return view('index');
 })->name('index');
+
+// Ruta de nosotros
+Route::get('/nosotros', function () {
+    return view('nosotros');
+})->name('nosotros');
+
+// Ruta de contacto
+Route::get('/contacto', function () {
+    return view('contacto');
+})->name('contacto');
+

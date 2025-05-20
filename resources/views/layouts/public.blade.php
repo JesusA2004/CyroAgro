@@ -48,19 +48,19 @@
             <div class="collapse navbar-collapse" id="navbarResponsive">
                 <ul class="navbar-nav text-uppercase ms-auto py-4 py-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link page-scroll" href="{{ route('index') }}#services">Inicio</a>
+                        <a class="nav-link page-scroll" href="{{ route('index') }}#page-top">Inicio</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link page-scroll" href="{{ route('index') }}#portfolio">Nosotros</a>
+                        <a class="nav-link page-scroll" href="{{ route('nosotros') }}">Nosotros</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link page-scroll" href="{{ route('index') }}#about">Agroquímicos</a>
+                        <a class="nav-link page-scroll" href="{{ route('index') }}#portfolio">Agroquímicos</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link page-scroll" href="{{ route('index') }}#about">Orgánicos</a>
+                        <a class="nav-link page-scroll" href="{{ route('index') }}#portfolio">Orgánicos</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link page-scroll" href="{{ route('index') }}#contact">Contacto</a>
+                        <a class="nav-link page-scroll" href="{{ route('contacto') }}">Contacto</a>
                     </li>
                     @guest
                         <li class="nav-item">
