@@ -1,69 +1,106 @@
 @php $role = Auth::user()->role; @endphp
 
 <style>
-  /* Fondo degradado atractivo con RGB */
+  /* Fondo moderno con efecto glass + partículas */
   .sb-sidenav {
-    background: #5865F2;   
+    background: radial-gradient(circle at top left, #1a1f2b, #0d0d0d);
+    background-size: cover;
+    position: relative;
+    overflow: hidden;
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+    box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
   }
 
-  /* Texto base blanco */
+  .sb-sidenav::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background-image: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    animation: moveDots 20s linear infinite;
+    z-index: 0;
+  }
+
+  @keyframes moveDots {
+    from { transform: translate(0, 0); }
+    to { transform: translate(50px, 50px); }
+  }
+
+  /* Asegura que el contenido quede sobre las partículas */
+  .sb-sidenav-menu,
+  .sb-sidenav-footer {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Estilo a los links */
   .sb-sidenav-menu .nav-link {
-      color: #ffffff;
-      transition: all 0.3s ease;
-      border-radius: 6px;
-      margin-bottom: 6px;
-      animation: fadeSlideIn 0.4s ease-in-out;
-      font-weight: 500;
+    color: #ffffff;
+    background-color: rgba(255, 255, 255, 0.04);
+    margin-bottom: 10px;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+    backdrop-filter: blur(3px);
   }
 
-  /* Hover con luz y sombra destacada */
   .sb-sidenav-menu .nav-link:hover {
-      background-color: rgba(255, 255, 255, 0.1);
-      color: #ffffff;
-      transform: translateX(6px);
-      box-shadow: 0 0 15px rgba(13, 202, 240, 0.4);
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    transform: translateX(6px);
+    box-shadow: 0 4px 10px rgba(13, 202, 240, 0.4);
   }
 
-  /* Íconos animados en hover */
   .sb-sidenav-menu .sb-nav-link-icon i {
-      color: #ccc;
-      transition: color 0.3s ease;
+    color: #79c3ff;
+    transition: color 0.3s ease;
   }
 
   .sb-sidenav-menu .nav-link:hover .sb-nav-link-icon i {
-      color: #0dcaf0;
+    color: #0dcaf0;
   }
 
-  /* Flecha de colapsado */
   .sb-sidenav-collapse-arrow i {
-      transition: transform 0.3s ease;
+    transition: transform 0.3s ease;
   }
 
   .nav-link.collapsed[aria-expanded="true"] .sb-sidenav-collapse-arrow i {
-      transform: rotate(180deg);
+    transform: rotate(180deg);
   }
 
-  /* Footer */
   .sb-sidenav-footer {
-      background: #5865F2;       
-      color: #ffffff;
-      padding: 1rem;
-      font-size: 0.9rem;
-      border-top: 1px solid #444;
+    background: rgba(0, 0, 0, 0.25);
+    color: #ffffff;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 1rem;
+    font-size: 0.9rem;
+    text-align: center;
+    backdrop-filter: blur(5px);
   }
 
-  /* Entrada animada */
+  .sb-sidenav-menu-heading {
+    font-weight: bold;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: #a0bdfd;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    letter-spacing: 1px;
+  }
+
+  .sb-sidenav-menu .nav-link {
+    animation: fadeSlideIn 0.3s ease-in-out both;
+  }
+
   @keyframes fadeSlideIn {
-      from { opacity: 0; transform: translateX(-10px); }
-      to { opacity: 1; transform: translateX(0); }
+    from { opacity: 0; transform: translateX(-10px); }
+    to { opacity: 1; transform: translateX(0); }
   }
-
-  .sb-sidenav-menu .nav-link,
-  .sb-sidenav-menu .nav-link .sb-nav-link-icon,
-  .sb-sidenav-menu .nav-link:hover {
-      color: #ffffff !important;
-  }
-
 </style>
 
 <nav class="sb-sidenav accordion sb-sidenav-dark" id="sidenavAccordion">

@@ -50,6 +50,8 @@
     <script src="{{ asset('assets/demo/chart-bar-demo.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/simple-datatables@7.1.2/dist/umd/simple-datatables.min.js" crossorigin="anonymous"></script>
     <script src="{{ asset('js/datatables-simple-demo.js') }}"></script>
+    <!-- Bootstrap 5 JS (necesario para dropdowns) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-HoAqUO4jcT5KoU2D6TwYbKQmbZ1Vr3lULhIUCWjAKrTktlhv9v+PbV7VAgAQKk9S" crossorigin="anonymous"></script>
 
     @stack('scripts')
 </body>

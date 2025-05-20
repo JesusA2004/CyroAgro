@@ -1,76 +1,122 @@
 <style>
-    /* Estilo base con degradado oscuro */
-    .navbar-dark {
-        background: #5865F2;
-    }
+  /* Fondo moderno con partículas animadas */
+  .navbar-dark {
+      background: radial-gradient(circle at top left, #1a1f2b, #0d0d0d);
+      background-size: cover;
+      position: relative;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      box-shadow: inset 0 -2px 25px rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(6px);
+      z-index: 1000;
+  }
 
-    /* Logo */
-    .navbar-logo {
-        height: 40px;
-        margin-right: 10px;
-        transition: transform 0.3s ease;
-    }
-    .navbar-logo:hover {
-        transform: scale(1.1);
-    }
+  .navbar-dark::before {
+      content: "";
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background-image: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      animation: moveNavbarDots 30s linear infinite;
+      z-index: 0;
+  }
 
-    /* Marca */
-    .navbar-brand {
-        color: #ffffff;
-        font-weight: bold;
-        font-size: 1.25rem;
-        display: flex;
-        align-items: center;
-        transition: transform 0.3s ease, color 0.3s ease;
-    }
-    .navbar-brand:hover {
-        color: #0dcaf0;
-        transform: scale(1.05);
-    }
+  @keyframes moveNavbarDots {
+      from { transform: translate(0, 0); }
+      to { transform: translate(80px, 80px); }
+  }
 
-    /* --- 🔧 FIX para el ícono de sidebar que no brillaba --- */
-    #sidebarToggle i {
-        color: #ffffff;
-        transition: all 0.3s ease;
-    }
-    #sidebarToggle:hover i {
-        color: #0dcaf0;
-        transform: scale(1.25);
-        text-shadow: 0 0 8px rgba(13, 202, 240, 0.7); /* Efecto de brillo */
-    }
+  /* Logo */
+  .navbar-logo {
+      height: 40px;
+      margin-right: 10px;
+      transition: transform 0.3s ease;
+      position: relative;
+      z-index: 1;
+  }
 
-    /* Íconos del usuario */
-    .navbar-nav .nav-link i {
-        color: #ffffff;
-        transition: all 0.3s ease;
-    }
-    .navbar-nav .nav-link:hover i {
-        color: #0dcaf0;
-        transform: scale(1.2);
-        text-shadow: 0 0 8px rgba(13, 202, 240, 0.7);
-    }
+  .navbar-logo:hover {
+      transform: scale(1.1);
+  }
 
-    /* Dropdown animado */
-    .dropdown-menu {
-        animation: dropdownFade 0.3s ease forwards;
-        border-radius: 8px;
-        background-color: #1e1e2f;
-        color: #fff;
-        border: none;
-    }
-    @keyframes dropdownFade {
-        from { opacity: 0; transform: translateY(-5px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-    .dropdown-item {
-        color: #ddd;
-        transition: all 0.2s ease;
-    }
-    .dropdown-item:hover {
-        background-color: #0dcaf0;
-        color: #ffffff;
-        transform: translateX(4px);
-    }
+  /* Marca */
+  .navbar-brand {
+      color: #ffffff;
+      font-weight: bold;
+      font-size: 1.25rem;
+      display: flex;
+      align-items: center;
+      transition: transform 0.3s ease, color 0.3s ease;
+      position: relative;
+      z-index: 1;
+  }
+
+  .navbar-brand:hover {
+      color: #0dcaf0;
+      transform: scale(1.05);
+  }
+
+  /* Botón del sidebar (tres rayitas) */
+  #sidebarToggle {
+      position: relative;
+      z-index: 1;
+  }
+
+  #sidebarToggle i {
+      color: #ffffff;
+      transition: all 0.3s ease;
+  }
+
+  #sidebarToggle:hover i {
+      color: #0dcaf0;
+      transform: scale(1.25);
+      text-shadow: 0 0 8px rgba(13, 202, 240, 0.7);
+  }
+
+  /* Íconos del usuario */
+  .navbar-nav .nav-link {
+      position: relative;
+      z-index: 1;
+  }
+
+  .navbar-nav .nav-link i {
+      color: #ffffff;
+      transition: all 0.3s ease;
+  }
+
+  .navbar-nav .nav-link:hover i {
+      color: #0dcaf0;
+      transform: scale(1.2);
+      text-shadow: 0 0 8px rgba(13, 202, 240, 0.7);
+  }
+
+  /* Dropdown animado */
+  .dropdown-menu {
+      animation: dropdownFade 0.3s ease forwards;
+      border-radius: 8px;
+      background-color: #1e1e2f;
+      color: #fff;
+      border: none;
+      z-index: 999;
+  }
+
+  @keyframes dropdownFade {
+      from { opacity: 0; transform: translateY(-5px); }
+      to { opacity: 1; transform: translateY(0); }
+  }
+
+  .dropdown-item {
+      color: #ddd;
+      transition: all 0.2s ease;
+  }
+
+  .dropdown-item:hover {
+      background-color: #0dcaf0;
+      color: #ffffff;
+      transform: translateX(4px);
+  }
 </style>
 
 <div class="container-fluid d-flex align-items-center">
