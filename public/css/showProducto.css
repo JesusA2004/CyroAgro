@@ -1,0 +1,101 @@
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fadein {
+  animation: fadeIn 0.6s ease-in-out both;
+}
+
+/* Card principal */
+.product-show {
+  background: #fff;
+  border-radius: 18px;
+  font-size: 1.1rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.product-show:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* Header */
+.product-show .card-header {
+  background: linear-gradient(to right, #0d6efd, #0dcaf0);
+  color: #fff;
+  font-size: 1.2rem;
+  padding: 1rem 1.5rem;
+  border-bottom: none;
+}
+
+/* Imagen */
+.product-image {
+  width: 100%;
+  max-width: 240px;
+  border-radius: 16px;
+  border: 2px solid #dee2e6;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
+  transition: transform 0.4s ease;
+}
+
+.product-image:hover {
+  transform: scale(1.05);
+}
+
+/* Bloques de información */
+.info-block {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  border-bottom: 1px dashed #e2e6ea;
+  padding: 0.6rem 0.2rem;
+  transition: background-color 0.3s ease;
+}
+
+.info-block:hover {
+  background-color: #f8f9fa;
+}
+
+.info-label {
+  font-weight: 600;
+  color: #2c3e50;
+  flex-basis: 40%;
+}
+
+.info-value {
+  text-align: right;
+  flex-basis: 58%;
+  color: #212529;
+  font-weight: 500;
+}
+
+/* Enlaces a PDF */
+.pdf-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: #d63384;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.pdf-link:hover {
+  color: #b82f6e;
+  text-decoration: underline;
+}
+
+/* Botón regresar */
+.btn-outline-primary {
+  border-radius: 8px;
+  font-weight: 500;
+  padding: 0.4rem 1rem;
+  transition: all 0.3s ease;
+}
+
+.btn-outline-primary:hover {
+  background-color: #0dcaf0;
+  color: white;
+}

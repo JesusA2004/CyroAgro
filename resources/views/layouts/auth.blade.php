@@ -21,6 +21,9 @@
     <!-- Estilos adicionales por stack -->
     @stack('styles')
 
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
     <!-- Vite: Bootstrap incluido desde app.js -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
 </head>
