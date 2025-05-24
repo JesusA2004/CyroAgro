@@ -115,7 +115,7 @@
                             <div class="portfolio-hover">
                                 <div class="portfolio-hover-content"><i class="fas fa-plus fa-3x"></i></div>
                             </div>
-                            <img src="{{ asset('assets/img/works/full/' . $img . '.jpg') }}" class="img-fluid rounded" alt="{{ $title }}">
+                            <img src="{{ asset('img/productosDestacados/' . $img . '.jpg') }}" class="img-fluid rounded" alt="{{ $title }}">
                         </a>
                         <div class="portfolio-caption">
                             <h5 class="portfolio-caption-heading">{{ $title }}</h5>
