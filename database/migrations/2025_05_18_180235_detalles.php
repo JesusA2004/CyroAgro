@@ -12,7 +12,7 @@ return new class extends Migration
         Schema::create('detalles', function (Blueprint $table) {
             $table->unsignedBigInteger('id')->autoIncrement();
             $table->unsignedBigInteger('ticket_id');
-            $table->unsignedInteger('producto_id');
+            $table->unsignedBigInteger('producto_id');
             $table->integer('cantidad');
             $table->decimal('precio_unit', 10, 2);
             $table->decimal('subtotal', 12, 2)->storedAs('cantidad * precio_unit');
