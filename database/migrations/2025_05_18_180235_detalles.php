@@ -18,7 +18,7 @@ return new class extends Migration
             $table->decimal('subtotal', 12, 2)->storedAs('cantidad * precio_unit');
 
             $table->foreign('ticket_id')->references('id')->on('tickets');
-            $table->foreign('producto_id')->references('folio')->on('productos');
+            $table->foreign('producto_id')->references('id')->on('productos');
     });
     }
 
