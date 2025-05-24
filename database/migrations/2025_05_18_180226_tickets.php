@@ -12,8 +12,8 @@ return new class extends Migration
         Schema::create('tickets', function (Blueprint $table) {
             $table->unsignedBigInteger('id')->autoIncrement();
             $table->dateTime('fecha')->useCurrent();
-            $table->unsignedInteger('empleado_id');
-            $table->unsignedInteger('cliente_id')->nullable();
+            $table->unsignedBigInteger('empleado_id');
+            $table->unsignedBigInteger('cliente_id')->nullable();
             $table->decimal('total', 12, 2);
             $table->timestamps();
 
