@@ -13,7 +13,6 @@
     <!-- Bootstrap 5 CSS (CDN) -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
           rel="stylesheet"
-          integrity="sha384-cuYeSxntonz0PPNlHhBs68uyIAVpIIOZZ5JqeqvYYIcEL727kskC66kF92t6Xl2V"
           crossorigin="anonymous">
 
     <!-- Font Awesome (CDN) -->
@@ -24,11 +23,17 @@
     <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css?family=Roboto+Slab:400,100,300,700" rel="stylesheet" />
 
+    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
     <!-- Tema CSS -->
     <link href="{{ asset('css/styles.css') }}" rel="stylesheet" />
 
     <!-- Vite: tu app.scss (incluye Bootstrap via npm) -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
+
+    <meta name="index-url" content="{{ route('index') }}">
 
     @stack('styles')
 </head>
@@ -94,8 +99,11 @@
     <!-- Tema JS -->
     <script src="{{ asset('js/scripts.js') }}"></script>
 
-    <!-- SB Forms JS (opcional) -->
-    <script src="https://cdn.startbootstrap.com/sb-forms-latest.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+
+    <script>
+        AOS.init();
+    </script>
 
     @stack('scripts')
 </body>

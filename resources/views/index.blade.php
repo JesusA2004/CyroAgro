@@ -1,10 +1,10 @@
 @extends('layouts.public')
 
 @section('content')
-    <!-- Masthead con carrusel -->
+    <!-- Carrusel simplificado -->
     <header class="position-relative">
-    <div id="carouselExampleDark" class="carousel carousel-dark slide" data-bs-ride="carousel">
-        <div class="carousel-indicators">
+        <div id="carouselExampleDark" class="carousel carousel-dark slide" data-bs-ride="carousel">
+            <div class="carousel-indicators">
         <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
         <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="1" aria-label="Slide 2"></button>
         <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="2" aria-label="Slide 3"></button>
@@ -38,39 +38,48 @@
             </div>
         </div>
         </div>
-        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="prev">
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Anterior</span>
-        </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="next">
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Siguiente</span>
-        </button>
-    </div>
+            <!-- Controles del carrusel -->
+            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Anterior</span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="visually-hidden">Siguiente</span>
+            </button>
+        </div>
     </header>
 
-    <!-- Services (Consulta rápida) -->
+    <!-- Sección Consulta Rápida -->
     <section id="services" class="page-section">
         <div class="container">
-            <div class="text-center">
+            <div class="text-center mb-5" data-aos="fade-down">
                 <h2 class="section-heading text-uppercase">Consulta rápida</h2>
                 <h3 class="section-subheading text-muted">Accede a nuestras secciones informativas</h3>
             </div>
-            <div class="row text-center">
-                 @foreach ([
-                    ['icon' => 'fa-lock',     'title' => 'Hojas de seguridad', 'route' => 'hojas_seguridad.index'],
-                    ['icon' => 'fa-file-alt', 'title' => 'Hojas técnicas',     'route' => 'fichas_tecnicas.index'],
-                    ['icon' => 'fa-book',     'title' => 'Registros COFEPRIS','route' => 'registros.cofepris'],
-                    ['icon' => 'fa-seedling', 'title' => 'Registros OMRI',     'route' => 'registros.omri'],
+            <div class="row justify-content-center">
+                @foreach ([
+                    ['icon' => 'fa-lock', 'title' => 'Hojas de seguridad', 'route' => 'hojas_seguridad.index'],
+                    ['icon' => 'fa-file-alt', 'title' => 'Hojas técnicas', 'route' => 'fichas_tecnicas.index'],
+                    ['icon' => 'fa-book', 'title' => 'Registros COFEPRIS', 'route' => 'registros.cofepris'],
+                    ['icon' => 'fa-seedling', 'title' => 'Registros OMRI', 'route' => 'registros.omri'],
                 ] as $item)
-                    <div class="col-md-3 col-sm-6 animate-on-scroll">
-                        <a class="page-scroll" href="{{ route($item['route']) }}">
-                            <div class="service-item"> 
-                                <span class="fa-stack fa-4x mb-3">
-                                    <i class="fas fa-circle fa-stack-2x text-primary"></i>
-                                    <i class="fas {{ $item['icon'] }} fa-stack-1x fa-inverse"></i>
-                                </span>
-                                <h4 class="my-3">{{ $item['title'] }}</h4>
+                    <div class="col-lg-3 col-md-6 mb-4" 
+                         data-aos="fade-up" 
+                         data-aos-delay="{{ $loop->index * 100 }}">
+                        <a class="card-hover" href="{{ route($item['route']) }}">
+                            <div class="service-card">
+                                <div class="card-front">
+                                    <div class="icon-wrapper">
+                                        <i class="fas {{ $item['icon'] }} fa-3x text-primary"></i>
+                                    </div>
+                                    <h4 class="mt-3">{{ $item['title'] }}</h4>
+                                </div>
+                                <div class="card-back">
+                                    <div class="icon-wrapper">
+                                        <i class="fas fa-arrow-circle-right fa-3x text-white"></i>
+                                    </div>
+                                </div>
                             </div>
                         </a>
                     </div>
@@ -79,27 +88,33 @@
         </div>
     </section>
 
-    <!-- Portfolio (Nuestros productos) -->
+    <!-- Sección Portfolio (Nuestros productos) -->
     <section id="portfolio" class="page-section bg-light">
         <div class="container">
-            <div class="text-center">
+            <div class="text-center mb-5" data-aos="fade-up">
                 <h2 class="section-heading text-uppercase">Nuestros productos</h2>
             </div>
             <div class="row">
                 @foreach ([
-                    ['id' => 2, 'img' => 'bg_Organicos.jpg', 'alt' => 'Orgánicos',   'modal' => '#portfolioModal1'],
-                    ['id' => 1, 'img' => 'bg_Agroquimicos.jpg', 'alt' => 'Agroquímicos','modal' => '#portfolioModal2'],
+                    ['id' => 2, 'img' => 'bg_Organicos.jpg', 'alt' => 'Orgánicos', 'modal' => '#portfolioModal1'],
+                    ['id' => 1, 'img' => 'bg_Agroquimicos.jpg', 'alt' => 'Agroquímicos', 'modal' => '#portfolioModal2'],
                 ] as $col)
-                    <div class="col-md-6 mb-4 animate-on-scroll">
+                    <div class="col-md-6 mb-5" 
+                         data-aos="{{ $loop->odd ? 'fade-right' : 'fade-left' }}" 
+                         data-aos-delay="{{ $loop->index * 200 }}">
                         <div class="portfolio-item mx-auto">
                             <a class="portfolio-link" data-bs-toggle="modal" href="{{ $col['modal'] }}">
                                 <div class="portfolio-hover">
-                                    <div class="portfolio-hover-content"><i class="fas fa-plus fa-3x"></i></div>
+                                    <div class="portfolio-hover-content">
+                                        <i class="fas fa-plus fa-3x"></i>
+                                    </div>
                                 </div>
-                                <img class="img-fluid rounded" src="{{ asset('img/' . $col['img']) }}" alt="{{ $col['alt'] }}">
+                                <img class="img-fluid rounded shadow-lg" 
+                                     src="{{ asset('img/' . $col['img']) }}" 
+                                     alt="{{ $col['alt'] }}">
                             </a>
                             <div class="portfolio-caption">
-                                <h4 class="portfolio-caption-heading">{{ $col['alt'] }}</h4>
+                                <h4 class="portfolio-caption-heading mt-3">{{ $col['alt'] }}</h4>
                             </div>
                         </div>
                     </div>
@@ -108,34 +123,36 @@
         </div>
     </section>
 
-    <!-- About (Productos estrella) -->
+    <!-- Sección Productos Estrella -->
     <section id="about" class="page-section">
         <div class="container">
-            <div class="text-center">
+            <div class="text-center mb-5" data-aos="zoom-in">
                 <h2 class="section-heading text-uppercase">Productos estrella</h2>
             </div>
             <div class="row">
                 @foreach([22 => 'OMEX DP 98', 23 => 'OMEX ZN 70', 20 => 'OMEX BIO 20'] as $img => $title)
-                <div class="col-md-4 mb-4 animate-on-scroll">
-                    <div class="portfolio-item mx-auto">
-                        <a class="portfolio-link" data-bs-toggle="modal" href="#portfolioModal{{ $loop->iteration + 2 }}">
-                            <div class="portfolio-hover">
-                                <div class="portfolio-hover-content"><i class="fas fa-plus fa-3x"></i></div>
-                            </div>
-                            <img src="{{ asset('img/productosDestacados/' . $img . '.jpg') }}" class="img-fluid rounded" alt="{{ $title }}">
-                        </a>
-                        <div class="portfolio-caption">
-                            <h5 class="portfolio-caption-heading">{{ $title }}</h5>
-                            <p class="portfolio-caption-subheading text-muted">Conoce más sobre los nutrientes que fortalecen tus cultivos.</p>
+                    <div class="col-md-4" 
+                         data-aos="zoom-in-up" 
+                         data-aos-delay="{{ $loop->index * 150 }}">
+                        <div class="product-card">
+                            <a class="portfolio-link" data-bs-toggle="modal" href="#portfolioModal{{ $loop->iteration + 2 }}">
+                                <div class="image-overlay"></div>
+                                <img src="{{ asset('img/productosDestacados/' . $img . '.jpg') }}" 
+                                     class="img-fluid rounded shadow" 
+                                     alt="{{ $title }}">
+                                <div class="card-content">
+                                    <h5 class="product-title">{{ $title }}</h5>
+                                    <p class="product-description">Conoce más sobre los nutrientes que fortalecen tus cultivos.</p>
+                                </div>
+                            </a>
                         </div>
                     </div>
-                </div>
                 @endforeach
             </div>
         </div>
     </section>
 @endsection
-    
+
 @push('styles')
     <link href="{{ asset('css/index.css') }}" rel="stylesheet">
 @endpush
@@ -143,7 +160,6 @@
 @push('scripts')
     <script src="{{ asset('js/index.js') }}"></script>
 @endpush
-
 
 @section('footer')
     @include('includes.footer')

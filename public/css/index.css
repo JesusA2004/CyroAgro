@@ -4,16 +4,16 @@
     object-fit: cover;
     filter: brightness(0.5);
     position: relative;
+    z-index: 0; /* Más bajo que overlay */
+
 }
 
 .carousel-item .overlay {
     position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 100%;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.1));
-    z-index: 1;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: linear-gradient(to top, rgba(0,0,0,0.6), rgba(0,0,0,0.1));
+    z-index: 1; /* Más alto que overlay */
 }
 
 .carousel-caption {
@@ -21,25 +21,22 @@
     z-index: 2;
     text-align: center;
     padding: 2rem;
-    background-color: rgba(0, 0, 0, 0.4);
+    background-color: rgba(0,0,0,0.4);
     border-radius: 1rem;
-    display: inline-block;
     animation: fadeInUp 1s ease;
+    z-index: 10; /* Más alto que overlay */
 }
-
 .carousel-caption h5 {
     font-size: 3rem;
     font-weight: bold;
     color: #fff;
-    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.8);
+    text-shadow: 2px 2px 6px rgba(0,0,0,0.8);
 }
-
 .carousel-caption p {
     font-size: 1.25rem;
     color: #f0f0f0;
-    text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.7);
+    text-shadow: 1px 1px 5px rgba(0,0,0,0.7);
 }
-
 .carousel-caption a.btn {
     margin-top: 1.5rem;
     padding: 14px 36px;
@@ -49,190 +46,195 @@
     border: none;
     color: white;
     transition: 0.3s ease;
-    box-shadow: 0 4px 15px rgba(25, 135, 84, 0.4);
+    box-shadow: 0 4px 15px rgba(25,135,84,0.4);
 }
-
 .carousel-caption a.btn:hover {
     background-color: #145c32;
     transform: scale(1.05);
-    box-shadow: 0 6px 20px rgba(25, 135, 84, 0.7);
+    box-shadow: 0 6px 20px rgba(25,135,84,0.7);
 }
 
-/* Animación de aparición */
-@keyframes fadeInUp {
-    0% {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* === Sección Consulta Rápida === */
+/* === Consulta rápida === */
 #services {
     background: linear-gradient(145deg, #f0f4f8, #e9ecef);
     padding: 6rem 0;
-    text-decoration: none;
 }
-
-#services a.page-scroll {
-    text-decoration: none !important;
+.card-hover {
+    perspective: 1000px;
 }
-
-#services .text-center h2 {
-    font-size: 2.5rem;
-    font-weight: bold;
-    color: #198754;
-    margin-bottom: 0.5rem;
+.service-card {
+    height: 250px;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+    position: relative;
 }
-
-#services .text-center h3 {
-    color: #6c757d;
-    font-weight: 400;
-    margin-bottom: 3rem;
-}
-
-#services h4 {
-    color: #343a40;
-    font-weight: 600;
-}
-
-/* === Efecto hover unificado para icono y texto === */
-#services .col-md-3.col-sm-6 {
-    transition: transform 0.3s ease;
-    margin-bottom: 2rem;
-}
-
-#services .col-md-3.col-sm-6:hover {
-    transform: translateY(-10px);
-}
-
-#services .service-item {
+.card-front, .card-back {
+    position: absolute;
+    width: 100%; height: 100%;
+    backface-visibility: hidden;
     display: flex;
     flex-direction: column;
     align-items: center;
-    text-align: center;
-    padding: 2rem 1rem;
+    justify-content: center;
+    padding: 20px;
     border-radius: 15px;
-    transition: all 0.3s ease;
-    height: 100%;
-    /* Efecto visible sin hover */
-    background: rgba(29, 172, 105, 0.133); /* leve color de fondo */
-    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.05); /* sombra sutil */
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+.card-back {
+    transform: rotateY(180deg);
+    background: linear-gradient(45deg, #1e3c72, #2a5298);
+}
+.card-hover:hover .service-card {
+    transform: rotateY(180deg);
 }
 
-
-#services .col-md-3.col-sm-6:hover .service-item {
-    background: rgba(28, 150, 93, 0.354); /* más fuerte que el estado normal */
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15); /* sombra más intensa */
-}
-
-#services .fa-stack {
-    margin-bottom: 1.5rem;
-    transition: transform 0.3s ease;
-}
-
-#services .col-md-3.col-sm-6:hover .fa-stack {
-    transform: scale(1.1);
-}
-
-#services h4.my-3 {
-    transition: color 0.3s ease;
-    margin-top: 1rem !important;
-}
-
-#services .col-md-3.col-sm-6:hover h4.my-3 {
-    color: #198754;
-}
-
-/* === Portfolio y Productos Estrella === */
+/* === Portfolio === */
 .portfolio-item {
-    border-radius: 1rem;
     overflow: hidden;
-    background: #fff;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background: linear-gradient(to bottom right, #ffffff, #f8f9fa);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    animation: aparecer-suelto 0.8s ease forwards;
 }
-
 .portfolio-item:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2);
+    transform: translateY(-10px) scale(1.02);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.15);
 }
-
 .portfolio-link {
     display: block;
     position: relative;
+    cursor: pointer;
 }
-
 .portfolio-hover {
     position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 100%;
-    background-color: rgba(25, 135, 84, 0.7);
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-color: rgba(25,135,84,0.8);
+    transition: all 0.4s ease;
     opacity: 0;
-    transition: opacity 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
 }
-
 .portfolio-link:hover .portfolio-hover {
     opacity: 1;
 }
-
 .portfolio-hover-content i {
     color: white;
-    font-size: 2rem;
+    font-size: 1rem;
+    transition: transform 0.3s ease;
+}
+.portfolio-link:hover .portfolio-hover-content i {
+    transform: scale(1.1);
 }
 
-.portfolio-caption {
-    padding: 1rem;
-    text-align: center;
+/* === Productos estrella (final refinado) === */
+.product-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: 15px;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    background: #fff;
+    margin-bottom: 2rem;
+    animation: cardFloat 3s ease-in-out infinite;
+}
+.product-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: linear-gradient(45deg, rgba(25,135,84,0.8) 0%, rgba(20,92,50,0.9) 100%);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    z-index: 1;
+}
+.product-card:hover::before {
+    opacity: 1;
+}
+.product-card img {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    transform: scale(1.03);
+    transition: transform 0.4s ease, filter 0.4s ease;
+    filter: brightness(0.9);
+}
+.product-card:hover img {
+    transform: scale(1.1);
+    filter: brightness(0.7);
+}
+.card-content {
+    position: absolute;
+    bottom: -30%;
+    left: 0;
+    width: 100%;
+    padding: 2rem;
+    color: white;
+    z-index: 2;
+    transition: bottom 0.4s ease;
+    animation: contentAppear 0.6s ease forwards;
+}
+.product-card:hover .card-content {
+    bottom: 0;
+}
+.product-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    transform: translateY(30px);
+    opacity: 0;
+    transition: all 0.4s ease;
+}
+.product-description {
+    font-size: 0.95rem;
+    line-height: 1.5;
+    transform: translateY(30px);
+    opacity: 0;
+    transition: all 0.4s ease 0.1s;
+}
+.product-card:hover .product-title,
+.product-card:hover .product-description {
+    transform: translateY(0);
+    opacity: 1;
 }
 
-.portfolio-caption h4,
-.portfolio-caption h5 {
-    font-weight: bold;
-    color: #198754;
+/* === Animaciones personalizadas === */
+@keyframes fadeInUp {
+    0% { opacity: 0; transform: translateY(30px); }
+    100% { opacity: 1; transform: translateY(0); }
 }
-
-.portfolio-caption-subheading {
-    font-size: 0.9rem;
-    color: #6c757d;
+@keyframes aparecer-suelto {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
 }
-
-/* === Sección general === */
-/* Espacio entre secciones*/
-.page-section {
-    padding: 1rem 0;
+@keyframes deslizar-estrella {
+    0% { opacity: 0; transform: translateY(30px) scale(0.95); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes cardFloat {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0); }
+}
+@keyframes contentAppear {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
 }
 
 /* === Responsive === */
 @media (max-width: 768px) {
-    .carousel-caption h5 {
-        font-size: 2rem;
-    }
-
-    .carousel-caption p {
-        font-size: 1rem;
-    }
-
-    .carousel-caption {
-        padding: 1rem;
-    }
+    .carousel-caption h5 { font-size: 2rem; }
+    .carousel-caption p { font-size: 1rem; }
+    .product-card { margin: 0 1rem 2rem; }
+    .card-content { padding: 1.5rem; }
+    .product-title { font-size: 1.2rem; }
 }
 
-.animate-on-scroll {
-    opacity: 0;
-    transform: translateY(30px);
-    transition: all 0.8s ease-out;
+/* === Espaciado secciones === */
+#portfolio.page-section.bg-light {
+    padding-bottom: 0 !important;
 }
-
-.animate-on-scroll.in-view {
-    opacity: 1;
-    transform: translateY(0);
+#about.page-section {
+    padding-top: 2rem;
 }
