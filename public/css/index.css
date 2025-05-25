@@ -1,0 +1,238 @@
+/* === Carrusel === */
+#carouselExampleDark .carousel-item img {
+    height: 100vh;
+    object-fit: cover;
+    filter: brightness(0.5);
+    position: relative;
+}
+
+.carousel-item .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.1));
+    z-index: 1;
+}
+
+.carousel-caption {
+    bottom: 30%;
+    z-index: 2;
+    text-align: center;
+    padding: 2rem;
+    background-color: rgba(0, 0, 0, 0.4);
+    border-radius: 1rem;
+    display: inline-block;
+    animation: fadeInUp 1s ease;
+}
+
+.carousel-caption h5 {
+    font-size: 3rem;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.8);
+}
+
+.carousel-caption p {
+    font-size: 1.25rem;
+    color: #f0f0f0;
+    text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.7);
+}
+
+.carousel-caption a.btn {
+    margin-top: 1.5rem;
+    padding: 14px 36px;
+    font-size: 1rem;
+    border-radius: 30px;
+    background-color: #198754;
+    border: none;
+    color: white;
+    transition: 0.3s ease;
+    box-shadow: 0 4px 15px rgba(25, 135, 84, 0.4);
+}
+
+.carousel-caption a.btn:hover {
+    background-color: #145c32;
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(25, 135, 84, 0.7);
+}
+
+/* Animación de aparición */
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* === Sección Consulta Rápida === */
+#services {
+    background: linear-gradient(145deg, #f0f4f8, #e9ecef);
+    padding: 6rem 0;
+    text-decoration: none;
+}
+
+#services a.page-scroll {
+    text-decoration: none !important;
+}
+
+#services .text-center h2 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #198754;
+    margin-bottom: 0.5rem;
+}
+
+#services .text-center h3 {
+    color: #6c757d;
+    font-weight: 400;
+    margin-bottom: 3rem;
+}
+
+#services h4 {
+    color: #343a40;
+    font-weight: 600;
+}
+
+/* === Efecto hover unificado para icono y texto === */
+#services .col-md-3.col-sm-6 {
+    transition: transform 0.3s ease;
+    margin-bottom: 2rem;
+}
+
+#services .col-md-3.col-sm-6:hover {
+    transform: translateY(-10px);
+}
+
+#services .service-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 2rem 1rem;
+    border-radius: 15px;
+    transition: all 0.3s ease;
+    height: 100%;
+    /* Efecto visible sin hover */
+    background: rgba(29, 172, 105, 0.133); /* leve color de fondo */
+    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.05); /* sombra sutil */
+}
+
+
+#services .col-md-3.col-sm-6:hover .service-item {
+    background: rgba(28, 150, 93, 0.354); /* más fuerte que el estado normal */
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15); /* sombra más intensa */
+}
+
+#services .fa-stack {
+    margin-bottom: 1.5rem;
+    transition: transform 0.3s ease;
+}
+
+#services .col-md-3.col-sm-6:hover .fa-stack {
+    transform: scale(1.1);
+}
+
+#services h4.my-3 {
+    transition: color 0.3s ease;
+    margin-top: 1rem !important;
+}
+
+#services .col-md-3.col-sm-6:hover h4.my-3 {
+    color: #198754;
+}
+
+/* === Portfolio y Productos Estrella === */
+.portfolio-item {
+    border-radius: 1rem;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.portfolio-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2);
+}
+
+.portfolio-link {
+    display: block;
+    position: relative;
+}
+
+.portfolio-hover {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    background-color: rgba(25, 135, 84, 0.7);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.portfolio-link:hover .portfolio-hover {
+    opacity: 1;
+}
+
+.portfolio-hover-content i {
+    color: white;
+    font-size: 2rem;
+}
+
+.portfolio-caption {
+    padding: 1rem;
+    text-align: center;
+}
+
+.portfolio-caption h4,
+.portfolio-caption h5 {
+    font-weight: bold;
+    color: #198754;
+}
+
+.portfolio-caption-subheading {
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+/* === Sección general === */
+/* Espacio entre secciones*/
+.page-section {
+    padding: 1rem 0;
+}
+
+/* === Responsive === */
+@media (max-width: 768px) {
+    .carousel-caption h5 {
+        font-size: 2rem;
+    }
+
+    .carousel-caption p {
+        font-size: 1rem;
+    }
+
+    .carousel-caption {
+        padding: 1rem;
+    }
+}
+
+.animate-on-scroll {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s ease-out;
+}
+
+.animate-on-scroll.in-view {
+    opacity: 1;
+    transform: translateY(0);
+}
