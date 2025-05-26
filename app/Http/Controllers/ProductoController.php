@@ -7,10 +7,12 @@ use Illuminate\Http\Request;
 use App\Http\Requests\ProductoRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
 class ProductoController extends Controller
 {
+
     /**
      * Mostrar listado de productos con paginación.
      */
@@ -37,7 +39,10 @@ class ProductoController extends Controller
      */
     public function store(ProductoRequest $request): RedirectResponse
     {
-        Producto::create($request->validated());
+        $data = $request->validated();
+        $data['created_by'] = Auth::id(); // 👈 Agrega el ID del usuario actual
+        $data['updated_by'] = Auth::id(); // 👈 Lo mismo al crearlo
+        Producto::create($data);
 
         return Redirect::route('productos.index')
             ->with('success', 'Producto creado correctamente.');
@@ -64,7 +69,9 @@ class ProductoController extends Controller
      */
     public function update(ProductoRequest $request, Producto $producto): RedirectResponse
     {
-        $producto->update($request->validated());
+        $data = $request->validated();
+        $data['updated_by'] = Auth::id(); // 👈 Solo se actualiza este
+        $producto->update($data);
 
         return Redirect::route('productos.index')
             ->with('success', 'Producto actualizado correctamente.');

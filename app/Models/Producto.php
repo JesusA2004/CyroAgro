@@ -38,4 +38,15 @@ class Producto extends Model
         'cantidad_inventario',
         'urlFoto',
     ];
+
+    public function creador()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function editor()
+    {
+        return $this->belongsTo(User::class, 'updated_by');
+    }
+
 }

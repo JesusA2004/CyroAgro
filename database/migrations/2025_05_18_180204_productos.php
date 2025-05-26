@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('hoja_seguridad')->nullable(); // Ruta o nombre del archivo
             $table->decimal('precio', 10, 2)->default(0.00);
             $table->unsignedInteger('cantidad_inventario')->default(0);
-            $table->string('urlFoto');
+            $table->string('urlFoto')->nullable();
             $table->timestamps();
         });
     }

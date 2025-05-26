@@ -99,3 +99,17 @@
   background-color: #0dcaf0;
   color: white;
 }
+
+[title]:hover::after {
+  content: attr(title);
+  position: absolute;
+  background: rgba(33, 37, 41, 0.85);
+  color: #fff;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  white-space: nowrap;
+  transform: translateY(-100%) translateX(10px);
+  z-index: 1000;
+  pointer-events: none;
+}
