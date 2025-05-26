@@ -1,0 +1,179 @@
+/* === Variables Actualizadas === */
+:root {
+  --primary-accent: #1036dc;         /* Verde agua moderno */
+  --secondary-accent: #E9C46A;       /* Amarillo dorado */
+  --hover-glow: #83C5BE;             /* Verde agua claro */
+  --dark-bg: #2443a9;                /* Azul oscuro elegante */
+  --nav-gradient: radial-gradient(circle at top left, #325dd1, #2a2b2c);
+  --text-color: #F8F9FA;             /* Blanco suave */
+  --muted-text: #94D2BD;             /* Verde agua pastel */
+}
+
+/* === Navbar Principal Mejorada === */
+.navbar-dark {
+  background: var(--nav-gradient);
+  border-bottom: 2px solid rgba(16, 42, 173, 0.3);
+  box-shadow: 
+    0 4px 20px rgba(0, 0, 0, 0.1),
+    0 0 15px rgba(42, 157, 143, 0.2);
+  backdrop-filter: blur(8px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  min-height: 70px;
+}
+
+.navbar-dark:hover {
+  box-shadow: 
+    0 6px 25px rgba(0, 0, 0, 0.15),
+    0 0 25px rgba(42, 157, 143, 0.3);
+}
+
+/* === Logo Rediseñado === */
+.navbar-logo {
+  height: 45px;
+  margin-right: 15px;
+  transition: all 0.3s ease;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+  padding: 3px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: white;
+}
+
+.navbar-logo:hover {
+  transform: scale(1.1) rotate(3deg);
+  filter: 
+    drop-shadow(0 0 10px rgba(233, 196, 106, 0.4))
+    brightness(105%);
+}
+
+/* === Marca Mejorada === */
+.navbar-brand {
+  color: var(--text-color);
+  font-weight: 700;
+  font-size: 1.5rem;
+  letter-spacing: 0.5px;
+  position: relative;
+  padding: 0 0.5rem;
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.navbar-brand::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: var(--secondary-accent);
+  transition: width 0.3s ease;
+}
+
+.navbar-brand:hover {
+  color: var(--secondary-accent);
+  transform: translateY(-1px);
+}
+
+.navbar-brand:hover::after {
+  width: 100%;
+}
+
+/* === Botón Sidebar Mejorado === */
+#sidebarToggle {
+  color: var(--text-color);
+  transition: all 0.3s ease;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+#sidebarToggle:hover {
+  background: rgba(233, 196, 106, 0.1);
+  transform: scale(1.05);
+  color: var(--secondary-accent);
+}
+
+#sidebarToggle i {
+  transition: transform 0.3s ease;
+}
+
+#sidebarToggle:hover i {
+  transform: rotate(90deg);
+}
+
+/* === Dropdown Usuario === */
+.nav-link.dropdown-toggle {
+  padding: 0.7rem 1.2rem;
+  border-radius: 10px;
+  border: 1px solid rgb(242, 243, 245);
+  transition: all 0.3s ease;
+}
+
+.nav-link.dropdown-toggle:hover {
+  background: rgba(16, 69, 182, 0.15);
+  border-color: var(--secondary-accent);
+  box-shadow: 0 0 15px rgba(233, 196, 106, 0.2);
+}
+
+/* === Menú Dropdown Mejorado === */
+.dropdown-menu {
+  background: var(--dark-bg);
+  border: 1px solid rgba(21, 74, 233, 0.911);
+  margin-top: 10px;
+  min-width: 200px;
+}
+
+.dropdown-menu::before {
+  content: '';
+  position: absolute;
+  top: -7px;
+  right: 15px;
+  width: 14px;
+  height: 14px;
+  background: var(--dark-bg);
+  transform: rotate(45deg);
+  border-top: 1px solid rgba(233, 196, 106, 0.15);
+  border-left: 1px solid rgba(233, 196, 106, 0.15);
+}
+
+.dropdown-item {
+  position: relative;
+  padding: 0.75rem 1.5rem;
+  transition: all 0.2s ease;
+  color:white;
+}
+
+.dropdown-item:hover {
+  background: linear-gradient(90deg, rgba(42, 157, 143, 0.15), transparent);
+  padding-left: 2rem;
+  color: var(--secondary-accent);
+}
+
+.dropdown-item::before {
+  content: '•';
+  color: var(--secondary-accent);
+  position: absolute;
+  left: 1rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.dropdown-item:hover::before {
+  opacity: 1;
+}
+
+/* === Animaciones Actualizadas === */
+@keyframes moveNavbarDots {
+  0% { background-position: 0 0; }
+  100% { background-position: 40px 40px; }
+}
+
+@media (max-width: 768px) {
+  .navbar-logo {
+    height: 40px;
+  }
+  
+  .navbar-brand {
+    font-size: 1.3rem;
+  }
+}

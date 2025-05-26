@@ -18,14 +18,17 @@
     <!-- Font Awesome -->
     <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
 
-    <!-- Estilos adicionales por stack -->
-    @stack('styles')
-
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
 
     <!-- Vite: Bootstrap incluido desde app.js -->
     @vite(['resources/sass/app.scss', 'resources/js/app.js'])
+
+    <link href="{{ asset('css/sidebar.css') }}" rel="stylesheet">
+
+    <link href="{{ asset('css/navbar.css') }}" rel="stylesheet">
+
+    @stack('styles')
 </head>
 
 <body class="sb-nav-fixed">
