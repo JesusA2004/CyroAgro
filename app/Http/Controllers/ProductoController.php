@@ -40,8 +40,14 @@ class ProductoController extends Controller
     public function store(ProductoRequest $request): RedirectResponse
     {
         $data = $request->validated();
-        $data['created_by'] = Auth::id(); // 👈 Agrega el ID del usuario actual
-        $data['updated_by'] = Auth::id(); // 👈 Lo mismo al crearlo
+        $data['created_by'] = Auth::id();
+        $data['updated_by'] = Auth::id();
+
+        if ($request->hasFile('foto')) {
+            $ruta = $request->file('foto')->store('FotosProductos', 'public'); // 👉 guarda en storage/app/public/FotosProductos
+            $data['urlFoto'] = $ruta;
+        }
+
         Producto::create($data);
 
         return Redirect::route('productos.index')
@@ -70,7 +76,13 @@ class ProductoController extends Controller
     public function update(ProductoRequest $request, Producto $producto): RedirectResponse
     {
         $data = $request->validated();
-        $data['updated_by'] = Auth::id(); // 👈 Solo se actualiza este
+        $data['updated_by'] = Auth::id();
+
+        if ($request->hasFile('foto')) {
+            $ruta = $request->file('foto')->store('FotosProductos', 'public');
+            $data['urlFoto'] = $ruta;
+        }
+
         $producto->update($data);
 
         return Redirect::route('productos.index')

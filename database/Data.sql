@@ -3,18 +3,32 @@ USE cyrodb;
 INSERT INTO productos (
     nombre, segmento, categoria, registro, contenido, presentaciones,
     intervalo_aplicacion, incompatibilidad, certificacion, controla,
-    ficha_tecnica, hoja_seguridad, precio, cantidad_inventario, urlFoto, created_at, updated_at
+    ficha_tecnica, hoja_seguridad, precio, cantidad_inventario, urlFoto,
+    created_at, updated_at
 ) VALUES
-('Manzana Roja', 'Frutas', 'Frescos', 'REG-123-FR', 'Manzana Red Delicious orgánica', '1 kg', 'Cada 5 días', 'No mezclar con cítricos', 'Orgánico USDA', 'Mejora digestión y antioxidante', 'manzana_ficha.pdf', 'manzana_seguridad.pdf', 0.50, 200, 'https://images.unsplash.com/photo-1567306226416-28f0efdc88ce', NOW(), NOW()),
-('Pan Integral', 'Panadería', 'Pan', 'REG-456-PN', 'Hecho con trigo integral, sin conservadores', '500 g', 'Diario', 'Evitar humedad', 'Pan Artesanal SINABIO', 'Favorece digestión, rico en fibra', 'pan_ficha.pdf', 'pan_seguridad.pdf', 1.20, 150, 'https://images.unsplash.com/photo-1608198093002-ad4e005484b9', NOW(), NOW()),
-('Leche Entera', 'Lácteos', 'Leche', 'REG-789-LC', 'Leche de vaca pasteurizada 3.5% grasa', '1 L', 'Diario', 'No hervir', 'Certificación ISO 22000', 'Fuente de calcio y vitamina D', 'leche_ficha.pdf', 'leche_seguridad.pdf', 0.85, 100, 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b', NOW(), NOW()),
-('Queso Oaxaca', 'Lácteos', 'Quesos', 'REG-258-QO', 'Queso tipo oaxaca fresco hilado', '250 g', 'Cada semana', 'No congelar', 'HACCP Certificado', 'Fuente de proteína y calcio', 'queso_ficha.pdf', 'queso_seguridad.pdf', 2.50, 80, 'https://images.unsplash.com/photo-1624381907831-fc6b36951eb2', NOW(), NOW()),
-('Arroz Blanco', 'Granos', 'Cereales', 'REG-159-AR', 'Arroz pulido de grano largo', '1 kg', 'Cada 3 días', 'Evitar humedad', 'Certificación Kosher', 'Aporta energía, bajo en grasa', 'arroz_ficha.pdf', 'arroz_seguridad.pdf', 0.90, 120, 'https://images.unsplash.com/photo-1612092417820-0c52f97f2b4e', NOW(), NOW()),
-('Frijol Negro', 'Granos', 'Legumbres', 'REG-357-FN', 'Frijol negro selección especial', '1 kg', 'Semanal', 'Evitar combinación con sales minerales', 'Certificado SAGARPA', 'Aporta proteína vegetal y fibra', 'frijol_ficha.pdf', 'frijol_seguridad.pdf', 1.10, 110, 'https://images.unsplash.com/photo-1615485298407-2a5640c457df', NOW(), NOW()),
-('Huevos', 'Proteínas', 'Huevos', 'REG-753-HV', 'Huevos de gallina libre de jaula', '12 piezas', 'Cada 2 días', 'Evitar cambios bruscos de temperatura', 'Libre de antibióticos', 'Ricos en proteína y vitamina B12', 'huevos_ficha.pdf', 'huevos_seguridad.pdf', 1.75, 90, 'https://images.unsplash.com/photo-1578985545062-69928b1d9587', NOW(), NOW()),
-('Azúcar', 'Endulzantes', 'Azúcar', 'REG-852-AZ', 'Azúcar refinada estándar', '1 kg', 'A conveniencia', 'No almacenar con productos húmedos', 'Norma NOM-117-SSA1', 'Fuente rápida de energía', 'azucar_ficha.pdf', 'azucar_seguridad.pdf', 0.65, 130, 'https://images.unsplash.com/photo-1582719478270-8f785ba67e45', NOW(), NOW()),
-('Aceite de Oliva', 'Aceites', 'Aceite de Oliva', 'REG-456-AO', 'Aceite extra virgen prensado en frío', '500 ml', 'Cada 3 días', 'Evitar freír en exceso', 'Orgánico certificado europeo', 'Reduce colesterol y es antioxidante', 'aceite_ficha.pdf', 'aceite_seguridad.pdf', 4.20, 60, 'https://images.unsplash.com/photo-1613145993481-e4eb6ec03c2b', NOW(), NOW()),
-('Café Molido', 'Bebidas', 'Café', 'REG-951-CF', 'Café 100% arábica molido medio', '250 g', 'Diario', 'No refrigerar', 'Certificación Rainforest Alliance', 'Estimulante natural, rico en antioxidantes', 'cafe_ficha.pdf', 'cafe_seguridad.pdf', 3.80, 70, 'https://images.unsplash.com/photo-1511920170033-f8396924c348', NOW(), NOW());
+-- Producto 1
+('BIOINSECTICIDA', 'BIOCONTROL', 'Extracto acuoso', 'RSCO-MEZC-1101E-301-406-012',
+ 'Argemonina (3.50%), berberina (2.20%), ricinina (2.80%), a-terthienil (3.50%)',
+ '12 x 1 L, 1 x 20 L, 1 a 3 L/ha', '7 días', NULL, NULL,
+ 'Araña roja (Oligonychus punicae), Trips (Thrips tabaci), Tetranychus urticae, Frankliniella occidentalis, Drosophila suzukii, Bemisia tabaci, Thrips palmi, Plutella xylostella, Trichoplusia ni, Brevicoryne brassicae, Diaphorina citri, Polyphagotarsonemus latus, Planococcus citri, Toxoptera aurantii, Lygus lineolaris, Dactylopius coccus, Raoiella indica',
+ NULL, NULL, 0.00, 0, NULL, NOW(), NOW()),
+('BIOINSECTICIDA', 'BIOCONTROL', 'Extracto de Neem', 'RSCO-INAC-0103I-303-009-080',
+ 'Extracto de Neem (Azadirachta indica) 80.0%, Concentrado emulsionable', '12 x 1 L, 1 x 20 L, 1 a 3 L/ha', '7 a 21 días', NULL, NULL,
+ 'Oligonychus punicae, Thrips tabaci, Tetranychus urticae, Thecla basilides, Frankliniella occidentalis, Bemisia tabaci, Plutella xylostella, Trichoplusia ni, Diaphorina citri, Toxoptera aurantii, Polyphagotarsonemus latus, Dactylopius coccus',
+ NULL, NULL, 0.00, 0, NULL, NOW(), NOW()),
+('BIOINSECTICIDA', 'BIOCONTROL', 'Extracto de Canela', 'RSCO-INAC-0104R-301-015-015',
+ 'Extracto de Canela (Cinnamomum zeylanicum) 15.0%, Emulsión aceite en agua', '12 x 1 L, 1 x 20 L, 1 a 3 L/ha', '7 a 21 días', NULL, NULL,
+ 'Oligonychus punicae, Thrips tabaci, Tetranychus urticae, Frankliniella occidentalis, Bemisia tabaci, Diaphorina citri, Polyphagotarsonemus latus, Planococcus citri, Dactylopius coccus, Aphis illinoisensis',
+ NULL, NULL, 0.00, 0, NULL, NOW(), NOW()),
+('BIOINSECTICIDA', 'BIOCONTROL', 'Sales potásicas de soya', 'RSCO-INAC-0101W-0426-375-50',
+ 'Sales potásicas de soya 50.0%, Concentrado soluble', '12 x 1 L, 1 x 20 L, 1 a 3 L/200 L', '7 días', NULL, NULL,
+ 'Tetranychus urticae, Oligonychus punicae, Dactylopius coccus, Diaphorina citri, Aphis gossypii, Frankliniella occidentalis, Thrips tabaci, Bemisia tabaci, Dysmicoccus brevipes, Aphis illinoisensis',
+ NULL, NULL, 0.00, 0, NULL, NOW(), NOW()),
+('BIOINSECTICIDA', 'BIOCONTROL', 'Mezcla Canela y Neem', 'RSCO-MEZC-1102B-301-009-070',
+ 'Extracto de Canela (55.0%), Extracto de Neem (15.0%), Concentrado emulsionable', '12 x 1 L, 1 x 20 L, 1 a 2 L/ha y 0.5-2.0 L/100 L', '7 a 8 días', NULL, NULL,
+ 'Aculops lycopersici, Tetranychus urticae, Bemisia tabaci, Thrips tabaci, Frankliniella occidentalis',
+ NULL, NULL, 0.00, 0, NULL, NOW(), NOW());
+
 
 -- 3. Insertar 10 tickets
 -- Usamos empleado_id en [1,3] y cliente_id en [4,8], algunos tickets sin cliente (NULL)
