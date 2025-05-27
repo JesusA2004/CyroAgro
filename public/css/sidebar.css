@@ -214,3 +214,56 @@
   background: rgba(255,255,255,0.2);
   border-radius: 4px;
 }
+
+.sb-sidenav {
+  box-shadow: 
+    inset 0 0 25px rgba(0, 0, 0, 0.6),
+    0 0 30px rgba(0, 181, 226, 0.1); /* 3125 C */
+}
+
+/* Hover mejorado */
+.sb-sidenav:hover {
+  box-shadow: 
+    inset 0 0 30px rgba(0, 0, 0, 0.8),
+    0 0 40px rgba(0, 181, 226, 0.2); /* 3125 C */
+}
+
+/* Enlaces */
+.sb-sidenav-menu .nav-link {
+  background: linear-gradient(90deg, rgba(255,255,255,0.06), rgba(0,181,226,0.02)); /* 3125 */
+  border: 1px solid rgba(0,181,226, 0.05);
+}
+
+/* Subrayado animado */
+.sb-sidenav-menu .nav-link::before {
+  background: linear-gradient(90deg, #009639, #00B5E2); /* 355 C a 3125 C */
+}
+
+/* Hover en nav-link */
+.sb-sidenav-menu .nav-link:hover {
+  background: linear-gradient(90deg, rgba(0,150,57,0.2), rgba(0,181,226,0.2)); /* 355 y 3125 */
+  border-color: rgba(0,181,226, 0.3);
+  box-shadow: 
+    0 6px 20px rgba(0,181,226, 0.4),
+    inset 0 0 15px rgba(255,255,255,0.05);
+}
+
+/* Resplandor de íconos */
+.sb-sidenav-menu .sb-nav-link-icon i {
+  color: #00B5E2; /* 3125 */
+  text-shadow: 0 0 5px rgba(0,181,226, 0.5);
+}
+
+.sb-sidenav-menu .nav-link:hover .sb-nav-link-icon i {
+  color: #009639; /* 355 */
+  text-shadow: 0 0 10px rgba(0,150,57, 0.6);
+}
+
+/* Footer */
+.sb-sidenav-footer {
+  background: linear-gradient(180deg, #003B49 0%, #000000 100%);
+}
+
+.sb-sidenav-footer:hover {
+  background: linear-gradient(180deg, rgba(0,150,57,0.2), rgba(0,59,73,0.2));
+}
