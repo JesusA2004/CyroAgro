@@ -13,15 +13,23 @@
                 <a class="btn btn-outline-primary btn-sm text-white" href="{{ route('productos.index') }}">
                     ← Volver
                 </a>
-                <a class="btn btn-outline-primary btn-sm text-white" href="{{ route('productos.edit', $producto->id) }}">
-                    ✏️ Modificar
-                </a>
-                <button type="button" class="btn btn-outline-danger btn-sm text-white" 
-                        data-bs-toggle="modal" 
-                        data-bs-target="#deleteModal"
-                        data-productid="{{ $producto->id }}">
-                    🗑️ Eliminar
-                </button>
+
+                @auth
+                    @if (Auth::user()->role === 'administrador' || Auth::user()->role === 'empleado')
+                        <a class="btn btn-outline-primary btn-sm text-white" href="{{ route('productos.edit', $producto->id) }}">
+                            ✏️ Modificar
+                        </a>
+                    @endif
+
+                    @if (Auth::user()->role === 'administrador')
+                        <button type="button" class="btn btn-outline-danger btn-sm text-white"
+                                data-bs-toggle="modal"
+                                data-bs-target="#deleteModal"
+                                data-productid="{{ $producto->id }}">
+                            🗑️ Eliminar
+                        </button>
+                    @endif
+                @endauth
             </div>
         </div>
 
@@ -45,8 +53,8 @@
                     ] as $field => $label)
                         <div class="info-block">
                             <div class="info-label">
-                                <i class="bi bi-info-circle-fill me-2 text-primary" 
-                                title="Información sobre {{ strtolower($label) }}"></i>{{ __($label) }}:
+                                <i class="bi bi-info-circle-fill me-2 text-primary"
+                                   title="Información sobre {{ strtolower($label) }}"></i>{{ __($label) }}:
                             </div>
                             <div class="info-value">{{ $producto->$field }}</div>
                         </div>
@@ -88,9 +96,6 @@
                                 <div class="info-label"><i class="bi bi-clock-history text-info me-2" title="Última vez que fue actualizado"></i>Actualizado:</div>
                                 <div class="info-value">{{ $producto->updated_at->format('d/m/Y H:i') }}</div>
                             </div>
-                        @endif
-
-                        @if(Auth::user()->role === 'administrador')
                             <div class="info-block">
                                 <div class="info-label"><i class="bi bi-person-fill text-success me-2"></i>Creado por:</div>
                                 <div class="info-value">{{ $producto->creador?->name ?? 'Desconocido' }}</div>
@@ -100,9 +105,7 @@
                                 <div class="info-value">{{ $producto->editor?->name ?? 'Sin cambios' }}</div>
                             </div>
                         @endif
-
                     @endauth
-
                 </div>
 
                 <!-- Imagen -->
@@ -122,26 +125,30 @@
 </section>
 
 <!-- Modal de confirmación de eliminación -->
-<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content border-0 rounded-3 shadow-lg">
-      <div class="modal-header bg-danger text-white">
-        <h5 class="modal-title" id="deleteModalLabel">Eliminar producto</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-      </div>
-      <div class="modal-body text-center">
-        <p class="fs-6">¿Estás seguro de que deseas eliminar este producto? Esta acción no se puede deshacer.</p>
-      </div>
-      <div class="modal-footer justify-content-center">
-        <form id="deleteForm" method="POST">
-            @csrf
-            @method('DELETE')
-            <button type="submit" class="btn btn-danger px-4">Eliminar</button>
-            <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Cancelar</button>
-        </form>
+@auth
+    @if(Auth::user()->role === 'administrador')
+    <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 rounded-3 shadow-lg">
+          <div class="modal-header bg-danger text-white">
+            <h5 class="modal-title" id="deleteModalLabel">Eliminar producto</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          </div>
+          <div class="modal-body text-center">
+            <p class="fs-6">¿Estás seguro de que deseas eliminar este producto? Esta acción no se puede deshacer.</p>
+          </div>
+          <div class="modal-footer justify-content-center">
+            <form id="deleteForm" method="POST">
+                @csrf
+                @method('DELETE')
+                <button type="submit" class="btn btn-danger px-4">Eliminar</button>
+                <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Cancelar</button>
+            </form>
+          </div>
+        </div>
       </div>
     </div>
-  </div>
-</div>
+    @endif
+@endauth
 
 @endsection
