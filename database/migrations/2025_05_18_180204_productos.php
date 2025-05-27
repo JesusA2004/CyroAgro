@@ -25,6 +25,8 @@ return new class extends Migration
             $table->decimal('precio', 10, 2)->default(0.00);
             $table->unsignedInteger('cantidad_inventario')->default(0);
             $table->string('urlFoto')->nullable();
+            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();
         });
     }

@@ -37,6 +37,8 @@ class Producto extends Model
         'precio',
         'cantidad_inventario',
         'urlFoto',
+        'created_by',
+        'updated_by',
     ];
 
     public function creador()

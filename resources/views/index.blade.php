@@ -25,7 +25,7 @@
           <div class="carousel-caption d-md-block">
             <h5>{{ $slide['h'] }}</h5>
             <p>{{ $slide['p'] }}</p>
-            <a class="btn btn-success btn-xl text-uppercase page-scroll" href="#services">Leer más</a>
+            <a class="btn btn-success btn-xl text-uppercase page-scroll" href="#orden">Leer más</a>
           </div>
         </div>
         @endforeach
@@ -42,6 +42,36 @@
       </button>
     </div>
   </header>
+
+  <!-- Sección con mensaje y logo grande -->
+  <section class="py-5 bg-light position-relative" data-aos="fade-up">
+    <span id="orden" style="position: absolute; top: -100px;"></span> <!-- Punto de ancla compensado -->
+    <div class="container">
+      <div class="row align-items-center mb-4">
+        <div class="col-12 col-md-6 text-center text-md-start mb-3 mb-md-0">
+          <h2 class="fs-3 fw-light mb-0">¡Estamos a la orden!</h2>
+        </div>
+        <div class="col-12 col-md-6 text-center text-md-end">
+          <a href="{{ route('contacto') }}" class="btn btn-primary px-4 py-2 rounded-pill">
+            CONTÁCTANOS
+          </a>
+        </div>
+      </div>
+      <div class="row justify-content-center">
+        <div class="col-12 col-sm-10 col-md-8 text-center">
+          <img src="{{ asset('img/logo.png') }}" alt="Logo"
+              class="img-fluid" style="max-width: 100%; height: auto;">
+        </div>
+      </div>
+      <div class="row py-4">
+        <div class="col-12 text-center">
+          <a class="btn btn-success btn-xl text-uppercase page-scroll" href="#portfolio">
+            🔍 Explora nuestro catálogo
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <!-- Consulta rápida -->
   <section id="services" class="page-section" data-aos="fade-up">

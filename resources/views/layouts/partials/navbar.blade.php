@@ -1,11 +1,7 @@
 <div class="container-fluid d-flex align-items-center">
-    <!-- Logo (puedes reemplazar src con asset('ruta') o una imagen en public/img/logo.png) -->
+    
+    <!-- Logo -->
     <img src="{{ asset('img/logo.png') }}" alt="Logo CYRAgro" class="navbar-logo">
-
-    <!-- Título del sistema -->
-    <a class="navbar-brand ps-2" href="{{ route('home') }}">
-        {{ config('app.name', 'CYRAgro') }}
-    </a>
 
     <!-- Botón de sidebar -->
     <button class="btn btn-link btn-sm order-1 order-lg-0 ms-3 me-4" id="sidebarToggle" href="#!">
