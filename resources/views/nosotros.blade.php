@@ -47,35 +47,6 @@
     </div>
 </section>
 
-<section id="nosotros" class="bg-light py-5">
-    <div class="container text-center">
-        <h2 class="section-title mb-5">Nuestro <strong>Equipo</strong></h2>
-        <div class="row justify-content-center g-4">
-            @foreach([
-                ['img' => 'representantes_noreste.jpg', 'name' => 'Maira Olivas Olivas', 'zona' => 'Zona Noroeste', 'tel' => '7772338212', 'mail' => 'maira@ultraquimia.com'],
-                ['img' => 'representantes_bajio.jpg', 'name' => 'Gustavo Rico Resendiz', 'zona' => 'Zona Bajío', 'tel' => '7773841658', 'mail' => 'gustavo.cyr@hotmail.com'],
-                ['img' => 'representantes_baja_california.jpg', 'name' => 'Gabriel Hernández', 'zona' => 'Zona Baja California', 'tel' => '6161010081', 'mail' => 'ing_gabihz@hotmail.com'],
-                ['img' => 'representantes_centro.jpg', 'name' => 'Oficina', 'zona' => 'Zona Centro', 'tel' => '7773218657 / 7773271756', 'mail' => 'rosascordero@yahoo.com.mx'],
-                ['img' => 'representantes_sureste.jpg', 'name' => 'Mario Alejos Peraza', 'zona' => 'Zona Sureste', 'tel' => '9992400412', 'mail' => 'mariopti@hotmail.com'],
-            ] as $rep)
-            <div class="col-sm-6 col-md-4 col-lg-4">
-                <div class="card h-100 border-0 shadow-sm team-card animate-zoom">
-                    <img src="{{ asset('img/carruselAbout/' . $rep['img']) }}" class="card-img-top" alt="{{ $rep['name'] }}">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ $rep['name'] }}</h5>
-                        <h6 class="text-muted">{{ $rep['zona'] }}</h6>
-                        <p class="card-text">
-                            <a href="tel:+52{{ preg_replace('/[^0-9]/', '', $rep['tel']) }}">{{ $rep['tel'] }}</a><br>
-                            <a href="mailto:{{ $rep['mail'] }}">{{ $rep['mail'] }}</a>
-                        </p>
-                    </div>
-                </div>
-            </div>
-            @endforeach
-        </div>
-    </div>
-</section>
-
 <section id="mapa-cyr" class="bg-white py-5">
     <div class="container text-center">
         <h2 class="section-title mb-5">Cobertura Nacional</h2>
