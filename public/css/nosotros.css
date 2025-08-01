@@ -1,4 +1,4 @@
-/* ===== Fondo general y animación de cuerpo ===== */
+/* === Fondo general y animación del cuerpo === */
 body {
     background: linear-gradient(to bottom, #f8f9fa, #ffffff);
     animation: bodyFade 1.5s ease;
@@ -10,7 +10,7 @@ body {
     100% { opacity: 1; }
 }
 
-/* ===== Estilo y sombra para encabezado interno ===== */
+/* === Encabezado interno === */
 #inner-headline {
     background: linear-gradient(to right, #e9ecef, #f8f9fa);
     border-bottom: 2px solid #dee2e6;
@@ -18,14 +18,8 @@ body {
 }
 
 @keyframes slideDown {
-    0% {
-        opacity: 0;
-        transform: translateY(-30px);
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    0% { opacity: 0; transform: translateY(-30px); }
+    100% { opacity: 1; transform: translateY(0); }
 }
 
 #inner-headline h2 {
@@ -34,7 +28,7 @@ body {
     color: #343a40;
 }
 
-/* ===== Animaciones para carrusel ===== */
+/* === Carrusel === */
 #aboutCarousel .carousel-item img {
     object-fit: cover;
     height: 350px;
@@ -43,17 +37,11 @@ body {
 }
 
 @keyframes fadeSlideIn {
-    0% {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    0% { opacity: 0; transform: translateY(30px); }
+    100% { opacity: 1; transform: translateY(0); }
 }
 
-/* ===== Diseño tarjetas de equipo ===== */
+/* === Tarjetas del equipo === */
 .team-card {
     transition: transform 0.3s ease, box-shadow 0.3s ease;
     border-radius: 12px;
@@ -68,17 +56,10 @@ body {
 }
 
 @keyframes zoomInCard {
-    from {
-        opacity: 0;
-        transform: scale(0.95);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
 }
 
-/* ===== Tipografía y detalles ===== */
 .team-card h5 {
     font-weight: 700;
     font-size: 1.2rem;
@@ -103,7 +84,7 @@ body {
     text-decoration: underline;
 }
 
-/* ===== Breadcrumb personalizado ===== */
+/* === Breadcrumb === */
 #inner-headline .breadcrumb-item a {
     color: #6c757d;
     transition: color 0.3s ease;
@@ -113,7 +94,7 @@ body {
     color: #198754;
 }
 
-/* ===== Encabezados de sección ===== */
+/* === Encabezados de sección === */
 section h2 {
     font-size: 2rem;
     margin-bottom: 1rem;
@@ -137,7 +118,7 @@ section h2::after {
     to { width: 60px; }
 }
 
-/* ===== Hero con fondo de imagen y overlay ===== */
+/* === Hero Section === */
 .hero-section {
     position: relative;
     height: 50vh;
@@ -170,7 +151,16 @@ section h2::after {
     margin: 0 auto;
 }
 
-/* Reutilizados */
+@keyframes fadeInTop {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* === Utilidades === */
+.texto-justificado {
+    text-align: justify;
+}
+
 .divider {
     width: 60px;
     height: 4px;
@@ -179,17 +169,14 @@ section h2::after {
     animation: growLine 1.2s ease-in-out both;
 }
 
-@keyframes fadeInTop {
-    from {
-        opacity: 0;
-        transform: translateY(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+.container path {
+    fill: #237a29;
+    stroke: #ffffff;
+    stroke-width: 2px;
 }
 
-.texto-justificado {
-    text-align: justify;
+.container :hover{
+    fill: #ff0310;
+    stroke: #ffffff;
+    stroke-width: 2px;
 }

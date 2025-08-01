@@ -29,7 +29,6 @@ INSERT INTO productos (
  'Aculops lycopersici, Tetranychus urticae, Bemisia tabaci, Thrips tabaci, Frankliniella occidentalis',
  NULL, NULL, 0.00, 0, NULL, NOW(), NOW());
 
-
 -- 3. Insertar 10 tickets
 -- Usamos empleado_id en [1,3] y cliente_id en [4,8], algunos tickets sin cliente (NULL)
 INSERT INTO tickets (empleado_id, cliente_id, total) VALUES
