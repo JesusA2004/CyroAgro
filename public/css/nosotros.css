@@ -122,7 +122,7 @@ section h2::after {
 .hero-section {
     position: relative;
     height: 50vh;
-    background: url('../img/about.png') center center / cover no-repeat;
+    background: url('../img/banner/BANNER\ 1.png') center center / cover no-repeat;
     color: #fff;
     padding: 4rem 1rem;
 }
@@ -133,7 +133,6 @@ section h2::after {
     left: 0;
     height: 100%;
     width: 100%;
-    background: rgba(0, 0, 0, 0.55);
     z-index: 0;
 }
 

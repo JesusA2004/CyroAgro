@@ -1,84 +1,148 @@
-/* Banner de encabezado */
+/* ===== Banner de encabezado ===== */
 #contact-header {
-    background: url('../img/bannerContacto.png') center center / cover no-repeat;
-    height: 320px;
-    position: relative;
+  background: url('../img/banner/BANNER%202.png') center center / cover no-repeat;
+  height: 320px;
+  position: relative;
+  color:#fff;
+  overflow:hidden;
 }
-
 #contact-header .overlay {
-    background: rgba(0, 0, 0, 0.5);
-    position: absolute;
-    inset: 0;
-    z-index: 1;
+  background: rgba(0, 0, 0, 0.5);
+  position: absolute;
+  inset: 0;
+  z-index: 1;
 }
-
 #contact-header .container {
-    z-index: 2;
-    animation: fadeInTop 1s ease-in-out both;
+  z-index: 2;
+  animation: fadeInTop 1s ease-in-out both;
 }
+@keyframes fadeInTop { from{opacity:0; transform:translateY(-30px)} to{opacity:1; transform:translateY(0)} }
 
-@keyframes fadeInTop {
-    from {
-        opacity: 0;
-        transform: translateY(-30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+/* ===== Mapa responsive genérico (si usas iframe en otra sección) ===== */
+.map-responsive { overflow:hidden; padding-bottom:56.25%; position:relative; height:0; }
+.map-responsive iframe { position:absolute; left:0; top:0; width:100%; height:100%; border-radius:10px; }
+
+/* ===== Formulario ===== */
+#contact-form input, #contact-form textarea{
+  border-radius:.5rem; border:1px solid #ced4da; transition: box-shadow .3s ease, border-color .3s ease;
 }
-
-/* Mapa responsive */
-.map-responsive {
-    overflow: hidden;
-    padding-bottom: 56.25%;
-    position: relative;
-    height: 0;
+#contact-form input:focus, #contact-form textarea:focus{
+  border-color:#198754; box-shadow:0 0 0 .2rem rgba(25,135,84,.25);
 }
-
-.map-responsive iframe {
-    left: 0;
-    top: 0;
-    height: 100%;
-    width: 100%;
-    position: absolute;
-    border-radius: 10px;
-}
-
-/* Formulario */
-#contact-form input,
-#contact-form textarea {
-    border-radius: 0.5rem;
-    border: 1px solid #ced4da;
-    transition: box-shadow 0.3s ease;
-}
-
-#contact-form input:focus,
-#contact-form textarea:focus {
-    border-color: #198754;
-    box-shadow: 0 0 0 0.2rem rgba(25, 135, 84, 0.25);
-}
-
 /* Botón */
-#contact-form button {
-    border-radius: 30px;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+#contact-form button{
+  border-radius:30px; transition:all .3s ease; box-shadow:0 4px 15px rgba(0,0,0,.2);
+}
+#contact-form button:hover{
+  background-color:#14532d; transform:scale(1.05); box-shadow:0 6px 20px rgba(0,0,0,.3);
 }
 
-#contact-form button:hover {
-    background-color: #14532d;
-    transform: scale(1.05);
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+/* ===== Fondo general ===== */
+body{ background:linear-gradient(to bottom,#f8f9fa,#ffffff); animation:bodyFade 1.5s ease; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+@keyframes bodyFade{ from{opacity:0} to{opacity:1} }
+
+/* ===== Encabezado interno opcional ===== */
+#inner-headline{ background:linear-gradient(to right,#e9ecef,#f8f9fa); border-bottom:2px solid #dee2e6; animation:slideDown 1.2s ease; }
+@keyframes slideDown{ from{opacity:0; transform:translateY(-30px)} to{opacity:1; transform:translateY(0)} }
+#inner-headline h2{ font-weight:700; font-size:2rem; color:#343a40; }
+
+/* ===== Carrusel (si aplica) ===== */
+#aboutCarousel .carousel-item img{ object-fit:cover; height:350px; border-radius:12px; animation:fadeSlideIn 1.2s ease-in-out both; }
+@keyframes fadeSlideIn{ from{opacity:0; transform:translateY(30px)} to{opacity:1; transform:translateY(0)} }
+
+/* ===== Team cards (si aplican) ===== */
+.team-card{ transition:transform .3s ease, box-shadow .3s ease; border-radius:12px; overflow:hidden; background:#fff; animation:zoomInCard .8s ease-in-out; }
+.team-card:hover{ transform:translateY(-5px) scale(1.02); box-shadow:0 12px 30px rgba(0,0,0,.2); }
+@keyframes zoomInCard{ from{opacity:0; transform:scale(.95)} to{opacity:1; transform:scale(1)} }
+.team-card h5{ font-weight:700; font-size:1.2rem; color:#2e2e2e; }
+.team-card h6{ font-weight:500; font-size:1rem; color:#777; margin-bottom:.5rem; }
+.team-card .card-text a{ color:#2d6a4f; text-decoration:none; transition:color .3s ease; }
+.team-card .card-text a:hover{ color:#1b4332; text-decoration:underline; }
+
+/* ===== Encabezados de sección ===== */
+section h2{ font-size:2rem; margin-bottom:1rem; color:#2c3e50; position:relative; }
+section h2::after{
+  content:""; display:block; width:60px; height:3px; background-color:#198754;
+  margin:10px auto 0; border-radius:2px; animation: growLine 1s ease-in-out;
+}
+@keyframes growLine{ from{width:0} to{width:60px} }
+
+/* ===== Utilidades ===== */
+.texto-justificado{ text-align: justify; }
+.divider{ width:60px; height:4px; background:#fff; border-radius:2px; animation:growLine 1.2s ease-in-out both; }
+
+/* =========================================================
+   MAPA: SE RESPETA TU ESTILO EXISTENTE (NO CAMBIO COLORES)
+   ========================================================= */
+
+/* *** NO CAMBIAR *** — Colores/hover del SVG definidos por ti */
+.container path {
+  fill: #237a29;
+  stroke: #ffffff;
+  stroke-width: 2px;
+}
+.container :hover{
+  fill: #ff0310;
+  stroke: #ffffff;
+  stroke-width: 2px;
 }
 
-/* Responsive ajustes */
-@media (max-width: 576px) {
-    #contact-header {
-        height: 200px;
-    }
+/* El mapa y el tooltip flotante */
+#mapa-cyr{ position:relative; }
+#mapa-cyr .mapa-container{ position:relative; }
 
-    #contact-header h1 {
-        font-size: 1.75rem;
-    }
+/* Tooltip/card flotante reutilizando #tarjeta-zona */
+#tarjeta-zona{
+  position: absolute;
+  left: var(--tt-left, 16px);
+  top:  var(--tt-top,  16px);
+
+  max-width: 360px;
+  border-radius: 14px;
+  border: 1px solid rgba(0,0,0,.06);
+  background: rgba(255,255,255,.96);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 14px 30px rgba(0,0,0,.18);
+  padding: .85rem 1rem;
+
+  /* Por defecto: no intercepta eventos para no romper el hover del mapa */
+  pointer-events: none;
+
+  /* Animación / estado inicial oculto */
+  transform-origin: 12px 12px;
+  transform: translateY(-6px) scale(.98);
+  opacity: 0;
+  z-index: 5;
 }
+#tarjeta-zona.pinned{
+  /* Cuando está fijada por clic: ahora SÍ recibe clicks (X, Copiar, etc.) */
+  pointer-events: auto;
+}
+
+#tarjeta-zona h5{ color:#14532d; margin-bottom:.35rem; }
+
+/* Flechita */
+#tarjeta-zona::after{
+  content:"";
+  position:absolute;
+  width:0; height:0;
+  border:10px solid transparent;
+  border-right-color: rgba(255,255,255,.96);
+  left:-20px; top:14px;
+  filter: drop-shadow(-2px 0 2px rgba(0,0,0,.06));
+}
+
+/* Mostrar con animación suave */
+#tarjeta-zona.show{
+  animation: ttIn .18s ease-out both;
+}
+@keyframes ttIn{
+  from{ opacity:0; transform: translateY(-8px) scale(.96); }
+  to  { opacity:1; transform: translateY(0)    scale(1);   }
+}
+
+/* Variantes de orientación opcionales (si JS las usa) */
+#tarjeta-zona.at-right::after{ left:-20px; right:auto; border-right-color: rgba(255,255,255,.96); border-left-color: transparent; }
+#tarjeta-zona.at-left::after { left:auto; right:-20px; border-left-color: rgba(255,255,255,.96);  border-right-color: transparent; }
+#tarjeta-zona.at-top::after  { left:14px; top:auto; bottom:-20px; border:10px solid transparent; border-top-color: rgba(255,255,255,.96); }
+#tarjeta-zona.at-bottom::after{ left:14px; top:-20px; border:10px solid transparent; border-bottom-color: rgba(255,255,255,.96); }

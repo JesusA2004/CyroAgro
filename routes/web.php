@@ -65,3 +65,7 @@ Route::get('/contacto', function () {
     return view('contacto');
 })->name('contacto');
 
+// Ruta de contacto
+Route::get('/producto-detalle', function () {
+    return view('producto-detalle');
+})->name('producto-detalle');
