@@ -9,24 +9,25 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('productos', function (Blueprint $table) {
-            $table->id(); // ID autoincremental
-            $table->string('nombre', 150);
-            $table->string('segmento', 50); // Ej: "Orgánicos"
-            $table->string('categoria', 100); // Ej: "Fertilizantes"
-            $table->string('registro', 100)->nullable(); // Ej: "RSCO-286/X/08"
-            $table->text('contenido')->nullable(); // Descripción de lo que contiene
-            $table->string('presentaciones')->nullable(); // Ej: "1 lt., 20 lt."
-            $table->string('intervalo_aplicacion')->nullable(); // Texto libre
-            $table->string('incompatibilidad')->nullable();
-            $table->string('certificacion')->nullable();
-            $table->text('controla')->nullable(); // Qué controla el producto
-            $table->string('ficha_tecnica')->nullable(); // Ruta o nombre del archivo
-            $table->string('hoja_seguridad')->nullable(); // Ruta o nombre del archivo
-            $table->decimal('precio', 10, 2)->default(0.00);
-            $table->unsignedInteger('cantidad_inventario')->default(0);
-            $table->string('urlFoto')->nullable();
-            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
-            $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->id();
+            $table->string('nombre');
+            $table->string('segmento')->nullable();
+            $table->string('categoria')->nullable();
+            $table->string('registro')->nullable();
+            $table->text('contenido')->nullable();
+            $table->text('uso_recomendado')->nullable();
+            $table->text('dosis_sugerida')->nullable();
+            $table->string('intervalo_aplicacion')->nullable();
+            $table->text('controla')->nullable();
+            $table->string('ficha_tecnica')->nullable();
+            $table->string('hoja_seguridad')->nullable();
+            $table->string('foto_producto')->nullable();
+            $table->string('presentacion')->nullable();
+            $table->string('creado_por')->nullable();
+            $table->string('modificado_por')->nullable();
+            $table->date('fecha_creacion')->nullable();
+            $table->date('fecha_actualizacion')->nullable();
+            $table->string('foto_catalogo')->nullable();
             $table->timestamps();
         });
     }
