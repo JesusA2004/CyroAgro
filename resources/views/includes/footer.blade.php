@@ -10,8 +10,7 @@
                     <ul class="link-list">
                         <li><a href="{{ route('index') }}">Inicio</a></li>
                         <li><a href="{{ route('nosotros') }}">Nosotros</a></li>
-                        <li><a href="{{ route('index') }}#portfolio">Agroquímicos</a></li>
-                        <li><a href="{{ route('index') }}#portfolio">Orgánicos</a></li>
+                        <li><a href="{{ route('productos.index') }}">Productos</a></li>
                         <li><a href="{{ route('contacto') }}">Contacto</a></li>
                     </ul>
                 </div>

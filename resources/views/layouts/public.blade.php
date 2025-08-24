@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="@yield('description', '')" />
     <meta name="author" content="@yield('author', '')" />
-    <title>@yield('title', config('app.name', 'C Y R Agro'))</title>
+    <title>@yield('title', config('app.name', 'CYRAgro'))</title>
 
-    <link rel="icon" type="image/x-icon" href="{{ asset('assets/favicon.ico') }}" />
+    <link rel="icon" type="image/x-icon" href="{{ asset('assets/logo.png') }}" />
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"

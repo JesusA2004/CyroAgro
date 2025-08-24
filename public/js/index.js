@@ -1,107 +1,175 @@
-(function(){
-  // Normaliza rutas de imágenes a /img/fotosproducto/...
-  function normalizeImgPath(p){
-    if(!p) return null;
-    p = p.replace(/^\/+/, ''); // quita leading slash
-    p = p.replace(/^Fotos(Productos?|Catalogo)\//i, 'img/fotosproducto/');
-    return p;
+// Reveal on view
+(function() {
+  const els = document.querySelectorAll('.reveal');
+  if (!('IntersectionObserver' in window) || els.length === 0) {
+    els.forEach(e => e.classList.add('in-view')); return;
   }
-  // Normaliza docs (PDFs) a asset()
-  function normalizeDocPath(p){
-    if(!p) return null;
-    if(/^https?:\/\//i.test(p)) return p;
-    p = p.replace(/^\/+/, '');
-    return ASSET_ROOT + p;
-  }
-
-  // Root de asset() para concatenar relativo
-  const ASSET_ROOT = document.querySelector('link[rel="stylesheet"][href*="css"]')
-    ? document.querySelector('link[rel="stylesheet"][href*="css"]').href.replace(/\/css\/.*$/, '/')
-    : (document.querySelector('script[src*="js"]')?.src.replace(/\/js\/.*$/, '/') || '/');
-
-  const modalEl = document.getElementById('pModal');
-  const bsModal = window.bootstrap ? new bootstrap.Modal(modalEl) : null;
-
-  // Abrir modal desde botón "Ver producto"
-  document.addEventListener('click', function(e){
-    const btn = e.target.closest('.p-view');
-    if(!btn) return;
-
-    const wrap = btn.closest('.p-card-wrap');
-    if(!wrap) return;
-
-    let data = {};
-    try { data = JSON.parse(wrap.dataset.json || '{}'); } catch(_){}
-
-    // Título / categoría
-    document.getElementById('d-titulo').textContent = data.nombre || 'Producto';
-    document.getElementById('d-cat').textContent = [data.segmento, data.categoria].filter(Boolean).join(' • ');
-
-    // Botella
-    const bottle = document.getElementById('d-botella');
-    const foto   = normalizeImgPath(data.FotoCatalogo || data.fotoProducto);
-    bottle.src   = foto ? ASSET_ROOT + foto : ASSET_ROOT + 'img/placeholder.png';
-    bottle.alt   = data.nombre || 'Producto';
-
-    // Banner (puedes cambiarlo si tienes uno por producto)
-    const banner = document.getElementById('d-banner');
-    banner.src   = ASSET_ROOT + 'img/banner/BANNER MUESTRA.png';
-
-    // Ficha técnica / campos
-    const setText = (id, val) => document.getElementById(id).textContent = (val && String(val).trim()) ? val : '—';
-    setText('d-registro', data.registro);
-    setText('d-contenido', data.contenido);
-    setText('d-dosis', data.dosisSugerida);
-    setText('d-intervalo', data.intervaloAplicacion);
-    setText('d-presentacion', data.presentacion);
-
-    // Controla (lista)
-    const ulCtrl = document.getElementById('d-control');
-    ulCtrl.innerHTML = '';
-    if(data.controla){
-      data.controla.split(',').map(s=>s.trim()).filter(Boolean).forEach(item=>{
-        const li = document.createElement('li');
-        li.textContent = item;
-        ulCtrl.appendChild(li);
-      });
-    }
-
-    // Cultivos (tags)
-    const tags = document.getElementById('d-cultivos');
-    tags.innerHTML = '';
-    if(data.usoRecomendado){
-      data.usoRecomendado.split(',').map(s=>s.trim()).filter(Boolean).forEach(c=>{
-        const span = document.createElement('span');
-        span.className = 'badge rounded-pill text-bg-success-subtle border border-success-subtle me-2 mb-2';
-        span.textContent = c;
-        tags.appendChild(span);
-      });
-    }
-
-    // Enlaces
-    const aFicha = document.getElementById('d-ficha');
-    const aHoja  = document.getElementById('d-hoja');
-    const ficha  = normalizeDocPath(data.fichaTecnica);
-    const hoja   = normalizeDocPath(data.hojaSeguridad);
-
-    if(ficha){ aFicha.href = ficha; aFicha.classList.remove('disabled'); }
-    else     { aFicha.href = '#'; aFicha.classList.add('disabled'); }
-
-    if(hoja){  aHoja.href = hoja;  aHoja.classList.remove('disabled'); }
-    else     { aHoja.href = '#';   aHoja.classList.add('disabled'); }
-
-    // Mostrar modal
-    if(bsModal) bsModal.show();
-  });
-
-  // Selector rápido: abre modal del seleccionado
-  const quick = document.getElementById('p-quick');
-  if(quick){
-    quick.addEventListener('change', function(){
-      const id = this.value;
-      if(!id) return;
-      const btn = document.querySelector(`.p-card-wrap[data-id="${id}"] .p-view`);
-      btn && btn.click();
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) { entry.target.classList.add('in-view'); io.unobserve(entry.target); }
     });
+  }, { threshold: 0.15 });
+  els.forEach(e => io.observe(e));
+})();
+
+// Métricas
+(function(){
+  const nums = document.querySelectorAll('.stat-num');
+  if (!('IntersectionObserver' in window) || nums.length === 0) return;
+  const animate = (el) => {
+    const target = Number(el.dataset.count || '0');
+    const dur = 1200; const start = performance.now();
+    const step = (now) => {
+      const p = Math.min((now - start) / dur, 1);
+      el.textContent = Math.floor(p * target).toLocaleString('es-MX');
+      if (p < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  };
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(en => { if (en.isIntersecting){ animate(en.target); io.unobserve(en.target); } });
+  }, { threshold: 0.5 });
+  nums.forEach(n => io.observe(n));
+})();
+
+// Smooth anchor offset
+(function(){
+  const header = document.querySelector('header.navbar, .navbar.fixed-top, .navbar.sticky-top');
+  const getOffset = () => (header ? header.offsetHeight + 12 : 84);
+  document.addEventListener('click', (e) => {
+    const a = e.target.closest('a[href^="#"]'); if (!a) return;
+    const id = a.getAttribute('href'); if (!id || id === '#') return;
+    const el = document.querySelector(id); if (!el) return;
+    e.preventDefault();
+    const top = el.getBoundingClientRect().top + window.pageYOffset - getOffset();
+    window.scrollTo({ top, behavior: 'smooth' });
+  });
+})();
+
+// Carril de destacados
+(function(){
+  const track = document.getElementById('railTrack');
+  if (!track) return;
+
+  let isDown = false, startX = 0, scrollLeft = 0;
+  const start = (x) => { isDown = true; startX = x - track.offsetLeft; scrollLeft = track.scrollLeft; track.classList.add('dragging'); };
+  const move = (x) => { if (!isDown) return; const walk = (x - track.offsetLeft - startX) * 1.1; track.scrollLeft = scrollLeft - walk; };
+  const end = () => { isDown = false; track.classList.remove('dragging'); };
+
+  track.addEventListener('mousedown', e => start(e.pageX));
+  track.addEventListener('mousemove', e => move(e.pageX));
+  ['mouseleave','mouseup'].forEach(ev => track.addEventListener(ev, end));
+  track.addEventListener('touchstart', e => start(e.touches[0].pageX), {passive:true});
+  track.addEventListener('touchmove', e => move(e.touches[0].pageX), {passive:true});
+  track.addEventListener('touchend', end);
+
+  const prev = document.querySelector('.featured-rail .prev');
+  const next = document.querySelector('.featured-rail .next');
+  const step = () => Math.max(280, track.clientWidth * 0.8);
+  prev?.addEventListener('click', () => track.scrollBy({left: -step(), behavior: 'smooth'}));
+  next?.addEventListener('click', () => track.scrollBy({left: step(), behavior: 'smooth'}));
+})();
+
+// Burbujas: limita a 5, más chicas y fuera del título/botones
+(function(){
+  const orbit = document.getElementById('hero-orbit');
+  const track = document.getElementById('railTrack');
+  if (!orbit || !track) return;
+
+  const imgs = track.querySelectorAll('.rail-card .rail-media img');
+  const count = Math.min(imgs.length, 5);
+
+  const rand = (min, max) => Math.random() * (max - min) + min;
+
+  for (let i = 0; i < count; i++) {
+    const src = imgs[i].getAttribute('src');
+    const b = document.createElement('div'); b.className = 'bubble';
+    const img = document.createElement('img'); img.src = src; img.alt = '';
+    b.appendChild(img);
+
+    /* Zona segura: alejadas del bloque de texto (evitamos el 0–55% ancho izquierdo y 40–75% alto central) */
+    const top = rand(8, 72);
+    let left = rand(58, 92);  // Preferimos derecha
+    if (i % 2 === 0) left = rand(10, 30); // Algunas pocas a la izquierda pero altas o bajas
+    b.style.top = `${top}%`;
+    b.style.left = `${left}%`;
+    b.style.setProperty('--dur', `${rand(12, 18)}s`);
+    orbit.appendChild(b);
   }
+})();
+
+// Parallax suave del fondo del hero (limitado)
+(function(){
+  const bg = document.querySelector('.hero .hero-bg');
+  if (!bg) return;
+  let ticking = false;
+  const onMove = (x, y) => {
+    const rx = (x / window.innerWidth - 0.5) * 2;
+    const ry = (y / window.innerHeight - 0.5) * 2;
+    bg.style.transform = `scale(1.05) translate(${rx * 5}px, ${ry * 4}px)`;
+  };
+  window.addEventListener('mousemove', (e) => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (!ticking){ window.requestAnimationFrame(() => { onMove(e.clientX, e.clientY); ticking = false; }); ticking = true; }
+  });
+})();
+
+/* --- Onda de íconos destacados --- */
+(function(){
+  const strip = document.getElementById('waveStrip');
+  if (!strip) return;
+
+  const items = Array.from(strip.querySelectorAll('.wave-item'));
+  if (items.length === 0) return;
+
+  let W = 0, H = 0, phase = 0;
+  const cfg = {
+    amplitude: 42,       // altura de la onda (px)
+    baseline: 70,        // altura base dentro del carril (px)
+    speed: 0.6,          // px por frame aprox (desplazamiento horizontal)
+    spacingMin: 140,     // separación mínima entre iconos (px)
+    spacingMax: 220      // separación máxima (se usa para distribuir)
+  };
+
+  function measure(){
+    const rect = strip.getBoundingClientRect();
+    W = rect.width; H = rect.height;
+  }
+
+  function layout(){
+    // Distribuye en X de forma uniforme con separación variable
+    const n = items.length;
+    const usable = Math.max(W - 60, 300);
+    const step = Math.min(cfg.spacingMax, Math.max(cfg.spacingMin, usable / n));
+    for (let i=0;i<n;i++){
+      const el = items[i];
+      const x = (i * step + phase) % (W + step) - step/2; // bucle continuo
+      const rad = (x / W) * Math.PI * 2;                  // 0..2π
+      const y = H/2 + cfg.baseline * 0.0 + Math.sin(rad) * cfg.amplitude;
+
+      el.style.left = `${x}px`;
+      el.style.top  = `${y}px`;
+    }
+  }
+
+  let raf;
+  function tick(){
+    phase += cfg.speed;   // avanza la fila hacia la derecha
+    layout();
+    raf = requestAnimationFrame(tick);
+  }
+
+  function onResize(){
+    measure(); layout();
+  }
+
+  // Inicializa
+  measure(); layout(); tick();
+  window.addEventListener('resize', () => { cancelAnimationFrame(raf); onResize(); tick(); }, {passive:true});
+
+  // Accesibilidad: pausa al no estar visible
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) cancelAnimationFrame(raf);
+    else { tick(); }
+  });
 })();

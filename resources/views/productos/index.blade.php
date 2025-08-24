@@ -16,7 +16,7 @@
 <div class="hero-bg-gradient"></div>
 
 <section class="section-products">
-  <div class="container-fluid px-4">  {{-- << más ancho que container --}}
+  <div class="container-fluid px-4">  {{-- más ancho que container con margen horizontal --}}
     {{-- ENCABEZADO --}}
     <div class="row align-items-end mb-4">
       <div class="col-12 col-lg-6">
@@ -69,7 +69,7 @@
 
     <div id="p-empty" class="alert alert-light border d-none">No se encontraron productos con esos filtros.</div>
 
-    {{-- GRID (más productos por fila) --}}
+    {{-- GRID (2 por fila en sm, 3 en lg, 4 en xl, 6 en xxl) --}}
     <div id="p-grid" class="row gy-4 gx-3 gx-xl-4">
       @foreach($productos as $p)
         @php
@@ -95,7 +95,6 @@
           ];
         @endphp
 
-        {{-- 2 por fila (sm), 3 (lg), 4 (xl), 6 (xxl) --}}
         <div class="col-12 col-sm-6 col-lg-4 col-xl-3 col-xxl-2 p-card-wrap"
              data-id="{{ $p->id }}"
              data-nombre="{{ Str::lower($p->nombre) }}"
@@ -108,6 +107,7 @@
           <article class="p-card h-100 d-flex flex-column text-center">
             <div class="p-media">
               @php
+                // Normaliza la ruta de la BD a la carpeta public/img/fotosproducto
                 $ruta = $img
                   ? preg_replace('#^/?Fotos(Productos?|Catalogo)/#i', 'img/fotosproducto/', $img)
                   : 'img/placeholder.png';
@@ -144,6 +144,9 @@ window.availableFilters = {
   control: @json($controles->map(fn($c) => trim($c))->values()),
   cultivo: @json($cultivos->map(fn($c) => trim($c))->values()),
 };
+
+// Expone el root de asset() a JS para construir URLs absolutas
+window.assetRoot = "{{ asset('') }}";
 </script>
 
 {{-- MODAL DETALLE --}}
@@ -220,5 +223,10 @@ window.availableFilters = {
 @endpush
 
 @push('scripts')
+{{-- Recuerda incluir Bootstrap JS en tu layout o antes de este script --}}
 <script src="{{ asset('js/infoProductos.js') }}"></script>
 @endpush
+
+@section('footer')
+  @include('includes.footer')
+@endsection
