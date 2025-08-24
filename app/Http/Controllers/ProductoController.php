@@ -16,12 +16,29 @@ class ProductoController extends Controller
     /**
      * Mostrar listado de productos con paginación.
      */
-    public function index(Request $request): View
+    public function index(Request $request)
     {
-        $productos = Producto::orderBy('created_at', 'desc')->paginate(10);
+        $q = trim((string) $request->get('q', ''));
 
-        return view('producto.index', compact('productos'))
-            ->with('i', ($request->input('page', 1) - 1) * $productos->perPage());
+        // Consulta base
+        $base = Producto::query();
+
+        // Paginado normal para la vista completa
+        $productos = $base->orderBy('nombre')->paginate(12);
+
+        // Si es AJAX y hay búsqueda, devolvemos SOLO el parcial con TODOS los matches (sin paginar)
+        if ($request->ajax() && $q !== '') {
+            $matches = Producto::where('nombre', 'like', "%{$q}%")
+                        ->orderBy('nombre')
+                        ->get();
+
+            return response()
+                ->view('producto.partials.cards', ['productos' => $matches])
+                ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+        }
+
+        // Render normal (index con paginación)
+        return view('producto.index', compact('productos'));
     }
 
     /**
@@ -40,8 +57,11 @@ class ProductoController extends Controller
     public function store(ProductoRequest $request): RedirectResponse
     {
         $data = $request->validated();
-        $data['created_by'] = Auth::id();
-        $data['updated_by'] = Auth::id();
+
+        // Si quieres guardar el nombre del usuario en tus columnas:
+        $data['creadoPor']     = Auth::user()->name ?? 'Administrador';
+        $data['modificadoPor'] = Auth::user()->name ?? 'Administrador';
+        // O simplemente no pongas nada si no te interesa registrar esto.
 
         if ($request->hasFile('foto')) {
             $ruta = $request->file('foto')->store('FotosProductos', 'public'); // 👉 guarda en storage/app/public/FotosProductos
@@ -50,7 +70,7 @@ class ProductoController extends Controller
 
         Producto::create($data);
 
-        return Redirect::route('productos.index')
+        return Redirect::route('producto.index')
             ->with('success', 'Producto creado correctamente.');
     }
 
@@ -76,7 +96,9 @@ class ProductoController extends Controller
     public function update(ProductoRequest $request, Producto $producto): RedirectResponse
     {
         $data = $request->validated();
-        $data['updated_by'] = Auth::id();
+
+        // Actualiza tu columna real (opcional):
+        $data['modificadoPor'] = Auth::user()->name ?? 'Administrador';
 
         if ($request->hasFile('foto')) {
             $ruta = $request->file('foto')->store('FotosProductos', 'public');
@@ -85,7 +107,7 @@ class ProductoController extends Controller
 
         $producto->update($data);
 
-        return Redirect::route('productos.index')
+        return Redirect::route('producto.index')
             ->with('success', 'Producto actualizado correctamente.');
     }
 
@@ -96,7 +118,28 @@ class ProductoController extends Controller
     {
         $producto->delete();
 
-        return Redirect::route('productos.index')
+        return Redirect::route('producto.index')
             ->with('success', 'Producto eliminado correctamente.');
     }
+
+    public function buscar(Request $request)
+    {
+        $q = trim((string) $request->get('q', ''));
+
+        $query = \App\Models\Producto::query();
+
+        if ($q !== '') {
+            $query->where('nombre', 'like', "%{$q}%");
+        }
+
+        // Trae todos los que machean (o limita si prefieres)
+        $productos = $query->orderBy('nombre', 'asc')->get();
+
+        // Devolvemos solo las cards como HTML (partial)
+        // Para evitar problemas con la caché del navegador:
+        return response()
+            ->view('producto.partials.cards', compact('productos'))
+            ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
+    }
+
 }

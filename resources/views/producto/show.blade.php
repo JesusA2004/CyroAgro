@@ -30,74 +30,64 @@
                 <!-- Detalles -->
                 <div class="col-md-8">
                     @foreach([
-                        'nombre' => 'Nombre',
-                        'segmento' => 'Segmento',
-                        'categoria' => 'Categoría',
-                        'registro' => 'Registro',
-                        'contenido' => 'Contenido',
-                        'presentaciones' => 'Presentaciones',
-                        'intervalo_aplicacion' => 'Intervalo de Aplicación',
-                        'incompatibilidad' => 'Incompatibilidad',
-                        'certificacion' => 'Certificación',
-                        'controla' => 'Controla',
-                        'precio' => 'Precio',
-                        'cantidad_inventario' => 'Inventario'
+                        'nombre'          => 'Nombre',
+                        'segmento'        => 'Segmento',
+                        'categoria'       => 'Categoría',
+                        'registro'        => 'Registro',
+                        'contenido'       => 'Contenido',
+                        'usoRecomendado'  => 'Uso recomendado',
+                        'dosisSugerida'   => 'Dosis sugerida',
+                        'intervaloAplicacion' => 'Intervalo de aplicación',
+                        'controla'        => 'Controla',
+                        'presentacion'    => 'Presentación',
                     ] as $field => $label)
-                        <div class="info-block">
-                            <div class="info-label">
-                                <i class="bi bi-info-circle-fill me-2 text-primary" 
-                                title="Información sobre {{ strtolower($label) }}"></i>{{ __($label) }}:
+                        @if(!empty($producto->$field))
+                            <div class="info-block">
+                                <div class="info-label">
+                                    <i class="bi bi-info-circle-fill me-2 text-primary"></i>{{ $label }}:
+                                </div>
+                                <div class="info-value">{{ $producto->$field }}</div>
                             </div>
-                            <div class="info-value">{{ $producto->$field }}</div>
-                        </div>
+                        @endif
                     @endforeach
 
+                    {{-- Ficha técnica --}}
                     <div class="info-block">
                         <div class="info-label"><i class="bi bi-file-earmark-pdf-fill text-danger me-2"></i>Ficha Técnica:</div>
                         <div class="info-value">
-                            @if($producto->ficha_tecnica)
-                                <a href="{{ asset('HojasTecnicas/' . $producto->ficha_tecnica) }}" target="_blank" class="pdf-link">
+                            @if(!empty($producto->fichaTecnica) && file_exists(public_path($producto->fichaTecnica)))
+                                <a href="{{ asset($producto->fichaTecnica) }}" target="_blank" class="pdf-link">
                                     <i class="bi bi-box-arrow-up-right me-1"></i> Ver archivo
                                 </a>
                             @else
-                                <span class="text-muted">No disponible</span>
+                                <span class="text-muted">Sin archivo</span>
                             @endif
                         </div>
                     </div>
 
+                    {{-- Hoja de seguridad --}}
                     <div class="info-block">
                         <div class="info-label"><i class="bi bi-file-earmark-pdf-fill text-warning me-2"></i>Hoja de Seguridad:</div>
                         <div class="info-value">
-                            @if($producto->hoja_seguridad)
-                                <a href="{{ asset('FichasTecnicas/' . $producto->hoja_seguridad) }}" target="_blank" class="pdf-link">
+                            @if(!empty($producto->hojaSeguridad) && file_exists(public_path($producto->hojaSeguridad)))
+                                <a href="{{ asset($producto->hojaSeguridad) }}" target="_blank" class="pdf-link">
                                     <i class="bi bi-box-arrow-up-right me-1"></i> Ver archivo
                                 </a>
                             @else
-                                <span class="text-muted">No disponible</span>
+                                <span class="text-muted">Sin archivo</span>
                             @endif
                         </div>
                     </div>
 
-                    @auth
-                        @if(Auth::user()->role === 'administrador')
-                            <div class="info-block">
-                                <div class="info-label"><i class="bi bi-calendar-plus text-success me-2"></i>Creado:</div>
-                                <div class="info-value">{{ $producto->created_at?->format('d/m/Y H:i') ?? '—' }}</div>
-                            </div>
-                            <div class="info-block">
-                                <div class="info-label"><i class="bi bi-clock-history text-info me-2"></i>Actualizado:</div>
-                                <div class="info-value">{{ $producto->updated_at?->format('d/m/Y H:i') ?? '—' }}</div>
-                            </div>
-                            <div class="info-block">
-                                <div class="info-label"><i class="bi bi-person-fill text-success me-2"></i>Creado por:</div>
-                                <div class="info-value">{{ $producto->creador?->name ?? 'Desconocido' }}</div>
-                            </div>
-                            <div class="info-block">
-                                <div class="info-label"><i class="bi bi-pencil-fill text-info me-2"></i>Última edición:</div>
-                                <div class="info-value">{{ $producto->editor?->name ?? 'Sin cambios' }}</div>
-                            </div>
-                        @endif
-                    @endauth
+                    {{-- Fechas --}}
+                    <div class="info-block">
+                        <div class="info-label"><i class="bi bi-calendar-plus text-success me-2"></i>Creado:</div>
+                        <div class="info-value">{{ $producto->created_at?->format('d/m/Y H:i') ?? '—' }}</div>
+                    </div>
+                    <div class="info-block">
+                        <div class="info-label"><i class="bi bi-clock-history text-info me-2"></i>Actualizado:</div>
+                        <div class="info-value">{{ $producto->updated_at?->format('d/m/Y H:i') ?? '—' }}</div>
+                    </div>
                 </div>
 
                 <!-- Imagen -->
@@ -125,6 +115,7 @@
                     <img src="{{ asset($ruta) }}"
                          alt="Imagen del producto"
                          class="product-image mb-3"
+                         style="max-height: 300px; object-fit: contain; background:#fff; border-radius:8px;"
                          onerror="this.onerror=null;this.src='{{ asset('img/generica.png') }}';">
                 </div>
             </div>

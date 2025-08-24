@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Collection;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\TicketController;
@@ -10,63 +9,65 @@ use App\Http\Controllers\DetalleController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\ProductPublicController;
 
-// Página de login
-Route::get('/', function () {
-    return view('index');
-});
+/**
+ * ======================
+ * PÁGINAS PÚBLICAS
+ * ======================
+ */
+Route::view('/', 'index')->name('index');
+Route::view('/index', 'index');               // alias opcional de portada
+Route::view('/nosotros', 'nosotros')->name('nosotros');
+Route::view('/contacto', 'contacto')->name('contacto');
 
-// Rutas de autenticación (login, register, etc.)
-Auth::routes();
-
-// Rutas protegidas (requieren usuario autenticado)
-Route::middleware('auth')->group(function () {
-    Route::get('/home', [HomeController::class, 'index'])->name('home');
-    Route::resource('producto', ProductoController::class);
-    Route::resource('usuarios', UsuarioController::class);
-    Route::resource('tickets', TicketController::class);
-    Route::resource('detalles', DetalleController::class);
-});
-
-// Rutas públicas (no requieren autenticación)
 // Hojas de Seguridad
 Route::get('/hojas-seguridad', function () {
-    // Aquí pasamos siempre la variable, aunque esté vacía
-    $hojasSeguridad = collect(); 
-
+    $hojasSeguridad = collect();              // siempre definida para evitar notices
     return view('hojasSeguridad.index', compact('hojasSeguridad'));
 })->name('hojas_seguridad.index');
 
 // Fichas Técnicas
-Route::get('/fichas-tecnicas', function () {
-    return view('fichasTecnicas.index');
-})->name('fichas_tecnicas.index');
+Route::view('/fichas-tecnicas', 'fichasTecnicas.index')->name('fichas_tecnicas.index');
 
-// Registros COFEPRIS
-Route::get('/registros/cofepris', function () {
-    return view('registros.cofepris');
-})->name('registros.cofepris');
+// Registros
+Route::view('/registros/cofepris', 'registros.cofepris')->name('registros.cofepris');
+Route::view('/registros/omri', 'registros.omri')->name('registros.omri');
 
-// Registros OMRI
-Route::get('/registros/omri', function () {
-    return view('registros.omri');
-})->name('registros.omri');
+// Página pública de productos (si usas un listado/landing informativa)
+Route::get('/infoProductos', [ProductPublicController::class, 'show'])
+    ->name('productos.show');                 // puedes mantener este nombre público en plural
 
-// Ruta de index
-Route::get('/index', function () {
-    return view('index');
-})->name('index');
+/**
+ * ======================
+ * AUTENTICACIÓN
+ * ======================
+ */
+Auth::routes();
 
-// Ruta de nosotros
-Route::get('/nosotros', function () {
-    return view('nosotros');
-})->name('nosotros');
+/**
+ * ======================
+ * ÁREA PROTEGIDA (AUTH)
+ * ======================
+ */
+Route::middleware('auth')->group(function () {
 
-// Ruta de contacto
-Route::get('/contacto', function () {
-    return view('contacto');
-})->name('contacto');
+    Route::get('/home', [HomeController::class, 'index'])->name('home');
 
-// Público (sin auth)
-// ACEPTA id o slug (sin :slug)
-Route::get('/infoProductos/{producto}', [ProductPublicController::class, 'show'])
-    ->name('productos.show');
+    // CRUD de administración EN SINGULAR
+    Route::resource('producto', ProductoController::class);
+    Route::resource('usuarios', UsuarioController::class);
+    Route::resource('tickets', TicketController::class);
+    Route::resource('detalles', DetalleController::class);
+
+    // Si tu búsqueda ahora es 100% front (JS en tiempo real), esta ruta NO es necesaria.
+    // Déjala comentada para evitar confusiones; si la usas, descoméntala.
+    // Route::get('/producto/buscar', [ProductoController::class, 'buscar'])->name('producto.buscar');
+});
+
+/**
+ * ======================
+ * COMPATIBILIDAD (ALIAS)
+ * ======================
+ * Si alguna vista antigua aún llama rutas en plural, redirigimos a las nuevas.
+ * Quita estas líneas cuando ya no se usen.
+ */
+Route::get('/productos', fn () => redirect()->route('producto.index'))->name('productos.index');

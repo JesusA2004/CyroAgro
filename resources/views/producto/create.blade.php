@@ -1,7 +1,7 @@
 @extends('layouts.auth')
 
 @section('content')
-    <form method="POST" action="{{ route('productos.store') }}" role="form" enctype="multipart/form-data">
+    <form method="POST" action="{{ route('producto.store') }}" role="form" enctype="multipart/form-data">
         @csrf
         @include('producto.form')
     </form>

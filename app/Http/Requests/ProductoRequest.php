@@ -14,21 +14,25 @@ class ProductoRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'nombre' => 'required|string|max:150',
-            'segmento' => 'required|string|max:50',
-            'categoria' => 'required|string|max:100',
-            'registro' => 'nullable|string|max:100',
-            'contenido' => 'nullable|string',
-            'presentaciones' => 'nullable|string',
-            'intervalo_aplicacion' => 'nullable|string',
-            'incompatibilidad' => 'nullable|string',
-            'certificacion' => 'nullable|string',
-            'controla' => 'nullable|string',
-            'ficha_tecnica' => 'nullable|string',
-            'hoja_seguridad' => 'nullable|string',
-            'precio' => 'required|numeric|min:0',
-            'cantidad_inventario' => 'required|integer|min:0',
-            'urlFoto' => 'nullable|string|max:255',
+            'nombre'               => ['required','string','max:255'],
+            'segmento'             => ['nullable','string','max:255'],
+            'categoria'            => ['nullable','string','max:255'],
+            'registro'             => ['nullable','string','max:255'],
+            'contenido'            => ['nullable','string'],
+            'usoRecomendado'       => ['nullable','string'],
+            'dosisSugerida'        => ['nullable','string'],
+            'intervaloAplicacion'  => ['nullable','string'],
+            'controla'             => ['nullable','string'],
+            'presentacion'         => ['nullable','string','max:255'],
+
+            // Rutas (texto) — se mantienen si no se sube un archivo nuevo
+            'fichaTecnica'         => ['nullable','string'],
+            'hojaSeguridad'        => ['nullable','string'],
+
+            // Archivos (opcionales)
+            'fichaTecnica_file'    => ['nullable','file','mimes:pdf','max:10240'],   // 10 MB
+            'hojaSeguridad_file'   => ['nullable','file','mimes:pdf','max:10240'],
+            'foto'                 => ['nullable','image','mimes:jpg,jpeg,png,webp','max:5120'], // 5 MB
         ];
     }
 
