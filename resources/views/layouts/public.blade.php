@@ -102,17 +102,10 @@
                             <i class="fas fa-users"></i> Nosotros
                         </a>
                     </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="productosDropdown"
-                           role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-box-open"></i> Productos
+                    <li class="nav-item">
+                        <a class="nav-link page-scroll" href="{{ route('productos.index') }}">
+                            <i class="fas fa-box-open"></i>  Productos
                         </a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="productosDropdown">
-                            <li><a class="dropdown-item page-scroll" href="{{ route('index') }}#portfolio">
-                                <i class="fas fa-flask"></i> Agroquímicos</a></li>
-                            <li><a class="dropdown-item page-scroll" href="{{ route('index') }}#portfolio">
-                                <i class="fas fa-leaf"></i> Orgánicos</a></li>
-                        </ul>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link page-scroll" href="{{ route('contacto') }}">

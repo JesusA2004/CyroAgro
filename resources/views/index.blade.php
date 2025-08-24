@@ -1,132 +1,78 @@
 @extends('layouts.public')
 
 @section('content')
-  <!-- Carrusel simplificado -->
-  <header class="position-relative overflow-hidden" data-aos="fade">
-    <div id="carouselExampleDark" class="carousel carousel-dark slide" data-bs-ride="carousel">
-      <div class="carousel-indicators">
-        <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="0"
-                class="active" aria-current="true" aria-label="Slide 1"></button>
-        <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="1"
-                aria-label="Slide 2"></button>
-        <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="2"
-                aria-label="Slide 3"></button>
-      </div>
-      <div class="carousel-inner">
-        @foreach ([
-          ['img'=>'bg_1.jpg','h'=>'Bienvenido a CYR AGROQUÍMICA','p'=>'Llevamos hasta ti productos de alta calidad'],
-          ['img'=>'bg_2.jpg','h'=>'Protección para tus cultivos','p'=>'Soluciones efectivas para el campo mexicano'],
-          ['img'=>'bg_3.jpg','h'=>'Calidad garantizada','p'=>'Productos certificados y de confianza'],
-        ] as $i => $slide)
-        <div class="carousel-item @if($i===0) active @endif" data-bs-interval="{{ $i===0 ? 10000 : 5000 }}">
-          <img src="{{ asset('img/slides/'.$slide['img']) }}"
-               class="d-block w-100" style="height:100vh;object-fit:cover;filter:brightness(.5)" alt="...">
-          <div class="overlay"></div>
-          <div class="carousel-caption d-md-block">
-            <h5>{{ $slide['h'] }}</h5>
-            <p>{{ $slide['p'] }}</p>
-            <a class="btn btn-success btn-xl text-uppercase page-scroll" href="#orden">Leer más</a>
+  <!-- HERO con “onda” de destacados -->
+  <header class="hero position-relative overflow-hidden">
+    <picture>
+      <img class="hero-bg"
+           src="{{ asset('img/bannerContacto.png') }}"
+           alt="Campo agrícola al amanecer"
+           loading="eager"
+           decoding="async">
+    </picture>
+
+    <!-- Onda de íconos destacados -->
+    <div class="wave-strip" id="waveStrip" aria-label="Productos destacados">
+      @php
+        // Usa tu colección real: Product::featured()->get()
+        $destacados = $destacados ?? collect([
+          (object)['id'=>22,'titulo'=>'OMEX DP 98','img'=>'22.jpg','url'=>route('fichas_tecnicas.index')],
+          (object)['id'=>23,'titulo'=>'OMEX ZN 70','img'=>'23.jpg','url'=>route('fichas_tecnicas.index')],
+          (object)['id'=>20,'titulo'=>'OMEX BIO 20','img'=>'20.jpg','url'=>route('fichas_tecnicas.index')],
+        ]);
+      @endphp
+
+      @foreach ($destacados as $p)
+        <a class="wave-item" href="{{ $p->url }}" title="{{ $p->titulo }}" data-title="{{ $p->titulo }}">
+          <img src="{{ asset('img/productosDestacados/'.$p->img) }}" alt="{{ $p->titulo }}" loading="lazy" decoding="async">
+        </a>
+      @endforeach
+    </div>
+
+    <div class="container position-relative z-1">
+      <div class="row align-items-center min-vh-100">
+        <div class="col-12 col-lg-8">
+          <h1 class="display-4 fw-bold mb-3 reveal lh-1">Soluciones integrales para el campo</h1>
+          <p class="lead text-white-50 mb-4 reveal pe-lg-5" style="max-width:56ch">
+            Productos con respaldo técnico para impulsar el rendimiento y la sanidad de tus cultivos en México.
+          </p>
+          <div class="d-flex flex-wrap gap-3 reveal mb-4">
+            <a href="#lineas" class="btn btn-success btn-xxl btn-glow">Ver líneas de producto</a>
+            <a href="{{ route('contacto') }}" class="btn btn-outline-light btn-xxl btn-outline-glow">Contacto</a>
           </div>
         </div>
-        @endforeach
       </div>
-      <button class="carousel-control-prev" type="button"
-              data-bs-target="#carouselExampleDark" data-bs-slide="prev">
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Anterior</span>
-      </button>
-      <button class="carousel-control-next" type="button"
-              data-bs-target="#carouselExampleDark" data-bs-slide="next">
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        <span class="visually-hidden">Siguiente</span>
-      </button>
+    </div>
+
+    <div class="shape-divider">
+      <svg viewBox="0 0 1200 120" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M1200 0L0 0 0 46.29 1200 120 1200 0z"></path>
+      </svg>
     </div>
   </header>
 
-  <!-- Sección con mensaje y logo grande -->
-  <section class="py-5 bg-light position-relative" data-aos="fade-up">
-    <span id="orden" style="position: absolute; top: -100px;"></span> <!-- Punto de ancla compensado -->
+  <!-- LÍNEAS DE PRODUCTO -->
+  <section id="lineas" class="py-6 bg-body-tertiary">
     <div class="container">
-      <div class="row align-items-center mb-4">
-        <div class="col-12 col-md-6 text-center text-md-start mb-3 mb-md-0">
-          <h2 class="fs-3 fw-light mb-0">¡Estamos a la orden!</h2>
-        </div>
-        <div class="col-12 col-md-6 text-center text-md-end">
-          <a href="{{ route('contacto') }}" class="btn btn-primary px-4 py-2 rounded-pill">
-            CONTÁCTANOS
-          </a>
-        </div>
+      <div class="text-center mb-4">
+        <h2 class="display-6 fw-bold mb-2 reveal">Líneas de producto</h2>
+        <p class="text-muted reveal">Explora nuestras categorías principales</p>
       </div>
-      <div class="row justify-content-center">
-        <div class="col-12 col-sm-10 col-md-8 text-center">
-          <img src="{{ asset('img/logo.png') }}" alt="Logo"
-              class="img-fluid" style="max-width: 100%; height: auto;">
-        </div>
-      </div>
-      <div class="row py-4">
-        <div class="col-12 text-center">
-          <a class="btn btn-success btn-xl text-uppercase page-scroll" href="#portfolio">
-            🔍 Explora nuestro catálogo
-          </a>
-        </div>
-      </div>
-    </div>
-  </section>
 
-  <!-- Consulta rápida -->
-  <section id="services" class="page-section" data-aos="fade-up">
-    <div class="container">
-      <div class="text-center mb-5" data-aos="fade-down">
-        <h2 class="section-heading text-uppercase">Consulta rápida</h2>
-        <h3 class="section-subheading text-muted">Accede a nuestras secciones informativas</h3>
-      </div>
-      <div class="row gx-3 gy-4 justify-content-center">
+      <div class="row g-4">
         @foreach ([
-          ['icon'=>'fa-lock','title'=>'Hojas de seguridad','route'=>'hojas_seguridad.index'],
-          ['icon'=>'fa-file-alt','title'=>'Hojas técnicas','route'=>'fichas_tecnicas.index'],
-          ['icon'=>'fa-book','title'=>'Registros COFEPRIS','route'=>'registros.cofepris'],
-          ['icon'=>'fa-seedling','title'=>'Registros OMRI','route'=>'registros.omri'],
-        ] as $item)
-        <div class="col-12 col-sm-6 col-md-3" data-aos="fade-up" data-aos-delay="{{ $loop->index * 100 }}">
-          <a class="card-hover" href="{{ route($item['route']) }}">
-            <div class="service-card">
-              <div class="card-front text-center p-4">
-                <i class="fas {{ $item['icon'] }} fa-3x text-primary"></i>
-                <h4 class="mt-3">{{ $item['title'] }}</h4>
-              </div>
-              <div class="card-back text-center p-4">
-                <i class="fas fa-arrow-circle-right fa-3x text-white"></i>
-              </div>
+          ['icon'=>'fa-seedling','title'=>'Fertilizantes y Bioestimulantes','desc'=>'Formulaciones para nutrición eficiente y vigor vegetal.'],
+          ['icon'=>'fa-flask','title'=>'Coadyuvantes y Bioadhesivos','desc'=>'Mejoran cobertura, adherencia y compatibilidad.'],
+          ['icon'=>'fa-shield-alt','title'=>'Protección de Cultivos','desc'=>'Manejo integrado con soluciones confiables.'],
+          ['icon'=>'fa-leaf','title'=>'Orgánicos y Especialidades','desc'=>'Opciones certificables y de baja huella ambiental.'],
+        ] as $i => $card)
+        <div class="col-12 col-sm-6 col-lg-3">
+          <div class="feature-card h-100 p-4 reveal tilt" style="--d:{{ $i * 80 }}ms">
+            <div class="icon-wrap mb-3">
+              <i class="fas {{ $card['icon'] }} fa-2x"></i>
             </div>
-          </a>
-        </div>
-        @endforeach
-      </div>
-    </div>
-  </section>
-
-  <!-- Portfolio -->
-  <section id="portfolio" class="page-section bg-light" data-aos="fade-up">
-    <div class="container">
-      <div class="text-center mb-5">
-        <h2 class="section-heading text-uppercase">Nuestros productos</h2>
-      </div>
-      <div class="row gx-0 gx-md-3 gy-4">
-        @foreach ([
-          ['img'=>'bg_Organicos.jpg','alt'=>'Orgánicos','modal'=>'#portfolioModal1'],
-          ['img'=>'bg_Agroquimicos.jpg','alt'=>'Agroquímicos','modal'=>'#portfolioModal2'],
-        ] as $col)
-        <div class="col-12 col-md-6" data-aos="zoom-in" data-aos-delay="{{ $loop->index * 150 }}">
-          <div class="portfolio-item mx-auto">
-            <a class="portfolio-link" data-bs-toggle="modal" href="{{ $col['modal'] }}">
-              <div class="portfolio-hover">
-                <div class="portfolio-hover-content"><i class="fas fa-plus fa-3x"></i></div>
-              </div>
-              <img class="img-fluid rounded shadow-lg" src="{{ asset('img/'.$col['img']) }}" alt="{{ $col['alt'] }}">
-            </a>
-            <div class="portfolio-caption text-center mt-3">
-              <h4>{{ $col['alt'] }}</h4>
-            </div>
+            <h3 class="h5 fw-bold mb-2">{{ $card['title'] }}</h3>
+            <p class="text-muted mb-0">{{ $card['desc'] }}</p>
           </div>
         </div>
         @endforeach
@@ -134,29 +80,79 @@
     </div>
   </section>
 
-  <!-- Productos estrella -->
-  <section id="about" class="page-section" data-aos="fade-up">
+  <!-- DOCUMENTACIÓN TÉCNICA -->
+  <section id="accesos" class="py-6">
     <div class="container">
-      <div class="text-center mb-5" data-aos="zoom-in">
-        <h2 class="section-heading text-uppercase">Productos estrella</h2>
+      <div class="text-center mb-4">
+        <h2 class="display-6 fw-bold mb-2 reveal">Documentación técnica</h2>
+        <p class="text-muted reveal">Consulta fichas, hojas de seguridad y registros</p>
       </div>
-      <div class="row gx-0 gx-md-3 gy-4">
-        @foreach ([22=>'OMEX DP 98',23=>'OMEX ZN 70',20=>'OMEX BIO 20'] as $img=>$title)
-        <div class="col-12 col-md-4" data-aos="fade-up" data-aos-delay="{{ $loop->index * 150 }}">
-          <div class="product-card position-relative overflow-hidden">
-            <a class="portfolio-link" data-bs-toggle="modal" href="#portfolioModal{{ $loop->iteration + 2 }}">
-              <img src="{{ asset('img/productosDestacados/'.$img.'.jpg') }}"
-                   class="img-fluid rounded shadow" alt="{{ $title }}">
-              <div class="card-content text-white p-4">
-                <h5 class="product-title">{{ $title }}</h5>
-                <p class="product-description">Conoce más sobre los nutrientes que fortalecen tus cultivos.</p>
-              </div>
-            </a>
-          </div>
+
+      <div class="row g-4 justify-content-center">
+        @foreach ([
+          ['title'=>'Hojas de seguridad','icon'=>'fa-lock','route'=>'hojas_seguridad.index'],
+          ['title'=>'Hojas técnicas','icon'=>'fa-file-alt','route'=>'fichas_tecnicas.index'],
+          ['title'=>'Registros COFEPRIS','icon'=>'fa-book','route'=>'registros.cofepris'],
+          ['title'=>'Registros OMRI','icon'=>'fa-seedling','route'=>'registros.omri'],
+        ] as $i => $item)
+        <div class="col-12 col-sm-6 col-lg-3">
+          <a class="quick-link reveal hover-shift" style="--d:{{ $i * 80 }}ms" href="{{ route($item['route']) }}">
+            <span class="ql-icon"><i class="fas {{ $item['icon'] }}"></i></span>
+            <span class="ql-text">{{ $item['title'] }}</span>
+            <span class="ql-arrow"><i class="fas fa-arrow-right"></i></span>
+          </a>
         </div>
         @endforeach
       </div>
     </div>
+  </section>
+
+  <!-- MÉTRICAS -->
+  <section id="metricas" class="py-6">
+    <div class="container">
+      <div class="row g-4 text-center">
+        <div class="col-6 col-lg-3">
+          <div class="stat reveal">
+            <div class="stat-num" data-count="15">0</div>
+            <div class="stat-label">Años de experiencia</div>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="stat reveal">
+            <div class="stat-num" data-count="120">0</div>
+            <div class="stat-label">Presentaciones activas</div>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="stat reveal">
+            <div class="stat-num" data-count="9">0</div>
+            <div class="stat-label">Líneas de producto</div>
+          </div>
+        </div>
+        <div class="col-6 col-lg-3">
+          <div class="stat reveal">
+            <div class="stat-num" data-count="32">0</div>
+            <div class="stat-label">Estados con presencia</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section id="contacto-cta" class="py-6 bg-success text-white position-relative overflow-hidden">
+    <div class="container position-relative z-1">
+      <div class="row align-items-center">
+        <div class="col-12 col-lg-8">
+          <h2 class="display-6 fw-bold mb-2 reveal">¿Lista la siguiente aplicación?</h2>
+          <p class="mb-0 reveal">Cuéntanos tu cultivo y te proponemos un programa técnico con respaldo de hoja de seguridad y ficha.</p>
+        </div>
+        <div class="col-12 col-lg-4 text-lg-end mt-3 mt-lg-0">
+          <a href="{{ route('contacto') }}" class="btn btn-outline-light btn-xxl btn-outline-glow reveal">Hablar con un asesor</a>
+        </div>
+      </div>
+    </div>
+    <div class="cta-pattern" aria-hidden="true"></div>
   </section>
 @endsection
 

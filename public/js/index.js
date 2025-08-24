@@ -1,54 +1,107 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const anchors = document.querySelectorAll('a.page-scroll');
-    const indexMeta = document.querySelector('meta[name="index-url"]');
-    const indexUrl = indexMeta ? indexMeta.getAttribute('content') : '/';
-    const currentPath = window.location.pathname;
-    const isIndex = currentPath === new URL(indexUrl, window.location.origin).pathname;
+(function(){
+  // Normaliza rutas de imágenes a /img/fotosproducto/...
+  function normalizeImgPath(p){
+    if(!p) return null;
+    p = p.replace(/^\/+/, ''); // quita leading slash
+    p = p.replace(/^Fotos(Productos?|Catalogo)\//i, 'img/fotosproducto/');
+    return p;
+  }
+  // Normaliza docs (PDFs) a asset()
+  function normalizeDocPath(p){
+    if(!p) return null;
+    if(/^https?:\/\//i.test(p)) return p;
+    p = p.replace(/^\/+/, '');
+    return ASSET_ROOT + p;
+  }
 
-    function slowScrollTo(targetY, duration = 1000) {
-        const startY = window.scrollY;
-        const distance = targetY - startY;
-        const startTime = performance.now();
+  // Root de asset() para concatenar relativo
+  const ASSET_ROOT = document.querySelector('link[rel="stylesheet"][href*="css"]')
+    ? document.querySelector('link[rel="stylesheet"][href*="css"]').href.replace(/\/css\/.*$/, '/')
+    : (document.querySelector('script[src*="js"]')?.src.replace(/\/js\/.*$/, '/') || '/');
 
-        function step(currentTime) {
-            const elapsed = currentTime - startTime;
-            const progress = Math.min(elapsed / duration, 1);
-            const ease = easeInOutCubic(progress);
-            window.scrollTo(0, startY + distance * ease);
+  const modalEl = document.getElementById('pModal');
+  const bsModal = window.bootstrap ? new bootstrap.Modal(modalEl) : null;
 
-            if (progress < 1) {
-                requestAnimationFrame(step);
-            }
-        }
+  // Abrir modal desde botón "Ver producto"
+  document.addEventListener('click', function(e){
+    const btn = e.target.closest('.p-view');
+    if(!btn) return;
 
-        function easeInOutCubic(t) {
-            return t < 0.5
-                ? 4 * t * t * t
-                : 1 - Math.pow(-2 * t + 2, 3) / 2;
-        }
+    const wrap = btn.closest('.p-card-wrap');
+    if(!wrap) return;
 
-        requestAnimationFrame(step);
+    let data = {};
+    try { data = JSON.parse(wrap.dataset.json || '{}'); } catch(_){}
+
+    // Título / categoría
+    document.getElementById('d-titulo').textContent = data.nombre || 'Producto';
+    document.getElementById('d-cat').textContent = [data.segmento, data.categoria].filter(Boolean).join(' • ');
+
+    // Botella
+    const bottle = document.getElementById('d-botella');
+    const foto   = normalizeImgPath(data.FotoCatalogo || data.fotoProducto);
+    bottle.src   = foto ? ASSET_ROOT + foto : ASSET_ROOT + 'img/placeholder.png';
+    bottle.alt   = data.nombre || 'Producto';
+
+    // Banner (puedes cambiarlo si tienes uno por producto)
+    const banner = document.getElementById('d-banner');
+    banner.src   = ASSET_ROOT + 'img/banner/BANNER MUESTRA.png';
+
+    // Ficha técnica / campos
+    const setText = (id, val) => document.getElementById(id).textContent = (val && String(val).trim()) ? val : '—';
+    setText('d-registro', data.registro);
+    setText('d-contenido', data.contenido);
+    setText('d-dosis', data.dosisSugerida);
+    setText('d-intervalo', data.intervaloAplicacion);
+    setText('d-presentacion', data.presentacion);
+
+    // Controla (lista)
+    const ulCtrl = document.getElementById('d-control');
+    ulCtrl.innerHTML = '';
+    if(data.controla){
+      data.controla.split(',').map(s=>s.trim()).filter(Boolean).forEach(item=>{
+        const li = document.createElement('li');
+        li.textContent = item;
+        ulCtrl.appendChild(li);
+      });
     }
 
-    anchors.forEach(anchor => {
-        anchor.addEventListener('click', function (e) {
-            const href = this.getAttribute('href');
-            if (!href || !href.startsWith('#')) return;
+    // Cultivos (tags)
+    const tags = document.getElementById('d-cultivos');
+    tags.innerHTML = '';
+    if(data.usoRecomendado){
+      data.usoRecomendado.split(',').map(s=>s.trim()).filter(Boolean).forEach(c=>{
+        const span = document.createElement('span');
+        span.className = 'badge rounded-pill text-bg-success-subtle border border-success-subtle me-2 mb-2';
+        span.textContent = c;
+        tags.appendChild(span);
+      });
+    }
 
-            e.preventDefault();
+    // Enlaces
+    const aFicha = document.getElementById('d-ficha');
+    const aHoja  = document.getElementById('d-hoja');
+    const ficha  = normalizeDocPath(data.fichaTecnica);
+    const hoja   = normalizeDocPath(data.hojaSeguridad);
 
-            if (isIndex) {
-                const target = document.querySelector(href);
-                if (target) {
-                    const navbar = document.querySelector('#mainNav');
-                    const offset = navbar ? navbar.offsetHeight + 10 : 80;
-                    const targetY = target.getBoundingClientRect().top + window.scrollY - offset;
+    if(ficha){ aFicha.href = ficha; aFicha.classList.remove('disabled'); }
+    else     { aFicha.href = '#'; aFicha.classList.add('disabled'); }
 
-                    slowScrollTo(targetY, 1200); // duración en ms (ajustable)
-                }
-            } else {
-                window.location.href = indexUrl + href;
-            }
-        });
+    if(hoja){  aHoja.href = hoja;  aHoja.classList.remove('disabled'); }
+    else     { aHoja.href = '#';   aHoja.classList.add('disabled'); }
+
+    // Mostrar modal
+    if(bsModal) bsModal.show();
+  });
+
+  // Selector rápido: abre modal del seleccionado
+  const quick = document.getElementById('p-quick');
+  if(quick){
+    quick.addEventListener('change', function(){
+      const id = this.value;
+      if(!id) return;
+      const btn = document.querySelector(`.p-card-wrap[data-id="${id}"] .p-view`);
+      btn && btn.click();
     });
-});
+  }
+})();

@@ -1,257 +1,151 @@
-/* === Carrusel === */
-#carouselExampleDark .carousel-item img {
-    height: calc(100vh + 1px);
-    object-fit: cover;
-    filter: brightness(0.5);
-    position: relative;
-    z-index: 0;
+/* === Ajustes clave de layout y jerarquía === */
+:root{
+  --brand:#198754; --brand-700:#145c32; --ink:#0f172a; --muted:#6b7280; --card:#fff;
+}
+:root{scroll-behavior:smooth;}
+section[id]{scroll-margin-top:84px;}
+img{max-width:100%; height:auto;}
+
+.py-6{padding-block:4.5rem;}
+/* Botón aún más grande */
+.btn-xxl{padding:1.05rem 1.9rem; font-size:1.125rem; border-radius:14px;}
+.btn-glow{box-shadow:0 10px 30px rgba(25,135,84,.35); transition:transform .2s ease, box-shadow .2s ease;}
+.btn-glow:hover{transform:translateY(-2px); box-shadow:0 16px 40px rgba(25,135,84,.45);}
+.btn-outline-glow:hover{box-shadow:0 12px 36px rgba(255,255,255,.2); transform:translateY(-2px);}
+
+/* Entradas en vista */
+.reveal{opacity:0; transform:translateY(16px); transition:opacity .7s ease, transform .7s ease;}
+.reveal.in-view{opacity:1; transform:none;}
+
+/* === HERO limpio y con aire === */
+.hero{
+  min-height:92vh;
+  background:
+    radial-gradient(70% 60% at 30% 30%, #0b1d1240 0, transparent 100%),
+    linear-gradient(180deg,#0b1d1233,#0b1d12a0);
+}
+.hero .hero-bg{
+  position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+  filter:brightness(.58) saturate(1.05); z-index:0; transform:scale(1.03);
+}
+.hero .container{position:relative; z-index:1; color:#fff;}
+.shape-divider{position:absolute; bottom:-1px; left:0; width:100%; line-height:0; z-index:1;}
+.shape-divider svg{display:block; width:calc(100% + 1.3px); height:88px;}
+.shape-divider path{fill:#f8f9fa;}
+/* Título menos invasivo en desktop grandes */
+@media (min-width:1200px){
+  .hero .display-4{font-size:2.75rem;}
 }
 
-.carousel-item .overlay {
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: linear-gradient(to top, rgba(0,0,0,0.6), rgba(0,0,0,0.1));
-    z-index: 1;
+/* Pista: menos ancha por tarjeta => más aire */
+.rail-track{
+  display:grid; grid-auto-flow:column; grid-auto-columns: 85%;
+  gap:16px; overflow:auto; scroll-snap-type:x mandatory; padding: 8px 12px 16px;
+  -webkit-overflow-scrolling:touch;
+}
+@media (min-width:576px){ .rail-track{grid-auto-columns: 66%;} }
+@media (min-width:992px){ .rail-track{grid-auto-columns: 100%;} } /* 1 por vista en desktop: más limpio */
+/* Oculta scrollbar (no interfiere en accesibilidad) */
+.rail-track::-webkit-scrollbar{height:8px}
+.rail-track::-webkit-scrollbar-thumb{background:#ffffff2b; border-radius:8px}
+
+/* Tarjetas del carril: más compactas y ordenadas */
+.rail-card{
+  background:#fff; color:var(--ink); border-radius:14px; overflow:hidden; text-decoration:none;
+  display:flex; gap:12px; align-items:center; scroll-snap-align:center;
+  border:1px solid #e5e7eb; transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease;
+  padding:10px;
+}
+.rail-card:hover{transform:translateY(-4px); box-shadow:0 18px 44px rgba(0,0,0,.12); border-color:#d1d5db;}
+.rail-media{flex:0 0 92px; aspect-ratio:1/1; overflow:hidden; border-right:1px solid #eef2f7; border-radius:10px}
+.rail-media img{width:100%; height:100%; object-fit:cover; transform:scale(1.03); transition:transform .45s ease;}
+.rail-card:hover .rail-media img{transform:scale(1.08);}
+.rail-body{padding:6px 6px 6px 2px;}
+.rail-body .badge{font-weight:600}
+
+/* === Feature cards / Quick links / Métricas (igual, pero con más aire) === */
+.feature-card{
+  background:var(--card); border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,.06);
+  transition:transform .3s ease, box-shadow .3s ease, border-color .3s ease; border:1px solid #e5e7eb;
+}
+.feature-card:hover{transform:translateY(-4px); box-shadow:0 18px 40px rgba(0,0,0,.08);}
+.feature-card .icon-wrap{
+  width:64px; height:64px; display:grid; place-content:center; border-radius:14px;
+  background:linear-gradient(145deg, #e8f5ee, #f4fbf7); color:var(--brand);
 }
 
-.carousel-caption {
-    bottom: 30%;
-    text-align: center;
-    padding: 2rem;
-    background-color: rgba(0,0,0,0.4);
-    justify-content: center; /* centra verticalmente */
-    align-items: center;     /* centra horizontalmente */
-    border-radius: 1rem;
-    animation: fadeInUp 1s ease;
-    z-index: 10; /* Más alto que overlay */
-    display: flex;
-    flex-direction: column;
+.quick-link{
+  display:flex; align-items:center; gap:12px; background:var(--card); padding:18px 20px; border-radius:16px;
+  border:1px solid #e5e7eb; text-decoration:none; color:var(--ink);
+  transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease, translate .25s ease;
+}
+.quick-link:hover{transform:translateY(-3px); translate: 2px -2px; box-shadow:0 12px 28px rgba(0,0,0,.08); border-color:#d1d5db;}
+.quick-link .ql-icon{width:46px; height:46px; display:grid; place-content:center; border-radius:12px; background:#eef7f1; color:var(--brand);}
+.quick-link .ql-text{font-weight:700;}
+.quick-link .ql-arrow{margin-left:auto; color:#9ca3af;}
+
+.stat{background:#fff; border:1px solid #e5e7eb; border-radius:18px; padding:26px 20px;}
+.stat-num{font-size:2.4rem; line-height:1; font-weight:900; color:var(--brand);}
+.stat-label{color:var(--muted);}
+
+/* CTA */
+#contacto-cta{isolation:isolate;}
+#contacto-cta .cta-pattern{
+  position:absolute; inset:0; background:
+    radial-gradient(transparent 20px, #00000011 21px) 0 0/40px 40px,
+    radial-gradient(transparent 12px, #0000000f 13px) 20px 20px/40px 40px;
+  mix-blend-mode:soft-light; opacity:.25; z-index:0;
 }
 
-.carousel-caption h5 {
-    font-size: 3rem;
-    font-weight: bold;
-    color: #fff;
-    text-shadow: 2px 2px 6px rgba(0,0,0,0.8);
+/* Motion-safe */
+@media (prefers-reduced-motion: reduce){
+  .reveal, .rail-card, .feature-card, .btn-glow, .quick-link{transition:none;}
 }
 
-.carousel-caption p {
-    font-size: 1.25rem;
-    color: #f0f0f0;
-    text-shadow: 1px 1px 5px rgba(0,0,0,0.7);
+/* --- Onda de íconos destacados --- */
+.wave-strip{
+  position:absolute; left:0; right:0;
+  bottom:12vh;           /* altura visual sobre el cultivo */
+  height:240px;          /* carril alto */
+  pointer-events:auto;   /* clickeables */
+  z-index:2;
+}
+@media (max-width: 768px){
+  .wave-strip{ bottom:16vh; height:150px; }
 }
 
-.carousel-caption a.btn {
-    margin-top: 1.5rem;
-    padding: 12px 32px;
-    font-size: 1rem;
-    border-radius: 25px;
-    background-color: #198754;
-    border: none;
-    color: white;
-    transition: 0.3s ease;
-    box-shadow: 0 4px 15px rgba(25,135,84,0.4);
+/* Tamaño grande y responsive */
+.wave-item{
+  --size: clamp(84px, 9vw, 120px);
+  position:absolute;
+  width:var(--size);
+  height:var(--size);
+  border-radius:50%;
+  overflow:hidden;
+  border:4px solid rgba(255,255,255,.9);
+  background:#fff;
+  box-shadow:0 14px 36px rgba(0,0,0,.28);
+  transform:translate(-50%, -50%); /* usamos x/y absolutas desde JS */
+  transition:transform .25s ease, box-shadow .25s ease;
+}
+.wave-item img{
+  width:100%; height:100%; object-fit:cover;
+}
+.wave-item:hover{
+  transform:translate(-50%, -55%) scale(1.06);
+  box-shadow:0 20px 54px rgba(0,0,0,.35);
 }
 
-.carousel-caption a.btn:hover {
-    background-color: #145c32;
-    transform: scale(1.05);
-    box-shadow: 0 6px 20px rgba(25,135,84,0.7);
+/* Etiqueta flotante (tooltip lite) */
+.wave-item::after{
+  content: attr(data-title);
+  position:absolute; left:50%; top:calc(100% + 10px);
+  transform:translateX(-50%);
+  white-space:nowrap;
+  font-size:.85rem; font-weight:700;
+  color:#fff; background:rgba(0,0,0,.35);
+  padding:.25rem .5rem; border-radius:8px;
+  backdrop-filter: blur(4px);
+  opacity:0; pointer-events:none; transition:opacity .2s ease, transform .2s ease;
 }
-
-/* === Consulta rápida === */
-#services {
-    background: linear-gradient(145deg, #f0f4f8, #e9ecef);
-    padding: 4rem 0;
-}
-.card-hover {
-    perspective: 1000px;
-}
-.service-card {
-    height: 250px;
-    transition: transform 0.6s;
-    transform-style: preserve-3d;
-    position: relative;
-}
-.card-front, .card-back {
-    position: absolute;
-    width: 100%; height: 100%;
-    backface-visibility: hidden;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-}
-.card-back {
-    transform: rotateY(180deg);
-    background: linear-gradient(45deg, #1e3c72, #2a5298);
-}
-.card-hover:hover .service-card {
-    transform: rotateY(180deg);
-}
-
-/* === Portfolio === */
-.portfolio-item {
-    overflow: hidden;
-    background: linear-gradient(to bottom right, #ffffff, #f8f9fa);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    transition: transform 0.4s ease, box-shadow 0.4s ease;
-    animation: aparecer-suelto 0.8s ease forwards;
-}
-.portfolio-item:hover {
-    transform: translateY(-10px) scale(1.02);
-    box-shadow: 0 20px 50px rgba(0,0,0,0.15);
-}
-.portfolio-link {
-    display: block;
-    position: relative;
-    cursor: pointer;
-}
-.portfolio-hover {
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background-color: rgba(25,135,84,0.8);
-    transition: all 0.4s ease;
-    opacity: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.portfolio-link:hover .portfolio-hover {
-    opacity: 1;
-}
-.portfolio-hover-content i {
-    color: white;
-    font-size: 1rem;
-    transition: transform 0.3s ease;
-}
-.portfolio-link:hover .portfolio-hover-content i {
-    transform: scale(1.1);
-}
-
-/* === Productos estrella (final refinado) === */
-.product-card {
-    position: relative;
-    overflow: hidden;
-    border-radius: 15px;
-    box-shadow: 0 15px 30px rgba(0,0,0,0.1);
-    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    background: #fff;
-    margin-bottom: 2rem;
-    animation: cardFloat 3s ease-in-out infinite;
-}
-.product-card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: linear-gradient(45deg, rgba(25,135,84,0.8) 0%, rgba(20,92,50,0.9) 100%);
-    opacity: 0;
-    transition: opacity 0.4s ease;
-    z-index: 1;
-}
-.product-card:hover::before {
-    opacity: 1;
-}
-.product-card img {
-    width: 100%;
-    height: 300px;
-    object-fit: cover;
-    transform: scale(1.03);
-    transition: transform 0.4s ease, filter 0.4s ease;
-    filter: brightness(0.9);
-}
-.product-card:hover img {
-    transform: scale(1.1);
-    filter: brightness(0.7);
-}
-.card-content {
-    position: absolute;
-    bottom: -30%;
-    left: 0;
-    width: 100%;
-    padding: 2rem;
-    color: white;
-    z-index: 2;
-    transition: bottom 0.4s ease;
-    animation: contentAppear 0.6s ease forwards;
-}
-.product-card:hover .card-content {
-    bottom: 0;
-}
-.product-title {
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
-    transform: translateY(30px);
-    opacity: 0;
-    transition: all 0.4s ease;
-}
-.product-description {
-    font-size: 0.95rem;
-    line-height: 1.5;
-    transform: translateY(30px);
-    opacity: 0;
-    transition: all 0.4s ease 0.1s;
-}
-.product-card:hover .product-title,
-.product-card:hover .product-description {
-    transform: translateY(0);
-    opacity: 1;
-}
-
-/* === Animaciones personalizadas === */
-@keyframes fadeInUp {
-    0% { opacity: 0; transform: translateY(30px); }
-    100% { opacity: 1; transform: translateY(0); }
-}
-@keyframes aparecer-suelto {
-    0% { opacity: 0; transform: translateY(20px); }
-    100% { opacity: 1; transform: translateY(0); }
-}
-@keyframes deslizar-estrella {
-    0% { opacity: 0; transform: translateY(30px) scale(0.95); }
-    100% { opacity: 1; transform: translateY(0) scale(1); }
-}
-@keyframes cardFloat {
-    0% { transform: translateY(0); }
-    50% { transform: translateY(-10px); }
-    100% { transform: translateY(0); }
-}
-@keyframes contentAppear {
-    0% { opacity: 0; transform: translateY(20px); }
-    100% { opacity: 1; transform: translateY(0); }
-}
-
-/* === Responsive === */
-@media (max-width: 768px) {
-    .carousel-caption h5 {
-        font-size: 1.8rem;
-        line-height: 1.3;
-    }
-    .carousel-caption p {
-        font-size: 1rem;
-    }
-    .product-card { margin: 0 1rem 2rem; }
-    .card-content { padding: 1.5rem; }
-    .product-title { font-size: 1.2rem; }
-}
-
-/* === Espaciado secciones === */
-#portfolio.page-section.bg-light {
-    padding-bottom: 0 !important;
-}
-#about.page-section {
-    padding-top: 2rem;
-}
-
-section[id] {
-  scroll-margin-top: 80px;
-}
-
-
+.wave-item:hover::after{ opacity:1; transform:translateX(-50%) translateY(-2px); }

@@ -8,6 +8,7 @@ use App\Http\Controllers\ProductoController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\DetalleController;
 use App\Http\Controllers\UsuarioController;
+use App\Http\Controllers\ProductPublicController;
 
 // Página de login
 Route::get('/', function () {
@@ -65,7 +66,6 @@ Route::get('/contacto', function () {
     return view('contacto');
 })->name('contacto');
 
-// Ruta de contacto
-Route::get('/producto-detalle', function () {
-    return view('producto-detalle');
-})->name('producto-detalle');
+// Público (sin auth)
+Route::get('/infoProductos', [ProductPublicController::class, 'index'])->name('productos.index');
+Route::get('/infoProductos/{producto:slug}', [ProductPublicController::class, 'show'])->name('productos.show');

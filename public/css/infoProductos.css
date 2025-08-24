@@ -1,0 +1,72 @@
+:root{
+  --brand:#198754;
+  --ink:#0f172a;
+  --muted:#6b7280;
+  --card:#fff;
+  --bd:#e5e7eb;
+}
+
+/* Sección */
+.section-products{ padding:2rem 0 3rem; margin-top:4.5rem; }
+
+/* Chips de segmentos (ligeramente más grandes) */
+.segments-nav{ display:flex; flex-wrap:wrap; gap:.5rem; overflow-x:auto; }
+.segments-nav .seg-chip{
+  background:#f3f5f7; color:#334155; border-radius:999px;
+  padding:.65rem 1.1rem; border:1px solid #e2e8f0; font-weight:600; cursor:pointer; white-space:nowrap;
+}
+.segments-nav .seg-chip.active{ background:var(--brand); color:#fff; border-color:var(--brand); }
+
+/* Filtros */
+.classification-row .form-label{ font-weight:600; color:var(--ink); margin-bottom:.3rem; }
+.classification-row .form-select{ border-radius:999px; }
+
+/* Tarjeta */
+.p-card{
+  background:var(--card); border:1px solid var(--bd); border-radius:16px;
+  padding:1.25rem; box-shadow:0 10px 24px rgba(0,0,0,.04);
+  transition:transform .2s, box-shadow .2s, border-color .2s;
+}
+.p-card:hover{ transform:translateY(-3px); box-shadow:0 16px 36px rgba(0,0,0,.08); border-color:#d1d5db; }
+
+.product-title{ font-size:1.05rem; }
+
+/* Imagen de la card: más alta */
+.p-media{
+  display:flex; align-items:center; justify-content:center;
+  height:240px; padding:12px; margin-bottom:.9rem;
+  background:#fafafa; border-radius:12px; overflow:hidden;
+}
+.p-media img{ height:100%; width:auto; max-width:100%; object-fit:contain; image-rendering:auto; }
+
+#p-empty{ border-radius:12px; }
+
+/* Modal */
+.detail-modal{ border:0; border-radius:0; overflow:hidden; }
+.detail-hero{ min-height:320px; position:relative; }
+.detail-banner{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; filter:brightness(.75); }
+.detail-hero-overlay{ position:absolute; inset:0; background:linear-gradient(180deg, rgba(0,0,0,.25), rgba(0,0,0,.55)); }
+.detail-hero-content{ position:relative; z-index:2; padding:2.2rem 0; }
+.detail-bottle{ max-width:320px; width:100%; height:auto; object-fit:contain; filter:drop-shadow(0 18px 40px rgba(0,0,0,.4)); }
+.btn-close-detail{ position:absolute; top:10px; right:12px; z-index:3; border-radius:999px; box-shadow:0 8px 20px rgba(0,0,0,.25); }
+
+.detail-body .detail-block{ background:#fff; border:1px solid var(--bd); border-radius:16px; padding:1.25rem; box-shadow:0 10px 24px rgba(0,0,0,.05); }
+.icon-list{ list-style:none; padding:0; margin:0; columns:2; column-gap:1.5rem; }
+.icon-list li{ margin-bottom:.35rem; position:relative; padding-left:1.2rem; }
+.icon-list li::before{ content:""; position:absolute; left:0; top:.45rem; width:.55rem; height:.55rem; border-radius:50%; background:var(--brand); }
+.tags{ display:flex; flex-wrap:wrap; gap:.5rem; }
+.tags .tag{ background:#f0fdf4; color:#14532d; border:1px solid #bbf7d0; border-radius:999px; padding:.35rem .7rem; font-weight:600; font-size:.85rem; }
+
+/* Responsivo */
+@media (max-width: 991.98px){
+  .icon-list{ columns:1; }
+  .detail-bottle{ max-width:260px; }
+  .p-media{ height:210px; }
+}
+
+/* Hero degradado (blanco abajo) */
+.hero-bg-gradient{
+  width:100%; height:10vh;
+  background:linear-gradient(135deg,#0d1b8a 10%,#1976d2 40%,#43a047 70%,#ffffff 100%);
+  margin-bottom:1rem;
+}
