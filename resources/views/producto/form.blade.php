@@ -9,7 +9,7 @@
                     ✏️ Edición de Producto
                 @endif
             </h5>
-            <a href="{{ route('productos.index') }}" class="btn btn-outline-light btn-sm">
+            <a href="{{ route('producto.index') }}" class="btn btn-outline-light btn-sm">
                 ← Volver
             </a>
         </div>
@@ -50,14 +50,34 @@
             <div class="col-12 col-md-6 col-lg-4">
                 <label for="foto" class="form-label fw-semibold w-100 text-center">Foto del producto</label>
 
+                @php
+                    // Normalización igual que en index/show
+                    $imgRaw = $producto->FotoCatalogo
+                            ?: ($producto->fotoProducto ?? null)
+                            ?: ($producto->fotosProducto ?? null)
+                            ?: ($producto->urlFoto ?? null);
+
+                    if ($imgRaw) {
+                        $imgRaw = ltrim((string)$imgRaw, '/');
+                        $imgRaw = preg_replace('#^public/#i', '', $imgRaw);
+
+                        if (!str_contains($imgRaw, '/')) {
+                            $ruta = 'img/FotosProducto/' . $imgRaw;
+                        } else {
+                            $ruta = preg_replace('#^(img/)?Fotos(Productos?|Catalogo)/#i', 'img/FotosProducto/', $imgRaw);
+                        }
+                    } else {
+                        $ruta = 'img/generica.png';
+                    }
+                @endphp
+
                 <div class="preview-container rounded-4 p-3 shadow-sm animate-fadein">
                     <div class="image-preview-wrapper mx-auto mb-2 position-relative" id="imagePreview">
                         <button type="button" class="btn btn-close remove-image-btn" aria-label="Eliminar" title="Quitar imagen"></button>
-                        <img id="previewImage" src="{{ $producto && $producto->urlFoto 
-                            ? (Storage::disk('public')->exists($producto->urlFoto) 
-                                ? asset('storage/' . $producto->urlFoto) 
-                                : asset('img/generica.png')) 
-                            : asset('img/generica.png') }}" alt="Vista previa">
+
+                        <img id="previewImage" src="{{ asset($ruta) }}" alt="Vista previa"
+                            onerror="this.onerror=null;this.src='{{ asset('img/generica.png') }}';">
+
                         <label for="foto" class="image-upload-label">Cambiar imagen</label>
                     </div>
                     <input type="file" name="foto" id="foto" class="custom-file-input" accept="image/*">

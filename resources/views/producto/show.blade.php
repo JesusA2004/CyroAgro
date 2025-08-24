@@ -10,10 +10,10 @@
         <div class="card-header d-flex justify-content-between align-items-center px-4">
             <h4 class="mb-0 fw-bold">📦 Detalles del Producto</h4>
             <div class="d-flex gap-2">
-                <a class="btn btn-outline-primary btn-sm text-white" href="{{ route('productos.index') }}">
+                <a class="btn btn-outline-primary btn-sm text-white" href="{{ route('producto.index') }}">
                     ← Volver
                 </a>
-                <a class="btn btn-outline-primary btn-sm text-white" href="{{ route('productos.edit', $producto->id) }}">
+                <a class="btn btn-outline-primary btn-sm text-white" href="{{ route('producto.edit', $producto->id) }}">
                     ✏️ Modificar
                 </a>
                 <button type="button" class="btn btn-outline-danger btn-sm text-white" 
@@ -81,16 +81,13 @@
                     @auth
                         @if(Auth::user()->role === 'administrador')
                             <div class="info-block">
-                                <div class="info-label"><i class="bi bi-calendar-plus text-success me-2" title="Fecha en que se creó este registro"></i>Creado:</div>
-                                <div class="info-value">{{ $producto->created_at->format('d/m/Y H:i') }}</div>
+                                <div class="info-label"><i class="bi bi-calendar-plus text-success me-2"></i>Creado:</div>
+                                <div class="info-value">{{ $producto->created_at?->format('d/m/Y H:i') ?? '—' }}</div>
                             </div>
                             <div class="info-block">
-                                <div class="info-label"><i class="bi bi-clock-history text-info me-2" title="Última vez que fue actualizado"></i>Actualizado:</div>
-                                <div class="info-value">{{ $producto->updated_at->format('d/m/Y H:i') }}</div>
+                                <div class="info-label"><i class="bi bi-clock-history text-info me-2"></i>Actualizado:</div>
+                                <div class="info-value">{{ $producto->updated_at?->format('d/m/Y H:i') ?? '—' }}</div>
                             </div>
-                        @endif
-
-                        @if(Auth::user()->role === 'administrador')
                             <div class="info-block">
                                 <div class="info-label"><i class="bi bi-person-fill text-success me-2"></i>Creado por:</div>
                                 <div class="info-value">{{ $producto->creador?->name ?? 'Desconocido' }}</div>
@@ -100,21 +97,35 @@
                                 <div class="info-value">{{ $producto->editor?->name ?? 'Sin cambios' }}</div>
                             </div>
                         @endif
-
                     @endauth
-
                 </div>
 
                 <!-- Imagen -->
                 <div class="col-md-4 text-center">
                     @php
-                        $localPath = public_path('ImgProductos/' . $producto->urlFoto);
-                        $localUrl = asset('ImgProductos/' . $producto->urlFoto);
-                        $fallback = asset('img/generica.png');
+                        // Prioridad: FotoCatalogo → fotoProducto → fotosProducto → genérica
+                        $imgRaw = $producto->FotoCatalogo
+                                ?: ($producto->fotoProducto ?? null)
+                                ?: ($producto->fotosProducto ?? null);
+
+                        if ($imgRaw) {
+                            $imgRaw = ltrim((string)$imgRaw, '/');
+                            $imgRaw = preg_replace('#^public/#i', '', $imgRaw);
+
+                            if (!str_contains($imgRaw, '/')) {
+                                $ruta = 'img/FotosProducto/' . $imgRaw;
+                            } else {
+                                $ruta = preg_replace('#^(img/)?Fotos(Productos?|Catalogo)/#i', 'img/FotosProducto/', $imgRaw);
+                            }
+                        } else {
+                            $ruta = 'img/generica.png';
+                        }
                     @endphp
-                    <img src="{{ file_exists($localPath) && $producto->urlFoto ? $localUrl : $fallback }}"
+
+                    <img src="{{ asset($ruta) }}"
                          alt="Imagen del producto"
-                         class="product-image mb-3">
+                         class="product-image mb-3"
+                         onerror="this.onerror=null;this.src='{{ asset('img/generica.png') }}';">
                 </div>
             </div>
         </div>

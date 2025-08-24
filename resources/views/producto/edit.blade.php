@@ -1,7 +1,7 @@
 @extends('layouts.auth')
 
 @section('content')
-    <form method="POST" action="{{ isset($producto->id) ? route('productos.update', $producto->id) : route('productos.store') }}" role="form" enctype="multipart/form-data">
+    <form method="POST" action="{{ isset($producto->id) ? route('producto.update', $producto->id) : route('producto.store') }}" role="form" enctype="multipart/form-data">
         @csrf
         @if(isset($producto->id)) @method('PATCH') @endif
 

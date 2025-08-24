@@ -15,19 +15,9 @@
         </a>
       @endif
 
-      <a class="nav-link" href="{{ route('productos.index') }}">
+      <a class="nav-link" href="{{ route('producto.index') }}">
         <div class="sb-nav-link-icon"><i class="fas fa-box-open"></i></div> Productos
       </a>
-
-      @if($role === 'administrador' || $role === 'empleado')
-        <a class="nav-link" href="{{ route('tickets.index') }}">
-          <div class="sb-nav-link-icon"><i class="fas fa-shopping-cart"></i></div> Ventas
-        </a>
-      @elseif($role === 'cliente')
-        <a class="nav-link" href="{{ route('tickets.index') }}">
-          <div class="sb-nav-link-icon"><i class="fas fa-cash-register"></i></div> Hacer Compra
-        </a>
-      @endif
 
       <div class="sb-sidenav-menu-heading text-white">Otros</div>
 

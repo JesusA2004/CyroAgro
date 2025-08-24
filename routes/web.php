@@ -21,7 +21,7 @@ Auth::routes();
 // Rutas protegidas (requieren usuario autenticado)
 Route::middleware('auth')->group(function () {
     Route::get('/home', [HomeController::class, 'index'])->name('home');
-    Route::resource('productos', ProductoController::class);
+    Route::resource('producto', ProductoController::class);
     Route::resource('usuarios', UsuarioController::class);
     Route::resource('tickets', TicketController::class);
     Route::resource('detalles', DetalleController::class);
@@ -67,5 +67,6 @@ Route::get('/contacto', function () {
 })->name('contacto');
 
 // Público (sin auth)
-Route::get('/infoProductos', [ProductPublicController::class, 'index'])->name('productos.index');
-Route::get('/infoProductos/{producto:slug}', [ProductPublicController::class, 'show'])->name('productos.show');
+// ACEPTA id o slug (sin :slug)
+Route::get('/infoProductos/{producto}', [ProductPublicController::class, 'show'])
+    ->name('productos.show');
