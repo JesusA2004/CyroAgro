@@ -122,8 +122,6 @@
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                                 <li><a class="dropdown-item" href="{{ route('login') }}">
                                     <i class="fas fa-sign-in-alt"></i> Iniciar sesión</a></li>
-                                <li><a class="dropdown-item" href="{{ route('register') }}">
-                                    <i class="fas fa-user-plus"></i> Registrarse</a></li>
                             </ul>
                         </li>
                     @else

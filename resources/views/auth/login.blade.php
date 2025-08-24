@@ -57,11 +57,7 @@
                                         <button type="submit" class="btn btn-success btn-register">
                                             {{ __('Iniciar sesión') }}
                                         </button>
-
-                                        <a class="btn btn-outline-light" href="{{ route('register') }}">
-                                            {{ __('Registrarme') }}
-                                        </a>
-
+                                        
                                         <a class="restore-link" href="{{ route('password.request') }}">
                                             {{ __('Restablecer contraseña') }}
                                         </a>
