@@ -3,11 +3,11 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\ProductoController;
+use App\Http\Controllers\ProductoController;         // CRUD admin (layout auth)
+use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\DetalleController;
-use App\Http\Controllers\UsuarioController;
-use App\Http\Controllers\ProductPublicController;
+use App\Http\Controllers\ProductPublicController;   // Listado/Detalle públicos
 
 /**
  * ======================
@@ -15,13 +15,13 @@ use App\Http\Controllers\ProductPublicController;
  * ======================
  */
 Route::view('/', 'index')->name('index');
-Route::view('/index', 'index');               // alias opcional de portada
+Route::view('/index', 'index'); // alias opcional
 Route::view('/nosotros', 'nosotros')->name('nosotros');
 Route::view('/contacto', 'contacto')->name('contacto');
 
 // Hojas de Seguridad
 Route::get('/hojas-seguridad', function () {
-    $hojasSeguridad = collect();              // siempre definida para evitar notices
+    $hojasSeguridad = collect();
     return view('hojasSeguridad.index', compact('hojasSeguridad'));
 })->name('hojas_seguridad.index');
 
@@ -32,9 +32,20 @@ Route::view('/fichas-tecnicas', 'fichasTecnicas.index')->name('fichas_tecnicas.i
 Route::view('/registros/cofepris', 'registros.cofepris')->name('registros.cofepris');
 Route::view('/registros/omri', 'registros.omri')->name('registros.omri');
 
-// Página pública de productos (si usas un listado/landing informativa)
-Route::get('/infoProductos', [ProductPublicController::class, 'show'])
-    ->name('productos.show');                 // puedes mantener este nombre público en plural
+/**
+ * ======================
+ * CATÁLOGO PÚBLICO DE PRODUCTOS (SIN LOGIN)
+ * ======================
+ * productos.index  -> listado público (clientes)
+ * productos.show   -> detalle público
+ */
+Route::get('/productos', [ProductPublicController::class, 'index'])
+    ->name('productos.index');
+
+Route::get('/productos/{producto}', [ProductPublicController::class, 'show'])
+    ->name('productos.show');
+// Si usas slug en lugar de id, ajusta el binding en el modelo o aquí:
+// ->where('producto', '^[A-Za-z0-9\-_]+$');
 
 /**
  * ======================
@@ -45,29 +56,23 @@ Auth::routes();
 
 /**
  * ======================
- * ÁREA PROTEGIDA (AUTH)
+ * ÁREA ADMIN (CON LOGIN) — CRUD EN SINGULAR: producto.*
  * ======================
  */
 Route::middleware('auth')->group(function () {
-
     Route::get('/home', [HomeController::class, 'index'])->name('home');
 
-    // CRUD de administración EN SINGULAR
+    // CRUD admin de productos (layout auth)
     Route::resource('producto', ProductoController::class);
+    // Nombres generados:
+    // producto.index, producto.create, producto.store, producto.show,
+    // producto.edit, producto.update, producto.destroy
+
+    // Otros recursos administrativos
     Route::resource('usuarios', UsuarioController::class);
     Route::resource('tickets', TicketController::class);
     Route::resource('detalles', DetalleController::class);
 
-    // Si tu búsqueda ahora es 100% front (JS en tiempo real), esta ruta NO es necesaria.
-    // Déjala comentada para evitar confusiones; si la usas, descoméntala.
+    // Si tu búsqueda ya es 100% en tiempo real (JS), NO necesitas esta ruta:
     // Route::get('/producto/buscar', [ProductoController::class, 'buscar'])->name('producto.buscar');
 });
-
-/**
- * ======================
- * COMPATIBILIDAD (ALIAS)
- * ======================
- * Si alguna vista antigua aún llama rutas en plural, redirigimos a las nuevas.
- * Quita estas líneas cuando ya no se usen.
- */
-Route::get('/productos', fn () => redirect()->route('producto.index'))->name('productos.index');
