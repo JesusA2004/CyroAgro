@@ -46,23 +46,20 @@
   });
 })();
 
-// Carril de destacados
+// Carril de destacados (drag)
 (function(){
   const track = document.getElementById('railTrack');
   if (!track) return;
-
   let isDown = false, startX = 0, scrollLeft = 0;
   const start = (x) => { isDown = true; startX = x - track.offsetLeft; scrollLeft = track.scrollLeft; track.classList.add('dragging'); };
   const move = (x) => { if (!isDown) return; const walk = (x - track.offsetLeft - startX) * 1.1; track.scrollLeft = scrollLeft - walk; };
   const end = () => { isDown = false; track.classList.remove('dragging'); };
-
   track.addEventListener('mousedown', e => start(e.pageX));
   track.addEventListener('mousemove', e => move(e.pageX));
   ['mouseleave','mouseup'].forEach(ev => track.addEventListener(ev, end));
   track.addEventListener('touchstart', e => start(e.touches[0].pageX), {passive:true});
   track.addEventListener('touchmove', e => move(e.touches[0].pageX), {passive:true});
   track.addEventListener('touchend', end);
-
   const prev = document.querySelector('.featured-rail .prev');
   const next = document.querySelector('.featured-rail .next');
   const step = () => Math.max(280, track.clientWidth * 0.8);
@@ -70,27 +67,22 @@
   next?.addEventListener('click', () => track.scrollBy({left: step(), behavior: 'smooth'}));
 })();
 
-// Burbujas: limita a 5, más chicas y fuera del título/botones
+// Burbujas decorativas
 (function(){
   const orbit = document.getElementById('hero-orbit');
   const track = document.getElementById('railTrack');
   if (!orbit || !track) return;
-
   const imgs = track.querySelectorAll('.rail-card .rail-media img');
   const count = Math.min(imgs.length, 5);
-
   const rand = (min, max) => Math.random() * (max - min) + min;
-
   for (let i = 0; i < count; i++) {
     const src = imgs[i].getAttribute('src');
     const b = document.createElement('div'); b.className = 'bubble';
     const img = document.createElement('img'); img.src = src; img.alt = '';
     b.appendChild(img);
-
-    /* Zona segura: alejadas del bloque de texto (evitamos el 0–55% ancho izquierdo y 40–75% alto central) */
     const top = rand(8, 72);
-    let left = rand(58, 92);  // Preferimos derecha
-    if (i % 2 === 0) left = rand(10, 30); // Algunas pocas a la izquierda pero altas o bajas
+    let left = rand(58, 92);
+    if (i % 2 === 0) left = rand(10, 30);
     b.style.top = `${top}%`;
     b.style.left = `${left}%`;
     b.style.setProperty('--dur', `${rand(12, 18)}s`);
@@ -98,7 +90,7 @@
   }
 })();
 
-// Parallax suave del fondo del hero (limitado)
+// Parallax suave
 (function(){
   const bg = document.querySelector('.hero .hero-bg');
   if (!bg) return;
@@ -114,60 +106,43 @@
   });
 })();
 
-/* --- Onda de íconos destacados --- */
+/* --- Onda de íconos destacados (ajustada) --- */
 (function(){
   const strip = document.getElementById('waveStrip');
   if (!strip) return;
-
   const items = Array.from(strip.querySelectorAll('.wave-item'));
   if (items.length === 0) return;
-
   let W = 0, H = 0, phase = 0;
   const cfg = {
-    amplitude: 42,       // altura de la onda (px)
-    baseline: 70,        // altura base dentro del carril (px)
-    speed: 0.6,          // px por frame aprox (desplazamiento horizontal)
-    spacingMin: 140,     // separación mínima entre iconos (px)
-    spacingMax: 220      // separación máxima (se usa para distribuir)
+    amplitude: 28,        // más chica
+    centerFrac: 0.55,     // más arriba
+    speed: 0.6,
+    spacingMin: 120,
+    spacingMax: 200
   };
-
   function measure(){
     const rect = strip.getBoundingClientRect();
     W = rect.width; H = rect.height;
   }
-
   function layout(){
-    // Distribuye en X de forma uniforme con separación variable
     const n = items.length;
     const usable = Math.max(W - 60, 300);
     const step = Math.min(cfg.spacingMax, Math.max(cfg.spacingMin, usable / n));
     for (let i=0;i<n;i++){
       const el = items[i];
-      const x = (i * step + phase) % (W + step) - step/2; // bucle continuo
-      const rad = (x / W) * Math.PI * 2;                  // 0..2π
-      const y = H/2 + cfg.baseline * 0.0 + Math.sin(rad) * cfg.amplitude;
-
+      const x = (i * step + phase) % (W + step) - step/2;
+      const rad = (x / W) * Math.PI * 2;
+      const baseY = H * cfg.centerFrac;
+      const y = baseY + Math.sin(rad) * cfg.amplitude;
       el.style.left = `${x}px`;
       el.style.top  = `${y}px`;
     }
   }
-
   let raf;
-  function tick(){
-    phase += cfg.speed;   // avanza la fila hacia la derecha
-    layout();
-    raf = requestAnimationFrame(tick);
-  }
-
-  function onResize(){
-    measure(); layout();
-  }
-
-  // Inicializa
+  function tick(){ phase += cfg.speed; layout(); raf = requestAnimationFrame(tick); }
+  function onResize(){ measure(); layout(); }
   measure(); layout(); tick();
   window.addEventListener('resize', () => { cancelAnimationFrame(raf); onResize(); tick(); }, {passive:true});
-
-  // Accesibilidad: pausa al no estar visible
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) cancelAnimationFrame(raf);
     else { tick(); }

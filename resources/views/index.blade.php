@@ -16,9 +16,9 @@
       @php
         // Usa tu colección real: Product::featured()->get()
         $destacados = $destacados ?? collect([
-          (object)['id'=>22,'titulo'=>'OMEX DP 98','img'=>'22.jpg','url'=>route('productos.index')],
-          (object)['id'=>23,'titulo'=>'OMEX ZN 70','img'=>'23.jpg','url'=>route('productos.index')],
-          (object)['id'=>20,'titulo'=>'OMEX BIO 20','img'=>'20.jpg','url'=>route('productos.index')],
+          (object)['id'=>22,'titulo'=>'OMEX DP 98','img'=>'22.png','url'=>route('productos.index')],
+          (object)['id'=>23,'titulo'=>'OMEX ZN 70','img'=>'23.png','url'=>route('productos.index')],
+          (object)['id'=>20,'titulo'=>'OMEX BIO 20','img'=>'20.png','url'=>route('productos.index')],
         ]);
       @endphp
 
