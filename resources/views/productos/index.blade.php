@@ -108,8 +108,8 @@
             <div class="p-media">
               @php
                 $ruta = $img
-                  ? preg_replace('#^/?Fotos(Productos?|Catalogo)/#i', 'img/fotosproducto/', $img)
-                  : 'img/placeholder.png';
+                  ? preg_replace('#^/?Fotos(Productos?|Catalogo)/#i', 'img/FotosProducto/', $img)
+                  : 'img/generica.png';
               @endphp
               <img src="{{ asset($ruta) }}" alt="{{ $p->nombre }}" loading="lazy" decoding="async">
             </div>
@@ -332,7 +332,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function normalizeImgPath(p){
     if(!p) return null;
     p = p.replace(/^\/+/, '');
-    return p.replace(/^Fotos(Productos?|Catalogo)\//i, 'img/fotosproducto/');
+    return p.replace(/^Fotos(Productos?|Catalogo)\//i, 'img/FotosProducto/');
   }
 
   const assetRoot = (window.assetRoot || '/').replace(/\/?$/, '/');

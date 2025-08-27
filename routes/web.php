@@ -5,8 +5,6 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProductoController;         // CRUD admin (layout auth)
 use App\Http\Controllers\UsuarioController;
-use App\Http\Controllers\TicketController;
-use App\Http\Controllers\DetalleController;
 use App\Http\Controllers\ProductPublicController;   // Listado/Detalle públicos
 
 /**
@@ -70,8 +68,6 @@ Route::middleware('auth')->group(function () {
 
     // Otros recursos administrativos
     Route::resource('usuarios', UsuarioController::class);
-    Route::resource('tickets', TicketController::class);
-    Route::resource('detalles', DetalleController::class);
 
     // Si tu búsqueda ya es 100% en tiempo real (JS), NO necesitas esta ruta:
     // Route::get('/producto/buscar', [ProductoController::class, 'buscar'])->name('producto.buscar');

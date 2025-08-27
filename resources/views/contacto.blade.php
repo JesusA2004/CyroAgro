@@ -87,10 +87,8 @@
 
   if (!card || !titulo || !nombre || !tel || !correo || !mapaContainer || !btnCopy || !btnClose) return;
 
-  // Dejar que el CSS controle visibilidad (quitamos el display:none inline)
   card.style.display = 'block';
 
-  // --- Zonas (tus datos) ---
   const zonas = {
     'Zona Noroeste': {
       estados: ['MXSON','MXSIN','MXCHH'],
@@ -124,8 +122,8 @@
     }
   };
 
-  let pinned = false; // ¿tarjeta fijada por click?
-  let pinRef = null;  // { zona, targetId }
+  let pinned = false;
+  let pinRef = null;
 
   function setInfo(zona) {
     const info = zonas[zona];
@@ -136,7 +134,6 @@
     correo.textContent = info.correo;
   }
 
-  // Posicionar la tarjeta junto al path (centro vertical y a un lado)
   function positionNearPath(pathEl) {
     const cRect = mapaContainer.getBoundingClientRect();
     const pRect = pathEl.getBoundingClientRect();
@@ -148,11 +145,10 @@
     let left = leftCand;
     let top  = topCand;
 
-    // Limitar dentro del contenedor
     const maxLeft = mapaContainer.clientWidth  - card.offsetWidth  - margin;
     const maxTop  = mapaContainer.clientHeight - card.offsetHeight - margin;
 
-    if (left > maxLeft) left = Math.max(margin, pRect.left - cRect.left - card.offsetWidth - 12); // a la izquierda si no cabe
+    if (left > maxLeft) left = Math.max(margin, pRect.left - cRect.left - card.offsetWidth - 12);
     if (left < margin)  left = margin;
     if (top  > maxTop)  top  = maxTop;
     if (top  < margin)  top  = margin;
@@ -160,7 +156,6 @@
     card.style.setProperty('--tt-left', left + 'px');
     card.style.setProperty('--tt-top',  top  + 'px');
 
-    // Flecha según lado
     const centerPathX = pRect.left - cRect.left + (pRect.width/2);
     const centerCardX = left + card.offsetWidth/2;
     card.classList.remove('at-left','at-right','at-top','at-bottom');
@@ -177,7 +172,6 @@
     if (!pinned) card.classList.remove('show');
   }
 
-  // Eventos por estado
   Object.entries(zonas).forEach(([zona, info]) => {
     info.estados.forEach(id => {
       const estado = document.getElementById(id);
@@ -195,19 +189,16 @@
       estado.addEventListener('mouseleave', () => {
         hideIfNotPinned();
       });
-      // Click: fijar
       estado.addEventListener('click', (e) => {
         e.stopPropagation();
         pinned = true;
         pinRef = { zona, targetId: id };
         showFor(zona, estado);
-        // Habilitar interacción de la tarjeta al fijar
         card.classList.add('pinned');
       });
     });
   });
 
-  // Cerrar con la X
   btnClose.addEventListener('click', (e) => {
     e.stopPropagation();
     pinned = false;
@@ -215,7 +206,6 @@
     card.classList.remove('show', 'pinned');
   });
 
-  // Click fuera del mapa → liberar pin
   document.addEventListener('click', (e) => {
     if (!pinned) return;
     if (!mapaContainer.contains(e.target) && !card.contains(e.target)) {
@@ -225,7 +215,6 @@
     }
   });
 
-  // Reposicionar si se redimensiona
   window.addEventListener('resize', () => {
     if (pinned && pinRef) {
       const el = document.getElementById(pinRef.targetId);
@@ -233,7 +222,6 @@
     }
   });
 
-  // --- Copiar contenido de la tarjeta ---
   btnCopy.addEventListener('click', (e) => {
     e.preventDefault();
     e.stopPropagation();
@@ -242,15 +230,13 @@
 `${titulo.textContent}
 Representante: ${nombre.textContent}
 Teléfono: ${tel.textContent}
-Correo: ${correo.textContent}`
-    ).trim();
+Correo: ${correo.textContent}` ).trim();
 
     const done = () => {
       btnCopy.innerHTML = '<i class="fas fa-check"></i> Copiado';
       setTimeout(() => btnCopy.innerHTML = '<i class="fas fa-copy"></i> Copiar datos', 1800);
     };
 
-    // Clipboard API (HTTPS/localhost) con fallback
     if (navigator.clipboard && window.isSecureContext) {
       navigator.clipboard.writeText(datos).then(done).catch(() => fallbackCopy(datos, done));
     } else {
@@ -258,7 +244,6 @@ Correo: ${correo.textContent}`
     }
   });
 
-  // Fallback para copiar (HTTP o navegadores antiguos)
   function fallbackCopy(text, onSuccess){
     const ta = document.createElement('textarea');
     ta.value = text;
