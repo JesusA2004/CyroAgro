@@ -9,6 +9,63 @@
 
     <link rel="icon" type="image/x-icon" href="{{ asset('assets/logo.png') }}" />
 
+    <!-- ====== SEO EXTRA (AÑADIDO) ====== -->
+    <meta name="robots" content="@yield('robots','index,follow')">
+    <link rel="canonical" href="@yield('canonical', url()->current())">
+
+    <!-- Favicons extra (mantengo tu favicon y agrego formatos comunes) -->
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('img/brand/favicon-32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('img/brand/favicon-16.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('img/brand/apple-touch-icon.png') }}">
+    <link rel="manifest" href="{{ asset('site.webmanifest') }}">
+    <meta name="theme-color" content="#198754">
+
+    <!-- Open Graph / Twitter (AÑADIDO) -->
+    <meta property="og:type" content="@yield('og_type','website')" />
+    <meta property="og:site_name" content="CYR Agroquímica" />
+    <meta property="og:title" content="@yield('og_title', (View::hasSection('title') ? View::yieldContent('title').' · CYR Agroquímica' : 'CYR Agroquímica'))" />
+    <meta property="og:description" content="@yield('og_description','Productos agroquímicos y orgánicos con cobertura nacional.')" />
+    <meta property="og:url" content="@yield('og_url', url()->current())" />
+    <meta property="og:image" content="@yield('og_image', asset('img/brand/og-cover.jpg'))" />
+    <meta property="og:locale" content="es_MX" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="@yield('og_title', (View::hasSection('title') ? View::yieldContent('title').' · CYR Agroquímica' : 'CYR Agroquímica'))" />
+    <meta name="twitter:description" content="@yield('og_description','Productos agroquímicos y orgánicos con cobertura nacional.')" />
+    <meta name="twitter:image" content="@yield('og_image', asset('img/brand/og-cover.jpg'))" />
+
+    <!-- Datos estructurados (AÑADIDO) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "CYR Agroquímica S.A. de C.V.",
+      "url": "{{ url('/') }}",
+      "logo": "{{ asset('img/brand/logo-schema.png') }}",
+      "contactPoint": [{
+        "@type": "ContactPoint",
+        "telephone": "+52-777-238-1213",
+        "contactType": "customer service",
+        "areaServed": "MX",
+        "availableLanguage": ["es"]
+      }]
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "CYR Agroquímica",
+      "url": "{{ url('/') }}",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "{{ url('/productos') }}?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+    <!-- ====== /SEO EXTRA ====== -->
+
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
           rel="stylesheet" crossorigin="anonymous">
@@ -35,43 +92,35 @@
     <meta name="index-url" content="{{ route('index') }}">
 
     <style>
-
         #mainNav {
             transition: background-color 0.3s ease;
             border-bottom: none !important; /* Evita línea negra */
         }
-
         /* Logo ligeramente más grande */
         .navbar-logo {
             height: 60px;
             max-height: 70px;
         }
-
         /* Estilo general para dropdown */
         .dropdown-menu {
             border-radius: 0.5rem;
             border: none;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
-
         .dropdown-item {
             padding: 0.75rem 1.25rem;
             transition: background-color 0.2s ease, color 0.2s ease;
         }
-
         .dropdown-item i {
             margin-right: 8px;
         }
-
         .dropdown-item:hover {
             background-color: #198754;
             color: #fff;
         }
-
         .dropdown-item:hover i {
             color: #fff;
         }
-        
     </style>
 
     @stack('styles')
@@ -114,31 +163,46 @@
                     </li>
 
                     @guest
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
-                               data-bs-toggle="dropdown" aria-expanded="false">
-                                <i class="fas fa-user"></i> Cuenta
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                                <li><a class="dropdown-item" href="{{ route('login') }}">
-                                    <i class="fas fa-sign-in-alt"></i> Iniciar sesión</a></li>
-                            </ul>
-                        </li>
-                    @else
-                        <li class="nav-item">
-                            <a class="nav-link" href="{{ route('dashboard') }}">
-                                <i class="fas fa-tachometer-alt"></i> Dashboard
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <form method="POST" action="{{ route('logout') }}" class="d-inline">
-                                @csrf
-                                <button class="nav-link btn btn-link" type="submit">
-                                    <i class="fas fa-sign-out-alt"></i> Cerrar sesión
-                                </button>
-                            </form>
-                        </li>
-                    @endguest
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fas fa-user"></i> Cuenta
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" href="{{ route('login') }}">
+                                <i class="fas fa-sign-in-alt"></i> Iniciar sesión</a></li>
+                        </ul>
+                    </li>
+                @else
+                    @php
+                        // Resuelve destino de panel sin romper si no hay rutas con nombre
+                        $dashboardUrl = null;
+                        if (\Illuminate\Support\Facades\Route::has('dashboard')) {
+                            $dashboardUrl = route('dashboard');
+                        } elseif (\Illuminate\Support\Facades\Route::has('admin.dashboard')) {
+                            $dashboardUrl = route('admin.dashboard');
+                        } elseif (\Illuminate\Support\Facades\Route::has('admin.index')) {
+                            $dashboardUrl = route('admin.index');
+                        } else {
+                            // Último recurso: URL “dura”; ajusta si tu panel es otro path
+                            $dashboardUrl = url('/admin');
+                        }
+                    @endphp
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ $dashboardUrl }}">
+                            <i class="fas fa-tachometer-alt"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <form method="POST" action="{{ url('/logout') }}" class="d-inline">
+                            @csrf
+                            <button class="nav-link btn btn-link" type="submit">
+                                <i class="fas fa-sign-out-alt"></i> Cerrar sesión
+                            </button>
+                        </form>
+                    </li>
+                @endguest
                 </ul>
             </div>
         </div>
@@ -177,24 +241,20 @@
 
             // Mostrar u ocultar botón
             window.addEventListener('scroll', function () {
-            if (window.scrollY > 300) {
-                scrollTopBtn.classList.remove('d-none');
-            } else {
-                scrollTopBtn.classList.add('d-none');
-            }
+              if (window.scrollY > 300) {
+                  scrollTopBtn.classList.remove('d-none');
+              } else {
+                  scrollTopBtn.classList.add('d-none');
+              }
             });
 
             // Scroll suave al top
             scrollTopBtn.addEventListener('click', function () {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
+              window.scrollTo({ top: 0, behavior: 'smooth' });
             });
         });
     </script>
 
     @stack('scripts')
-
 </body>
 </html>
