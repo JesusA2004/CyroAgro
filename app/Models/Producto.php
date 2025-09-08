@@ -22,23 +22,10 @@ class Producto extends Model
 
     // Campos masivamente asignables
     protected $fillable = [
-        'nombre',
-        'segmento',
-        'categoria',
-        'registro',
-        'contenido',
-        'presentaciones',
-        'intervalo_aplicacion',
-        'incompatibilidad',
-        'certificacion',
-        'controla',
-        'ficha_tecnica',
-        'hoja_seguridad',
-        'precio',
-        'cantidad_inventario',
-        'urlFoto',
-        'created_by',
-        'updated_by',
+        'nombre','segmento','categoria','registro','contenido',
+        'usoRecomendado','dosisSugerida','intervaloAplicacion','controla',
+        'fichaTecnica','hojaSeguridad','fotoProducto','presentacion',
+        'creadoPor','modificadoPor','fechaCreacion','fechaActualizacion','FotoCatalogo'
     ];
 
     public function creador()

@@ -106,12 +106,14 @@
 
           <article class="p-card h-100 d-flex flex-column text-center">
             <div class="p-media">
-              @php
-                $ruta = $img
-                  ? preg_replace('#^/?Fotos(Productos?|Catalogo)/#i', 'img/FotosProducto/', $img)
-                  : 'img/generica.png';
-              @endphp
-              <img src="{{ asset($ruta) }}" alt="{{ $p->nombre }}" loading="lazy" decoding="async">
+            @php
+              // Solo desde BD: fotoProducto (p.ej. "/FotosProducto/ProluxAdherente.png")
+              $imgBd  = $p->fotoProducto;
+              $srcRel = $imgBd ? 'img/' . ltrim($imgBd, '/') : 'img/FotosProducto/default.png';
+            @endphp
+
+            <img src="{{ asset($srcRel) }}?v={{ optional($p->updated_at)->timestamp }}"
+                alt="{{ $p->nombre }}" loading="lazy" decoding="async">
             </div>
 
             <h3 class="product-title fw-bold mb-1">{{ $p->nombre }}</h3>
