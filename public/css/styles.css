@@ -11435,3 +11435,43 @@ section#contact form#contactForm :-ms-input-placeholder {
     color: #198754 !important;       /* verde en hover */
   }
 }
+
+/* --- NAVBAR: md y abajo (≤991.98px) --- */
+@media (max-width: 991.98px){
+  /* Fondo SIEMPRE blanco en colapsado y al expandir */
+  #mainNav,
+  #mainNav .navbar-collapse {
+    background: #fff !important;
+  }
+
+  /* En modo hamburguesa: texto negro */
+  #mainNav .navbar-nav .nav-link{
+    color:#000 !important;
+  }
+
+  /* Ícono hamburguesa negro */
+  #mainNav .navbar-toggler {
+    --bs-navbar-toggler-border-color: rgba(0,0,0,.15);
+  }
+  #mainNav .navbar-toggler-icon{
+    background-image:
+      url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba(0,0,0,1)' stroke-linecap='round' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+  }
+}
+
+/* --- NAVBAR: lg y arriba (≥992px) --- */
+/* Menú completo: links BLANCOS sobre hero; cuando encoja (navbar-shrink), negro */
+@media (min-width: 992px){
+  #mainNav { background: transparent !important; }
+  #mainNav .navbar-nav .nav-link{ color:#fff !important; } /* horizontal */
+  #mainNav.navbar-shrink{
+    background:#fff !important; /* si usas shrink al hacer scroll */
+  }
+  #mainNav.navbar-shrink .navbar-nav .nav-link{
+    color:#000 !important;
+  }
+}
+
+/* Mata la regla heredada que pintaba #mainNav de negro (#212529) */
+#mainNav.navbar-shrink{ background:#fff !important; } /* hard kill */
+/* …porque en tu css original existe una versión oscura. :contentReference[oaicite:2]{index=2} */

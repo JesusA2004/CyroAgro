@@ -1,245 +1,151 @@
-/* === Ajustes clave de layout y jerarquía === */
+/* ===== Base / tokens ===== */
 :root{
   --brand:#198754; --brand-700:#145c32; --ink:#0f172a; --muted:#6b7280; --card:#fff;
-
-  /* Alturas estimadas de navbar (ajústalas a tu sitio) */
-  --nav-h: 72px;         /* navbar normal en desktop */
-  --nav-h-sm: 64px;      /* navbar en phone */
-  --nav-h-open: 112px;   /* navbar + menú hamburguesa abierto */
+  --nav-h:72px; --nav-h-sm:64px; --nav-h-open:112px;
 }
 :root{scroll-behavior:smooth;}
 section[id]{scroll-margin-top:84px;}
-img{max-width:100%; height:auto;}
+img{max-width:100%;height:auto;}
+.py-6{padding-block:4rem;}
 
-.py-6{padding-block:4.5rem;}
-/* Botón aún más grande */
-.btn-xxl{padding:1.05rem 1.9rem; font-size:1.125rem; border-radius:14px;}
-.btn-glow{box-shadow:0 10px 30px rgba(25,135,84,.35); transition:transform .2s ease, box-shadow .2s ease;}
-.btn-glow:hover{transform:translateY(-2px); box-shadow:0 16px 40px rgba(25,135,84,.45);}
-.btn-outline-glow:hover{box-shadow:0 12px 36px rgba(255,255,255,.2); transform:translateY(-2px);}
+.btn-xxl{padding:1.05rem 1.9rem;font-size:1.125rem;border-radius:14px;}
+.btn-glow{box-shadow:0 10px 30px rgba(25,135,84,.35);transition:transform .2s,box-shadow .2s;}
+.btn-glow:hover{transform:translateY(-2px);box-shadow:0 16px 40px rgba(25,135,84,.45);}
+.btn-outline-glow:hover{box-shadow:0 12px 36px rgba(255,255,255,.2);transform:translateY(-2px);}
+.reveal{opacity:0;transform:translateY(16px);transition:opacity .7s,transform .7s;}
+.reveal.in-view{opacity:1;transform:none;}
 
-/* Entradas en vista */
-.reveal{opacity:0; transform:translateY(16px); transition:opacity .7s ease, transform .7s ease;}
-.reveal.in-view{opacity:1; transform:none;}
-
-/* === HERO (desktop) ===
-   - xl/large: imagen full-bleed (cover) sin oscurecer
-*/
+/* ===== HERO ===== */
 .hero{
-  position:relative;
-  display:flex;
-  align-items:flex-start;              /* contenido arriba */
-  overflow:hidden;
-  min-height: calc(92vh - var(--nav-h));/* descuenta navbar en desktop */
-  padding-top: 0;                       /* desktop: sin offset extra */
+  position:relative; display:flex; align-items:flex-start;
+  overflow:visible;                      /* nada se corta */
+  min-height:clamp(46vh,58vh,64vh);      /* no tapa el resto de secciones */
+  padding-top:0;
+  padding-bottom:clamp(64px,9vh,96px);   /* reserva para la tira */
+  isolation:isolate;
 }
 .hero .hero-bg{
-  position:absolute; inset:0;
-  width:100%; height:100%;
-  object-fit:cover;                     /* desktop: look hero */
-  object-position:center center;
-  z-index:0;                            /* sin filtros ni sombras */
+  position:absolute; inset:0; width:100%; height:100%;
+  object-fit:cover; object-position:center center; z-index:0;
 }
 .hero .container{position:relative; z-index:1; color:#fff;}
 
-.shape-divider{position:absolute; bottom:-1px; left:0; width:100%; line-height:0; z-index:1;}
-.shape-divider svg{display:block; width:calc(100% + 1.3px); height:88px;}
+.shape-divider{position:absolute;bottom:-1px;left:0;width:100%;line-height:0;z-index:1;}
+.shape-divider svg{display:block;width:calc(100% + 1px);height:72px;}
 .shape-divider path{fill:#f8f9fa;}
 
-@media (min-width:1200px){
-  .hero .display-4{font-size:2.75rem;}
-}
-
-/* === PHONE & TABLET: ver MÁS imagen (sin recortes) === */
-/* Teléfonos y tablets: la imagen es contenido real (contain), el hero crece */
-/* Además: usa MÁS espacio hacia abajo cuando el menú hamburguesa está abierto */
-@media (max-width: 991.98px){
-  /* El hero se coloca debajo de la navbar y puede crecer libremente */
-  .hero{
-    min-height:auto;
-    padding-top: 0;
-    margin-top: var(--nav-h-sm); /* offset bajo navbar en móviles */
-  }
-  /* Si el menú está abierto, da más margen superior para que se vea MAS imagen */
-  body:has(#mainNav .navbar-collapse.show) .hero{
-    margin-top: var(--nav-h-open);
-  }
-  /* Fallback si agregas la clase manualmente al abrir menú */
-  body.nav-open .hero{
-    margin-top: var(--nav-h-open);
-  }
-
-  .hero .hero-bg{
-    position:static;       /* deja de ser background fijo */
-    display:block;
-    width:100%;
-    height:auto;           /* respeta proporción → casi sin recortes */
-    object-fit:contain;
-    object-position:right center; /* foco a la derecha como pediste */
-    z-index:auto;
-  }
-
-  /* La “onda” no debe tapar: más chica y más abajo */
-  .wave-strip{
-    position:absolute;
-    left:0; right:0;
-    bottom: 6vh;          /* baja la onda */
-    height: 96px;         /* más compacta */
-    z-index:2;
-  }
-}
-
-/* md+ sm separado para refinar tablets si lo necesitas */
-@media (min-width: 577px) and (max-width: 991.98px){
-  .hero{
-    margin-top: var(--nav-h);         /* navbar algo mayor en tablet */
-  }
+@media (max-width:991.98px){
+  .hero{min-height:auto;margin-top:var(--nav-h-sm);}
   body:has(#mainNav .navbar-collapse.show) .hero,
-  body.nav-open .hero{
-    margin-top: var(--nav-h-open);    /* más espacio cuando el menú abre */
-  }
-  .hero .hero-bg{
-    object-position:80% center;       /* leve preferencia a la derecha */
-  }
-  .wave-strip{ bottom: 8vh; height:110px; }
+  body.nav-open .hero{margin-top:var(--nav-h-open);}
+  .hero .hero-bg{position:static;display:block;width:100%;height:auto;object-fit:contain;object-position:right center;}
+}
+@media (min-width:577px) and (max-width:991.98px){
+  .hero{margin-top:var(--nav-h);}
+  body:has(#mainNav .navbar-collapse.show) .hero, body.nav-open .hero{margin-top:var(--nav-h-open);}
+  .hero .hero-bg{object-position:80% center;}
+}
+@media (min-width:992px) and (max-width:1199.98px){
+  .hero{min-height:56vh;}
+  .hero .hero-bg{object-fit:cover;object-position:60% center;}
 }
 
-/* lg: 992–1199 (desktop mediano). Mantén hero pero evita recortes críticos */
-@media (min-width: 992px) and (max-width: 1199.98px){
-  .hero{
-    min-height: calc(88vh - var(--nav-h)); /* un poco menos alto para mostrar más */
-  }
-  .hero .hero-bg{
-    object-fit:cover;
-    object-position:60% center;           /* ligera preferencia a la derecha */
-  }
-  .wave-strip{ bottom:20vh; height:150px; }
+/* ===== Fila de botellas: layout correcto ===== */
+.wave-row{
+  display:flex;
+  align-items:center;
+  gap:clamp(16px,3vw,28px);
+  height:100%;
+  padding-inline:clamp(12px,2vw,24px);
+  min-width:max-content;
+  will-change:transform;
+  transform:translate3d(0,0,0);
 }
 
-/* Móviles en landscape: pantallas bajas, aún más compacto */
-@media (max-height: 420px) and (orientation: landscape){
-  .hero{
-    min-height:auto;
-    padding-top:0;
-    margin-top: var(--nav-h-sm);
-  }
-  body:has(#mainNav .navbar-collapse.show) .hero,
-  body.nav-open .hero{
-    margin-top: var(--nav-h-open);
-  }
-  .hero .hero-bg{
-    position:static;
-    width:100%; height:auto;
-    object-fit:contain;
-    object-position:right center;
-  }
-  .wave-strip{ bottom:4vh; height:88px; }
-}
-
-/* --- Onda de íconos destacados (desktop) --- */
-.wave-strip{
-  position:absolute; left:0; right:0;
-  bottom:22vh;                       /* desktop: más arriba para no tapar */
-  height:160px;
-  pointer-events:auto;
-  z-index:2;
-}
-@media (max-width: 768px){
-  .wave-strip{ bottom:24vh; height:130px; }
-}
-
-/* Íconos flotantes */
 .wave-item{
-  --size: clamp(70px, 7.5vw, 95px);
-  position:absolute;
-  border:none; background:transparent; border-radius:0;
-  overflow:visible;
-  transform:translateX(-50%);
-  transition:transform .25s ease;
-  width:auto; height:auto;
+  --size:clamp(72px,7.2vw,96px);
+  flex:0 0 auto;                 /* cada botella mantiene su ancho */
+  position:relative; display:block; pointer-events:auto;
 }
 .wave-item img{
-  display:block;
-  width:var(--size);
-  height:auto;
-  object-fit:contain;
-  background:transparent !important;
+  width:var(--size); height:auto; object-fit:contain; display:block;
+  transition:transform .25s ease;
 }
-.wave-item:hover{ transform:translateX(-50%) translateY(-6%) scale(1.06); }
-
-/* Etiqueta flotante */
+.wave-item:hover img{transform:scale(1.06);}
 .wave-item::after{
-  content: attr(data-title);
-  position:absolute; left:50%; top:calc(100% + 10px);
-  transform:translateX(-50%);
+  content:attr(data-title);
+  position:absolute; left:50%; top:calc(100% + 8px); transform:translateX(-50%);
   white-space:nowrap; font-size:.8rem; font-weight:700;
-  color:#fff; background:rgba(0,0,0,.35);
-  padding:.25rem .5rem; border-radius:8px;
-  backdrop-filter: blur(4px);
-  opacity:0; pointer-events:none; transition:opacity .2s ease, transform .2s ease;
+  color:#fff; background:rgba(0,0,0,.35); padding:.25rem .5rem; border-radius:8px; backdrop-filter:blur(4px);
+  opacity:0; pointer-events:none; transition:opacity .2s, transform .2s;
 }
-.wave-item:hover::after{ opacity:1; transform:translateX(-50%) translateY(-2px); }
+.wave-item:hover::after{opacity:1;transform:translateX(-50%) translateY(-2px);}
 
-/* Pista de tarjetas */
+.wave-strip{
+  position:absolute; left:0; right:0;
+  bottom:clamp(10px,5vh,48px);
+  height:clamp(110px,16vh,150px);
+  z-index:2;
+  overflow-x:hidden;   /* recorta costados */
+  overflow-y:visible;  /* no corta labels/sombras */
+  pointer-events:none; /* la pista no captura hover */
+}
+
+/* ===== Resto del sitio ===== */
 .rail-track{
-  display:grid; grid-auto-flow:column; grid-auto-columns: 85%;
-  gap:16px; overflow:auto; scroll-snap-type:x mandatory; padding: 8px 12px 16px;
+  display:grid; grid-auto-flow:column; grid-auto-columns:85%;
+  gap:16px; overflow:auto; scroll-snap-type:x mandatory; padding:8px 12px 16px;
   -webkit-overflow-scrolling:touch;
 }
-@media (min-width:576px){ .rail-track{grid-auto-columns: 66%;} }
-@media (min-width:992px){ .rail-track{grid-auto-columns: 100%;} }
-.rail-track::-webkit-scrollbar{height:8px}
-.rail-track::-webkit-scrollbar-thumb{background:#ffffff2b; border-radius:8px}
+@media (min-width:576px){ .rail-track{grid-auto-columns:66%;} }
+@media (min-width:992px){ .rail-track{grid-auto-columns:100%;} }
+.rail-track::-webkit-scrollbar{height:8px;}
+.rail-track::-webkit-scrollbar-thumb{background:#ffffff2b;border-radius:8px;}
 
-/* Tarjetas carril */
 .rail-card{
   background:#fff; color:var(--ink); border-radius:14px; overflow:hidden; text-decoration:none;
   display:flex; gap:12px; align-items:center; scroll-snap-align:center;
-  border:1px solid #e5e7eb; transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease;
-  padding:10px;
+  border:1px solid #e5e7eb; transition:transform .25s, box-shadow .25s, border-color .25s; padding:10px;
 }
-.rail-card:hover{transform:translateY(-4px); box-shadow:0 18px 44px rgba(0,0,0,.12); border-color:#d1d5db;}
-.rail-media{flex:0 0 92px; aspect-ratio:1/1; overflow:hidden; border-right:1px solid #eef2f7; border-radius:10px}
-.rail-media img{width:100%; height:100%; object-fit:cover; transform:scale(1.03); transition:transform .45s ease;}
+.rail-card:hover{transform:translateY(-4px);box-shadow:0 18px 44px rgba(0,0,0,.12);border-color:#d1d5db;}
+.rail-media{flex:0 0 92px;aspect-ratio:1/1;overflow:hidden;border-right:1px solid #eef2f7;border-radius:10px;}
+.rail-media img{width:100%;height:100%;object-fit:cover;transform:scale(1.03);transition:transform .45s;}
 .rail-card:hover .rail-media img{transform:scale(1.08);}
 .rail-body{padding:6px 6px 6px 2px;}
-.rail-body .badge{font-weight:600}
+.rail-body .badge{font-weight:600;}
 
-/* Feature cards / Quick links */
 .feature-card{
   background:var(--card); border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,.06);
-  transition:transform .3s ease, box-shadow .3s ease, border-color .3s ease; border:1px solid #e5e7eb;
+  transition:transform .3s, box-shadow .3s, border-color .3s; border:1px solid #e5e7eb;
 }
-.feature-card:hover{transform:translateY(-4px); box-shadow:0 18px 40px rgba(0,0,0,.08);}
+.feature-card:hover{transform:translateY(-4px);box-shadow:0 18px 40px rgba(0,0,0,.08);}
 .feature-card .icon-wrap{
-  width:64px; height:64px; display:grid; place-content:center; border-radius:14px;
-  background:linear-gradient(145deg, #e8f5ee, #f4fbf7); color:var(--brand);
+  width:64px;height:64px;display:grid;place-content:center;border-radius:14px;
+  background:linear-gradient(145deg,#e8f5ee,#f4fbf7);color:var(--brand);
 }
-.quick-link{
-  display:flex; align-items:center; gap:12px; background:var(--card); padding:18px 20px; border-radius:16px;
-  border:1px solid #e5e7eb; text-decoration:none; color:var(--ink);
-  transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease, translate .25s ease;
-}
-.quick-link:hover{transform:translateY(-3px); translate: 2px -2px; box-shadow:0 12px 28px rgba(0,0,0,.08); border-color:#d1d5db;}
-.quick-link .ql-icon{width:46px; height:46px; display:grid; place-content:center; border-radius:12px; background:#eef7f1; color:var(--brand);}
-.quick-link .ql-text{font-weight:700;}
-.quick-link .ql-arrow{margin-left:auto; color:#9ca3af;}
 
-/* Stats */
-.stat{background:#fff; border:1px solid #e5e7eb; border-radius:18px; padding:26px 20px;}
-.stat-num{font-size:2.4rem; line-height:1; font-weight:900; color:var(--brand);}
+.quick-link{
+  display:flex;align-items:center;gap:12px;background:var(--card);padding:18px 20px;
+  border-radius:16px;border:1px solid #e5e7eb;text-decoration:none;color:#0f172a;
+  transition:transform .25s,box-shadow .25s,border-color .25s,translate .25s;
+}
+.quick-link:hover{transform:translateY(-3px);translate:2px -2px;box-shadow:0 12px 28px rgba(0,0,0,.08);border-color:#d1d5db;}
+.quick-link .ql-icon{width:46px;height:46px;display:grid;place-content:center;border-radius:12px;background:#eef7f1;color:var(--brand);}
+.quick-link .ql-text{font-weight:700;}
+.quick-link .ql-arrow{margin-left:auto;color:#9ca3af;}
+
+.stat{background:#fff;border:1px solid #e5e7eb;border-radius:18px;padding:26px 20px;}
+.stat-num{font-size:2.4rem;line-height:1;font-weight:900;color:#198754;}
 .stat-label{color:#6b7280;}
 
-/* CTA */
 #contacto-cta{isolation:isolate;}
 #contacto-cta .cta-pattern{
   position:absolute; inset:0; background:
-    radial-gradient(transparent 20px, #00000011 21px) 0 0/40px 40px,
-    radial-gradient(transparent 12px, #0000000f 13px) 20px 20px/40px 40px;
+    radial-gradient(transparent 20px,#00000011 21px) 0 0/40px 40px,
+    radial-gradient(transparent 12px,#0000000f 13px) 20px 20px/40px 40px;
   mix-blend-mode:soft-light; opacity:.25; z-index:0;
 }
 
-/* Motion-safe */
-@media (prefers-reduced-motion: reduce){
-  .reveal, .rail-card, .feature-card, .btn-glow, .quick-link{transition:none;}
+@media (prefers-reduced-motion:reduce){
+  .reveal,.rail-card,.feature-card,.btn-glow,.quick-link,.wave-row{transition:none; animation: none;}
 }

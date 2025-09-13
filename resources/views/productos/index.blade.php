@@ -53,7 +53,6 @@
         <label for="class-select" class="form-label fw-bold">Clasificación</label>
         <select id="class-select" class="form-select form-select-lg">
           <option value="">Selecciona clasificación…</option>
-          <option value="segmento">Segmento</option>
           <option value="categoria">Categoría</option>
           <option value="control">Plaga/Control</option>
           <option value="cultivo">Cultivo</option>

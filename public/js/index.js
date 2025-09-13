@@ -1,150 +1,62 @@
-// Reveal on view
-(function() {
-  const els = document.querySelectorAll('.reveal');
-  if (!('IntersectionObserver' in window) || els.length === 0) {
-    els.forEach(e => e.classList.add('in-view')); return;
-  }
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) { entry.target.classList.add('in-view'); io.unobserve(entry.target); }
-    });
-  }, { threshold: 0.15 });
-  els.forEach(e => io.observe(e));
-})();
-
-// Métricas
-(function(){
-  const nums = document.querySelectorAll('.stat-num');
-  if (!('IntersectionObserver' in window) || nums.length === 0) return;
-  const animate = (el) => {
-    const target = Number(el.dataset.count || '0');
-    const dur = 1200; const start = performance.now();
-    const step = (now) => {
-      const p = Math.min((now - start) / dur, 1);
-      el.textContent = Math.floor(p * target).toLocaleString('es-MX');
-      if (p < 1) requestAnimationFrame(step);
-    };
-    requestAnimationFrame(step);
-  };
-  const io = new IntersectionObserver(entries => {
-    entries.forEach(en => { if (en.isIntersecting){ animate(en.target); io.unobserve(en.target); } });
-  }, { threshold: 0.5 });
-  nums.forEach(n => io.observe(n));
-})();
-
-// Smooth anchor offset
-(function(){
-  const header = document.querySelector('header.navbar, .navbar.fixed-top, .navbar.sticky-top');
-  const getOffset = () => (header ? header.offsetHeight + 12 : 84);
-  document.addEventListener('click', (e) => {
-    const a = e.target.closest('a[href^="#"]'); if (!a) return;
-    const id = a.getAttribute('href'); if (!id || id === '#') return;
-    const el = document.querySelector(id); if (!el) return;
-    e.preventDefault();
-    const top = el.getBoundingClientRect().top + window.pageYOffset - getOffset();
-    window.scrollTo({ top, behavior: 'smooth' });
-  });
-})();
-
-// Carril de destacados (drag)
-(function(){
-  const track = document.getElementById('railTrack');
-  if (!track) return;
-  let isDown = false, startX = 0, scrollLeft = 0;
-  const start = (x) => { isDown = true; startX = x - track.offsetLeft; scrollLeft = track.scrollLeft; track.classList.add('dragging'); };
-  const move = (x) => { if (!isDown) return; const walk = (x - track.offsetLeft - startX) * 1.1; track.scrollLeft = scrollLeft - walk; };
-  const end = () => { isDown = false; track.classList.remove('dragging'); };
-  track.addEventListener('mousedown', e => start(e.pageX));
-  track.addEventListener('mousemove', e => move(e.pageX));
-  ['mouseleave','mouseup'].forEach(ev => track.addEventListener(ev, end));
-  track.addEventListener('touchstart', e => start(e.touches[0].pageX), {passive:true});
-  track.addEventListener('touchmove', e => move(e.touches[0].pageX), {passive:true});
-  track.addEventListener('touchend', end);
-  const prev = document.querySelector('.featured-rail .prev');
-  const next = document.querySelector('.featured-rail .next');
-  const step = () => Math.max(280, track.clientWidth * 0.8);
-  prev?.addEventListener('click', () => track.scrollBy({left: -step(), behavior: 'smooth'}));
-  next?.addEventListener('click', () => track.scrollBy({left: step(), behavior: 'smooth'}));
-})();
-
-// Burbujas decorativas
-(function(){
-  const orbit = document.getElementById('hero-orbit');
-  const track = document.getElementById('railTrack');
-  if (!orbit || !track) return;
-  const imgs = track.querySelectorAll('.rail-card .rail-media img');
-  const count = Math.min(imgs.length, 5);
-  const rand = (min, max) => Math.random() * (max - min) + min;
-  for (let i = 0; i < count; i++) {
-    const src = imgs[i].getAttribute('src');
-    const b = document.createElement('div'); b.className = 'bubble';
-    const img = document.createElement('img'); img.src = src; img.alt = '';
-    b.appendChild(img);
-    const top = rand(8, 72);
-    let left = rand(58, 92);
-    if (i % 2 === 0) left = rand(10, 30);
-    b.style.top = `${top}%`;
-    b.style.left = `${left}%`;
-    b.style.setProperty('--dur', `${rand(12, 18)}s`);
-    orbit.appendChild(b);
-  }
-})();
-
-// Parallax suave
-(function(){
-  const bg = document.querySelector('.hero .hero-bg');
-  if (!bg) return;
-  let ticking = false;
-  const onMove = (x, y) => {
-    const rx = (x / window.innerWidth - 0.5) * 2;
-    const ry = (y / window.innerHeight - 0.5) * 2;
-    bg.style.transform = `scale(1.05) translate(${rx * 5}px, ${ry * 4}px)`;
-  };
-  window.addEventListener('mousemove', (e) => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-    if (!ticking){ window.requestAnimationFrame(() => { onMove(e.clientX, e.clientY); ticking = false; }); ticking = true; }
-  });
-})();
-
-/* --- Onda de íconos destacados (ajustada) --- */
-(function(){
-  const strip = document.getElementById('waveStrip');
-  if (!strip) return;
-  const items = Array.from(strip.querySelectorAll('.wave-item'));
-  if (items.length === 0) return;
-  let W = 0, H = 0, phase = 0;
-  const cfg = {
-    amplitude: 28,        // más chica
-    centerFrac: 0.55,     // más arriba
-    speed: 0.6,
-    spacingMin: 120,
-    spacingMax: 200
-  };
-  function measure(){
-    const rect = strip.getBoundingClientRect();
-    W = rect.width; H = rect.height;
-  }
-  function layout(){
-    const n = items.length;
-    const usable = Math.max(W - 60, 300);
-    const step = Math.min(cfg.spacingMax, Math.max(cfg.spacingMin, usable / n));
-    for (let i=0;i<n;i++){
-      const el = items[i];
-      const x = (i * step + phase) % (W + step) - step/2;
-      const rad = (x / W) * Math.PI * 2;
-      const baseY = H * cfg.centerFrac;
-      const y = baseY + Math.sin(rad) * cfg.amplitude;
-      el.style.left = `${x}px`;
-      el.style.top  = `${y}px`;
+/* 2) Reveal on scroll */
+function revealOnScroll() {
+  const reveals = document.querySelectorAll('.reveal');
+  for (let i = 0; i < reveals.length; i++) {
+    const windowHeight = window.innerHeight;
+    const elementTop = reveals[i].getBoundingClientRect().top;
+    const elementVisible = 150;
+    if (elementTop < windowHeight - elementVisible) {
+      reveals[i].classList.add('in-view');
     }
   }
-  let raf;
-  function tick(){ phase += cfg.speed; layout(); raf = requestAnimationFrame(tick); }
-  function onResize(){ measure(); layout(); }
-  measure(); layout(); tick();
-  window.addEventListener('resize', () => { cancelAnimationFrame(raf); onResize(); tick(); }, {passive:true});
-  document.addEventListener('visibilitychange', () => {
-    if (document.hidden) cancelAnimationFrame(raf);
-    else { tick(); }
+}
+
+/* 3) Smooth scroll */
+function initSmoothScroll() {
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      e.preventDefault();
+      const targetId = this.getAttribute('href');
+      if (targetId === '#') return;
+      const targetElement = document.querySelector(targetId);
+      if (targetElement) {
+        targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
   });
-})();
+}
+
+/* 4) Tilt */
+function initTiltEffect() {
+  const tiltElements = document.querySelectorAll('.tilt');
+  tiltElements.forEach(el => {
+    el.addEventListener('mousemove', (e) => {
+      const rect = el.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+      const rotateX = (y - centerY) / 10;
+      const rotateY = (centerX - x) / 10;
+      el.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+    });
+    el.addEventListener('mouseleave', () => {
+      el.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)';
+    });
+  });
+}
+
+/* 5) Modal mantenimiento */
+function initMaintenanceModal() {
+  document.querySelectorAll('[data-maintenance="true"]').forEach(function (el) {
+    el.addEventListener('click', function (ev) {
+      ev.preventDefault();
+      const modalEl = document.getElementById('maintenanceModal');
+      if (modalEl && window.bootstrap) {
+        const m = bootstrap.Modal.getOrCreateInstance(modalEl, { backdrop: 'static', keyboard: true });
+        m.show();
+      }
+    }, { passive: false });
+    el.addEventListener('contextmenu', function(e){ e.preventDefault(); });
+  });
+}

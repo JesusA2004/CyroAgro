@@ -1,34 +1,35 @@
 @extends('layouts.public')
 
 @section('content')
-  <!-- HERO con “onda” de destacados -->
-  <header class="hero position-relative overflow-hidden">
+  <!-- HERO con "onda" de destacados -->
+  <header class="hero position-relative">
     <picture>
       <img class="hero-bg"
-           src="{{ asset('img/banner/PRINCIPAL.png') }}"
-           alt="Campo agrícola al amanecer"
-           loading="eager"
-           decoding="async">
+          src="{{ asset('img/banner/PRINCIPAL.png') }}"
+          alt="Campo agrícola al amanecer" loading="eager" decoding="async">
     </picture>
 
-    <!-- Onda de íconos destacados -->
+    <!-- Tira horizontal de destacados -->
     <div class="wave-strip" id="waveStrip" aria-label="Productos destacados">
-      @php
-        // Usa tu colección real: Product::featured()->get()
-        $destacados = $destacados ?? collect([
-          (object)['id'=>22,'titulo'=>'OMEX DP 98','img'=>'22.png','url'=>route('productos.index')],
-          (object)['id'=>23,'titulo'=>'OMEX ZN 70','img'=>'23.png','url'=>route('productos.index')],
-          (object)['id'=>20,'titulo'=>'OMEX BIO 20','img'=>'20.png','url'=>route('productos.index')],
-        ]);
-      @endphp
+      <div class="wave-row">
+        @php
+          $destacados = $destacados ?? collect([
+            (object)['id'=>22,'titulo'=>'OMEX DP 98','img'=>'22.png'],
+            (object)['id'=>23,'titulo'=>'OMEX ZN 70','img'=>'23.png'],
+            (object)['id'=>20,'titulo'=>'OMEX BIO 20','img'=>'20.png'],
+          ]);
+        @endphp
 
-      @foreach ($destacados as $p)
-        <a class="wave-item" href="{{ $p->url }}" title="{{ $p->titulo }}" data-title="{{ $p->titulo }}">
-          <img src="{{ asset('img/productosDestacados/'.$p->img) }}" alt="{{ $p->titulo }}" loading="lazy" decoding="async">
-        </a>
-      @endforeach
+        @foreach ($destacados as $p)
+          <a class="wave-item"
+            href="{{ route('productos.index', ['open' => $p->id]) }}"
+            title="{{ $p->titulo }}" data-title="{{ $p->titulo }}" data-id="{{ $p->id }}">
+            <img src="{{ asset('img/productosDestacados/'.$p->img) }}" alt="{{ $p->titulo }}" loading="lazy" decoding="async">
+          </a>
+        @endforeach
+        
+      </div>
     </div>
-
   </header>
 
   <!-- LÍNEAS DE PRODUCTO -->
@@ -136,15 +137,90 @@
       --bs-btn-padding-y:.7rem; --bs-btn-padding-x:1.25rem; --bs-btn-border-radius:.8rem;
       box-shadow:0 6px 18px rgba(16,185,129,.25);
     }
+    
+    /* Animación para las botellas - Corregida para izquierda a derecha */
+    .wave-row {
+      display: flex;
+      animation: waveAnimation 20s linear infinite;
+      width: max-content;
+    }
+    
+    @keyframes waveAnimation {
+      0% { transform: translateX(-50%); }
+      100% { transform: translateX(0); }
+    }
+    
+    /* Asegurar que el contenido sea visible */
+    .hero {
+      min-height: 60vh;
+      overflow: hidden;
+    }
+    
+    /* Animaciones de revelado */
+    .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.8s ease-out;
+    }
+    
+    .reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    
+    /* Pausar animación al hacer hover */
+    .wave-strip:hover .wave-row {
+      animation-play-state: paused;
+    }
   </style>
 @endpush
 
 @push('scripts')
-  <script src="{{ asset('js/index.js') }}"></script>
-
-  <!-- Bloqueo y apertura del modal “bonito” -->
+  <!-- Script para animaciones -->
   <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('DOMContentLoaded', function() {
+      // Animación de revelado al hacer scroll
+      function revealElements() {
+        const reveals = document.querySelectorAll('.reveal');
+        
+        for (let i = 0; i < reveals.length; i++) {
+          const windowHeight = window.innerHeight;
+          const elementTop = reveals[i].getBoundingClientRect().top;
+          const elementVisible = 150;
+          
+          if (elementTop < windowHeight - elementVisible) {
+            reveals[i].classList.add('active');
+          }
+        }
+      }
+      
+      // Inicializar animaciones
+      window.addEventListener('scroll', revealElements);
+      revealElements(); // Verificar elementos al cargar
+      
+      // Efecto de inclinación para las tarjetas
+      const tiltElements = document.querySelectorAll('.tilt');
+      tiltElements.forEach(el => {
+        el.addEventListener('mousemove', (e) => {
+          const rect = el.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          
+          const centerX = rect.width / 2;
+          const centerY = rect.height / 2;
+          
+          const angleY = (x - centerX) / 25;
+          const angleX = (centerY - y) / 25;
+          
+          el.style.transform = `perspective(1000px) rotateX(${angleX}deg) rotateY(${angleY}deg)`;
+        });
+        
+        el.addEventListener('mouseleave', () => {
+          el.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)';
+        });
+      });
+      
+      // Bloqueo y apertura del modal "bonito"
       document.querySelectorAll('[data-maintenance="true"]').forEach(function (el) {
         el.addEventListener('click', function (ev) {
           ev.preventDefault();
