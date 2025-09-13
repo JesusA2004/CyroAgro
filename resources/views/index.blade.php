@@ -5,7 +5,7 @@
   <header class="hero position-relative overflow-hidden">
     <picture>
       <img class="hero-bg"
-           src="{{ asset('img/bannerContacto.png') }}"
+           src="{{ asset('img/banner/PRINCIPAL.png') }}"
            alt="Campo agrícola al amanecer"
            loading="eager"
            decoding="async">
@@ -29,26 +29,6 @@
       @endforeach
     </div>
 
-    <div class="container position-relative z-1">
-      <div class="row align-items-center min-vh-100">
-        <div class="col-12 col-lg-8">
-          <h1 class="display-4 fw-bold mb-3 reveal lh-1">Soluciones integrales para el campo</h1>
-          <p class="lead text-white-50 mb-4 reveal pe-lg-5" style="max-width:56ch">
-            Productos con respaldo técnico para impulsar el rendimiento y la sanidad de tus cultivos en México.
-          </p>
-          <div class="d-flex flex-wrap gap-3 reveal mb-4">
-            <a href="#lineas" class="btn btn-success btn-xxl btn-glow">Ver líneas de producto</a>
-            <a href="{{ route('contacto') }}" class="btn btn-outline-light btn-xxl btn-outline-glow">Contacto</a>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="shape-divider">
-      <svg viewBox="0 0 1200 120" preserveAspectRatio="none" aria-hidden="true">
-        <path d="M1200 0L0 0 0 46.29 1200 120 1200 0z"></path>
-      </svg>
-    </div>
   </header>
 
   <!-- LÍNEAS DE PRODUCTO -->
@@ -75,103 +55,6 @@
             <p class="text-muted mb-0">{{ $card['desc'] }}</p>
           </div>
         </div>
-        @endforeach
-      </div>
-    </div>
-  </section>
-
-  <!-- MARCAS (con imagen) -->
-  <section id="marcas" class="py-6">
-    <div class="container">
-      <div class="text-center mb-4">
-        <h2 class="display-6 fw-bold mb-2 reveal">Marcas</h2>
-        <p class="text-muted reveal">Conoce nuestras marcas y líneas comerciales</p>
-      </div>
-
-      @php
-        $marcas = [
-            ['nombre' => 'Agrimycu 100',   'archivo' => 'AGRIMYCU 100.png'],
-            ['nombre' => 'Agrimycu 500',   'archivo' => 'AGRIMYCU 500.png'],
-            ['nombre' => 'Kborca',         'archivo' => 'AMINOFIT KBORCA.png'],
-            ['nombre' => 'Aminofit Xtra',  'archivo' => 'AMINOFIT XTRA.png'],
-            ['nombre' => 'Anibac 580',     'archivo' => 'ANIBAC 580.png'],
-            ['nombre' => 'Anibac Cítrico', 'archivo' => 'ANIBAC CITRICO.png'],
-            ['nombre' => 'Anibac Plus',    'archivo' => 'ANIBAC PLUS.png'],
-            ['nombre' => 'Bio PH',         'archivo' => 'BIO PH.png'],
-            ['nombre' => 'Biopunch',       'archivo' => 'BIOPUNCH.png'],
-            ['nombre' => 'Bio-Stick',      'archivo' => 'BIO-STICK.png'],
-            ['nombre' => 'Bioxystrobin',   'archivo' => 'BIOXYSTROBIN.png'],
-            ['nombre' => 'Canela',         'archivo' => 'CANELA.png'],
-            ['nombre' => 'Carbenpro 500F', 'archivo' => 'CARBENPRO 500 F.png'],
-            ['nombre' => 'Cinna-NeemCE',   'archivo' => 'CINNA-NEEMCE.png'],
-            ['nombre' => 'Citroil',        'archivo' => 'CITROIL.png'],
-            ['nombre' => 'Coraza 720',     'archivo' => 'CORAZA 720.png'],
-            ['nombre' => 'CU 25',          'archivo' => 'CU 25.png'],
-            ['nombre' => 'Ecdyfinn',       'archivo' => 'ECDFYNN.png'],
-            ['nombre' => 'Gamma',          'archivo' => 'GAMMA.png'],
-            ['nombre' => 'Ionic Ultra',    'archivo' => 'IONIC ULTRA.png'],
-            ['nombre' => 'Macroroot',      'archivo' => 'MACROROOT.png'],
-            ['nombre' => 'Mega',           'archivo' => 'MEGA.png'],
-            ['nombre' => 'Molusquicida',   'archivo' => 'MOLUSQUICIDA.png'],
-            ['nombre' => 'Natuactivo',     'archivo' => 'NATUACTIVO.png'],
-            ['nombre' => 'NeemCE 80',      'archivo' => 'NEEMCE 80.png'],
-            ['nombre' => 'Nutripro CAB',   'archivo' => 'NUTRIPRO CAB.png'],
-            ['nombre' => 'Nutripro Energy','archivo' => 'NUTRIPRO ENERGY.png'],
-            ['nombre' => 'Nutripro Forte', 'archivo' => 'NUTRIPRO FORTE.png'],
-            ['nombre' => 'Nutripro KMG',   'archivo' => 'NUTRIPRO KMG.png'],
-            ['nombre' => 'Nutripro MAG',   'archivo' => 'NUTRIPRO MAG.png'],
-            ['nombre' => 'Nutripro Mix',   'archivo' => 'NUTRIPRO MIX.png'],
-            ['nombre' => 'Nutripro TR',    'archivo' => 'NUTRIPRO TR.png'],
-            ['nombre' => 'Nutripro Xtra Alga','archivo' => 'NUTRIPRO XTRA ALGA.png'],
-            ['nombre' => 'Omega',          'archivo' => 'OMEGA.png'],
-            ['nombre' => 'Ovifinn',        'archivo' => 'OVIFINN.png'],
-            ['nombre' => 'P Oil Premium',  'archivo' => 'P OIL PREMIUM.png'],
-            ['nombre' => 'Piretrinas',     'archivo' => 'PIRETRINAS.png'],
-            ['nombre' => 'Potasy Max',     'archivo' => 'POTASY MAX.png'],
-            ['nombre' => 'Probac BS',      'archivo' => 'PROBAC BS.png'],
-            ['nombre' => 'Progranic Citrus','archivo' => 'PROGRANIC CITRUS.png'],
-            ['nombre' => 'Progranic Delphinus','archivo' => 'PROGRANIC DELPHINUS.png'],
-            ['nombre' => 'Progranic Insect Out','archivo' => 'PROGRANIC INSECT OUT.png'],
-            ['nombre' => 'Progranic Mix Top','archivo' => 'PROGRANIC MIX TOP.png'],
-            ['nombre' => 'Progrow Activador','archivo' => 'PROGROW ACTIVADOR.png'],
-            ['nombre' => 'Prolux Adherente','archivo' => 'PROLUX ADHERENTE.png'],
-            ['nombre' => 'Prolux Plus PH', 'archivo' => 'PROLUX PLUS PH.png'],
-            ['nombre' => 'Promethyl 70PH', 'archivo' => 'PROMETHYL 70 PH.png'],
-            ['nombre' => 'Prommilo 50PH',  'archivo' => 'PROMMILO 50PH.png'],
-            ['nombre' => 'Prowet BioAdher','archivo' => 'PROWET BIO ADHER.png'],
-            ['nombre' => 'Prowet Biodyna', 'archivo' => 'PROWET BIODYNA.png'],
-            ['nombre' => 'Prowet CL',      'archivo' => 'PROWET CL.png'],
-            ['nombre' => 'Prowet Pine Oil','archivo' => 'PROWET PINE OIL.png'],
-            ['nombre' => 'Prowet SA',      'archivo' => 'PROWET SA.png'],
-            ['nombre' => 'Pull 75 WG',     'archivo' => 'PULL 75 WG.png'],
-            ['nombre' => 'Pyraclostrobin', 'archivo' => 'PYRACLOSTROBIN.png'],
-            ['nombre' => 'RepelentAjo',    'archivo' => 'REPELENTAJO.png'],
-            ['nombre' => 'Sigma',          'archivo' => 'SIGMA.png'],
-            ['nombre' => 'Spectrum Bea B', 'archivo' => 'SPECTRUM BEA B.png'],
-            ['nombre' => 'Spectrum Meta A','archivo' => 'SPECTRUM META A.png'],
-            ['nombre' => 'Spectrum Micoradix L','archivo' => 'SPECTRUM MICORADIX L.png'],
-            ['nombre' => 'Spectrum Trico Bio','archivo' => 'SPECTRUM TRICO BIO.png'],
-            ['nombre' => 'Sinal Frut',     'archivo' => 'SINAL FRUT.png'],
-            ['nombre' => 'StarAgrícola',   'archivo' => 'STARAGRICOLA.png'],
-            ['nombre' => 'Terra 5% Cu',    'archivo' => 'TERRA 5% CU.png'],
-            ['nombre' => 'Tural',          'archivo' => 'TURAL.png'],
-            ['nombre' => 'Ultralux N',     'archivo' => 'ULTRALUX N.png'],
-        ];
-    @endphp
-
-      <div class="row g-4">
-        @foreach ($marcas as $m)
-          <div class="col-12 col-md-6">
-            <div class="brand-card h-100 d-flex align-items-center justify-content-between p-4">
-              <div class="brand-logo-wrap">
-                <img class="brand-logo"
-                     src="{{ asset('img/marcas/'.$m['archivo']) }}"
-                     alt="{{ $m['nombre'] }}"
-                     loading="lazy" decoding="async">
-              </div>
-              <a href="{{ route('productos.index') }}" class="btn btn-success btn-lg">Ver producto</a>
-            </div>
-          </div>
         @endforeach
       </div>
     </div>
@@ -214,17 +97,6 @@
   <link href="{{ asset('css/index.css') }}" rel="stylesheet">
 
   <style>
-    /* ====== MARCAS ====== */
-    .brand-card{
-      background:#fff;border-radius:1rem;
-      box-shadow:0 6px 20px rgba(0,0,0,.08);
-      transition:transform .2s ease, box-shadow .2s ease;
-      gap:1rem;
-    }
-    .brand-card:hover{ transform:translateY(-3px); box-shadow:0 10px 26px rgba(0,0,0,.12); }
-    .brand-logo-wrap{ max-width: 70%; }
-    .brand-logo{ width:100%; height:auto; display:block; object-fit:contain; }
-
     /* ====== DOC. TÉCNICA BLOQUEADA ====== */
     .as-button{ border:none; background:transparent; padding:0; width:100%; text-align:inherit; }
     .as-button:focus{ outline: none; }

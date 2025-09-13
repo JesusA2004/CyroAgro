@@ -36,9 +36,8 @@
                         Jiutepec, Morelos
                     </address>
                     <p>
-                        <i class="fas fa-phone"></i> +52(777)321-8657 / +52(777)321-8658<br>
-                        <i class="fas fa-phone"></i> 800-6400486 / 800-6679550<br>
-                        <i class="fas fa-envelope"></i> agroquimica.cyr@gmail.com
+                        <i class="fas fa-phone"></i> +52(777)321-8657<br>
+                        <i class="fas fa-envelope"></i> Contacto@cyr-agroquimica.com
                     </p>
                 </div>
             </div>
@@ -49,11 +48,6 @@
         <div class="container d-flex flex-column flex-md-row justify-content-between align-items-center text-center text-md-start">
             <div class="copyright">
                 &copy; CYR AGROQUÍMICA S.A. DE C.V. - Todos los derechos reservados.
-            </div>
-            <div class="social-icons mt-3 mt-md-0">
-                <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
-                <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
-                <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
             </div>
         </div>
     </div>

@@ -10878,7 +10878,7 @@ p {
 #mainNav {
   padding-top: 1rem;
   padding-bottom: 1rem;
-  background-color: #212529;
+  background-color: white;
 }
 #mainNav .navbar-toggler {
   padding: 0.75rem;
@@ -10947,7 +10947,6 @@ header.masthead {
   padding-bottom: 6rem;
   text-align: center;
   color: #fff;
-  background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.7)), url("../img/bg_login.jpg");
   background-repeat: no-repeat;
   background-attachment: scroll;
   background-position: center center;
@@ -11368,5 +11367,71 @@ section#contact form#contactForm :-ms-input-placeholder {
     font-size: 0.8rem;
     padding-left: 0.4rem;
     padding-right: 0.4rem;
+  }
+}
+
+/* Fuerza los links del navbar a negro */
+#mainNav .navbar-nav .nav-link {
+  color: #000 !important;       /* negro normal */
+}
+
+#mainNav .navbar-nav .nav-link:hover,
+#mainNav .navbar-nav .nav-link:focus {
+  color: #198754 !important;    /* verde brand al pasar hover (opcional) */
+}
+
+/* === Navbar en pantallas pequeñas === */
+@media (max-width: 992px) {
+  #mainNav {
+    background-color: #fff !important;  /* navbar blanca */
+    border-bottom: 4px solid #198754;   /* detalle verde debajo */
+  }
+
+  #mainNav .navbar-nav .nav-link,
+  #mainNav .navbar-brand,
+  #mainNav .navbar-toggler {
+    color: #000 !important;             /* textos y marca en negro */
+  }
+}
+
+/* Línea combinada debajo del navbar en móvil */
+@media (max-width: 992px) {
+  #mainNav::after {
+    content: "";
+    position: absolute;
+    bottom: -4px; /* pegada al borde inferior */
+    left: 0;
+    width: 100%;
+    height: 7px; /* línea delgada */
+    background: linear-gradient(
+      to right,
+      #198754 0%,     /* verde corporativo */
+      #198754 40%,    /* domina la primera parte */
+      #0b3d91 60%,    /* empieza a mezclarse con azul */
+      #0b3d91 100%    /* azul rey al final */
+    );
+    border-radius: 0; /* línea recta */
+  }
+}
+
+/* === NAVBAR EN ESCRITORIO (pantallas grandes) === */
+@media (min-width: 992px) {
+  #mainNav .navbar-nav .nav-link {
+    color: #fff !important;          /* letras blancas */
+  }
+  #mainNav .navbar-nav .nav-link:hover,
+  #mainNav .navbar-nav .nav-link:focus {
+    color: #ffc800 !important;       /* ejemplo: amarillo en hover */
+  }
+}
+
+/* === NAVBAR EN MÓVIL (cuando se abre el menú hamburguesa) === */
+@media (max-width: 991.98px) {
+  #mainNav .navbar-collapse.show .nav-link {
+    color: #000 !important;          /* letras negras */
+  }
+  #mainNav .navbar-collapse.show .nav-link:hover,
+  #mainNav .navbar-collapse.show .nav-link:focus {
+    color: #198754 !important;       /* verde en hover */
   }
 }

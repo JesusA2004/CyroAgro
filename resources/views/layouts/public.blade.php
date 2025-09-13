@@ -96,11 +96,6 @@
             transition: background-color 0.3s ease;
             border-bottom: none !important; /* Evita línea negra */
         }
-        /* Logo ligeramente más grande */
-        .navbar-logo {
-            height: 60px;
-            max-height: 70px;
-        }
         /* Estilo general para dropdown */
         .dropdown-menu {
             border-radius: 0.5rem;
@@ -130,7 +125,6 @@
     <nav id="mainNav" class="navbar navbar-expand-lg navbar-dark fixed-top">
         <div class="container-fluid px-3">
             <a class="navbar-brand ps-3" href="{{ route('index') }}#page-top">
-                <img src="{{ asset('img/logo.png') }}" alt="Logo" class="navbar-logo">
             </a>
 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
@@ -216,15 +210,6 @@
             style="z-index: 1050; width: 60px; height: 60px;">
         <i class="fas fa-arrow-up fa-lg"></i>
     </button>
-
-    <!-- Botón de WhatsApp con Bootstrap -->
-    <div class="position-fixed bottom-0 start-0 m-4" style="z-index: 1050;">
-        <a href="https://wa.me/5217772381213" target="_blank"
-            class="btn btn-success rounded-circle shadow d-flex align-items-center justify-content-center"
-            style="width: 60px; height: 60px;">
-            <i class="fab fa-whatsapp fa-2x text-white"></i>
-        </a>
-    </div>
 
     <!-- Footer -->
     @yield('footer')
