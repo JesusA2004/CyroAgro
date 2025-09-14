@@ -1,3 +1,7 @@
+@php
+    // Canonical absoluto: https + sin www
+    $canonical = 'https://www.cyr-agroquimica.com' . request()->getRequestUri();
+@endphp
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -9,38 +13,30 @@
 
     <link rel="icon" type="image/x-icon" href="{{ asset('assets/logo.png') }}" />
 
-    <!-- ====== SEO EXTRA (AÑADIDO) ====== -->
+    <!-- ====== SEO ====== -->
     <meta name="robots" content="@yield('robots','index,follow')">
-    <link rel="canonical" href="@yield('canonical', url()->current())">
+    <link rel="canonical" href="{{ $canonical }}">
 
-    <!-- Favicons extra (mantengo tu favicon y agrego formatos comunes) -->
-    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('img/brand/favicon-32.png') }}">
-    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('img/brand/favicon-16.png') }}">
-    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('img/brand/apple-touch-icon.png') }}">
-    <link rel="manifest" href="{{ asset('site.webmanifest') }}">
-    <meta name="theme-color" content="#198754">
-
-    <!-- Open Graph / Twitter (AÑADIDO) -->
+    <!-- Open Graph / Twitter -->
     <meta property="og:type" content="@yield('og_type','website')" />
     <meta property="og:site_name" content="CYR Agroquímica" />
     <meta property="og:title" content="@yield('og_title', (View::hasSection('title') ? View::yieldContent('title').' · CYR Agroquímica' : 'CYR Agroquímica'))" />
     <meta property="og:description" content="@yield('og_description','Productos agroquímicos y orgánicos con cobertura nacional.')" />
-    <meta property="og:url" content="@yield('og_url', url()->current())" />
+    <meta property="og:url" content="{{ $canonical }}" />
     <meta property="og:image" content="@yield('og_image', asset('img/brand/og-cover.jpg'))" />
     <meta property="og:locale" content="es_MX" />
-
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="@yield('og_title', (View::hasSection('title') ? View::yieldContent('title').' · CYR Agroquímica' : 'CYR Agroquímica'))" />
     <meta name="twitter:description" content="@yield('og_description','Productos agroquímicos y orgánicos con cobertura nacional.')" />
     <meta name="twitter:image" content="@yield('og_image', asset('img/brand/og-cover.jpg'))" />
 
-    <!-- Datos estructurados (AÑADIDO) -->
+    <!-- JSON-LD Organization -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "Organization",
       "name": "CYR Agroquímica S.A. de C.V.",
-      "url": "{{ url('/') }}",
+      "url": "https://www.cyr-agroquimica.com",
       "logo": "{{ asset('img/brand/logo-schema.png') }}",
       "contactPoint": [{
         "@type": "ContactPoint",
@@ -51,20 +47,22 @@
       }]
     }
     </script>
+
+    <!-- JSON-LD WebSite -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "WebSite",
       "name": "CYR Agroquímica",
-      "url": "{{ url('/') }}",
+      "url": "https://www.cyr-agroquimica.com",
       "potentialAction": {
         "@type": "SearchAction",
-        "target": "{{ url('/productos') }}?q={search_term_string}",
+        "target": "https://cyr-agroquimica.com/productos?q={search_term_string}",
         "query-input": "required name=search_term_string"
       }
     }
     </script>
-    <!-- ====== /SEO EXTRA ====== -->
+    <!-- ====== /SEO ====== -->
 
     <!-- Bootstrap -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
