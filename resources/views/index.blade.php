@@ -1,33 +1,36 @@
 @extends('layouts.public')
 
 @section('content')
-  <!-- HERO con "onda" de destacados -->
+  <!-- HERO con imagen de fondo (sin recorte lateral) -->
   <header class="hero position-relative">
-    <picture>
+    <picture class="hero-media">
       <img class="hero-bg"
-          src="{{ asset('img/banner/PRINCIPAL.png') }}"
-          alt="Campo agrícola al amanecer" loading="eager" decoding="async">
+           src="{{ asset('img/banner/PRINCIPAL.png') }}"
+           alt="Campo agrícola al amanecer" loading="eager" decoding="async">
     </picture>
 
-    <!-- Tira horizontal de destacados -->
-    <div class="wave-strip" id="waveStrip" aria-label="Productos destacados">
-      <div class="wave-row">
-        @php
-          $destacados = $destacados ?? collect([
-            (object)['id'=>22,'titulo'=>'OMEX DP 98','img'=>'22.png'],
-            (object)['id'=>23,'titulo'=>'OMEX ZN 70','img'=>'23.png'],
-            (object)['id'=>20,'titulo'=>'OMEX BIO 20','img'=>'20.png'],
-          ]);
-        @endphp
+    @php
+      $destacados = ($destacados ?? collect([
+        (object)['id'=>22,'titulo'=>'OMEX DP 98','img'=>'22.png'],
+        (object)['id'=>23,'titulo'=>'OMEX ZN 70','img'=>'23.png'],
+        (object)['id'=>20,'titulo'=>'OMEX BIO 20','img'=>'20.png'],
+      ]))->take(3);
+    @endphp
 
-        @foreach ($destacados as $p)
-          <a class="wave-item"
-            href="{{ route('productos.index', ['open' => $p->id]) }}"
-            title="{{ $p->titulo }}" data-title="{{ $p->titulo }}" data-id="{{ $p->id }}">
-            <img src="{{ asset('img/productosDestacados/'.$p->img) }}" alt="{{ $p->titulo }}" loading="lazy" decoding="async">
-          </a>
-        @endforeach
-        
+    <!-- Fila única: 3 botellas (transparente, dentro del header y bajo el navbar) -->
+    <div class="bottles-strip" id="bottlesStrip" aria-label="Productos destacados">
+      <div class="bottles-viewport" id="bottlesViewport">
+        <div class="bottles-row" id="bottlesRow" data-speed="120">
+          @foreach ($destacados as $p)
+            <a class="bottle-link"
+               href="{{ route('productos.index', ['open' => $p->id]) }}"
+               title="{{ $p->titulo }}" data-title="{{ $p->titulo }}" data-id="{{ $p->id }}">
+              <img class="bottle-img"
+                   src="{{ asset('img/productosDestacados/'.$p->img) }}"
+                   alt="{{ $p->titulo }}" loading="lazy" decoding="async">
+            </a>
+          @endforeach
+        </div>
       </div>
     </div>
   </header>
@@ -61,7 +64,7 @@
     </div>
   </section>
 
-  <!-- DOCUMENTACIÓN TÉCNICA (bloqueada, sin href) -->
+  <!-- DOCUMENTACIÓN TÉCNICA -->
   <section id="accesos" class="py-6">
     <div class="container">
       <div class="text-center mb-4">
@@ -77,7 +80,6 @@
           ['title'=>'Registros OMRI','icon'=>'fa-seedling'],
         ] as $i => $item)
         <div class="col-12 col-sm-6 col-lg-3">
-          <!-- Botón estilizado como card; SIN href -->
           <button type="button"
                   class="quick-link reveal hover-shift as-button"
                   style="--d:{{ $i * 80 }}ms"
@@ -96,166 +98,201 @@
 
 @push('styles')
   <link href="{{ asset('css/index.css') }}" rel="stylesheet">
-
   <style>
-    /* ====== DOC. TÉCNICA BLOQUEADA ====== */
+    /* ===== HERO: sin recortar laterales =====
+       - La imagen ocupa 100% de ancho y altura automática (no hay crop lateral).
+       - El header controla la altura con min/max y oculta sobrante vertical (si lo hay).
+    */
+    .hero{
+      position:relative;
+      display:block;
+      overflow:hidden;                  /* si la imagen es muy alta, recortamos ARRIBA/ABAJO */
+      min-height: clamp(48vh, 58vh, 68vh);
+      max-height: 80vh;                 /* controla “lo alto” del hero en pantallas grandes */
+      padding: 0;
+      isolation:isolate;
+    }
+    .hero-media{display:block; width:100%; line-height:0;}
+    .hero-bg{
+      position:relative;                /* en flujo, no absoluta */
+      display:block;
+      width:100%;
+      height:auto;                      /* no se recorta a los lados */
+      object-fit:unset;                 /* sin forzar fitting */
+      object-position:center top;       /* si hay recorte vertical, prioriza parte superior */
+      background:#fff;
+      /* Para que el hero tenga altura incluso si la imagen es bajita en móvil */
+      min-height: 360px;
+    }
+
+    /* ===== Botellas (igual que tenías, dentro del header) ===== */
+    .bottles-strip{
+      position:absolute; left:0; right:0;
+      top: calc(var(--nav-h, 72px) + 8px);
+      z-index: 3;
+      pointer-events:none;
+    }
+    @media (max-width: 991.98px){
+      .bottles-strip{ top: calc(var(--nav-h-sm, 64px) + 6px); }
+    }
+    .bottles-viewport{ position:relative; width:100%; overflow:hidden; padding-inline:8px; }
+    .bottles-row{
+      display:flex; align-items:center; gap: clamp(26px, 4vw, 44px);
+      width:max-content; will-change: transform;
+      animation: slideLoop var(--dur, 22s) linear infinite;
+      animation-play-state: running;
+      pointer-events:none;
+    }
+    .bottles-strip:hover .bottles-row{ animation-play-state: paused; }
+    @keyframes slideLoop{
+      0%   { transform: translateX(var(--start, 100vw)); }
+      100% { transform: translateX(var(--end, -140px));  }
+    }
+    .bottle-link{ display:block; flex:0 0 auto; text-decoration:none; pointer-events:auto; }
+    .bottle-img{
+      display:block; height: clamp(120px, 16vh, 200px); width:auto; object-fit:contain;
+      filter: drop-shadow(0 12px 26px rgba(0,0,0,.22));
+      transition: transform .22s ease, filter .22s ease;
+      will-change: transform;
+    }
+    .bottle-link:hover .bottle-img{
+      transform: translateY(-3px) scale(1.05);
+      filter: drop-shadow(0 18px 34px rgba(0,0,0,.26));
+    }
+
+    /* Reveal + utilidades que ya usas */
+    .reveal{ opacity:0; transform:translateY(16px); transition:opacity .7s, transform .7s; }
+    .reveal.in-view{ opacity:1; transform:none; }
     .as-button{ border:none; background:transparent; padding:0; width:100%; text-align:inherit; }
-    .as-button:focus{ outline: none; }
     a.quick-link, .quick-link.as-button{
-      display:flex; align-items:center; justify-content:space-between;
-      gap:.75rem; padding:1rem 1.25rem;
-      background:#fff; border-radius:.875rem; text-decoration:none;
-      box-shadow:0 6px 20px rgba(0,0,0,.06);
-      transition:transform .15s ease, box-shadow .15s ease; width:100%;
+      display:flex; align-items:center; justify-content:space-between; gap:.75rem;
+      padding:1rem 1.25rem; background:#fff; border-radius:.875rem; text-decoration:none;
+      box-shadow:0 6px 20px rgba(0,0,0,.06); transition:transform .15s ease, box-shadow .15s ease; width:100%;
     }
     .quick-link:hover{ transform:translateY(-2px); box-shadow:0 10px 22px rgba(0,0,0,.1); }
-    .ql-icon i{ font-size:1.25rem; } .ql-text{ font-weight:600; } .ql-arrow i{ opacity:.7; }
+    .ql-icon i{ font-size:1.25rem; } .ql-text{ font-weight:700; } .ql-arrow i{ opacity:.7; }
     .py-6{ padding-top:4rem; padding-bottom:4rem; }
 
-    /* ===== Modal de mantenimiento bonito ===== */
-    .maint-modal .modal-content{
-      border:none; border-radius:18px; backdrop-filter:blur(10px);
-      background:linear-gradient(180deg, rgba(255,255,255,.92), rgba(255,255,255,.88));
-      box-shadow:0 20px 60px rgba(16,24,40,.18);
-    }
-    .maint-modal .modal-header{ border:0; justify-content:center; padding-bottom:.25rem; }
-    .maint-badge{
-      width:74px; height:74px; border-radius:18px; display:grid; place-items:center;
-      background: radial-gradient(120px 120px at 30% 20%, #d1f7d6, transparent 60%),
-                  radial-gradient(140px 140px at 80% 20%, #e6f3ff, transparent 60%),
-                  linear-gradient(135deg, #22c55e, #16a34a 60%, #0ea5e9);
-      box-shadow: inset 0 0 0 2px rgba(255,255,255,.5), 0 8px 20px rgba(34,197,94,.35);
-      color:#fff; animation:floaty 2.2s ease-in-out infinite;
-    }
-    @keyframes floaty { 0%,100%{ transform:translateY(0)} 50%{ transform:translateY(-4px)} }
-    .maint-badge i{ font-size:34px }
-    .maint-modal .modal-title{ font-weight:800; letter-spacing:.2px; }
-    .maint-modal .modal-body{ text-align:center; color:#344054; padding-top:.25rem; }
-    .maint-modal .hint{ font-size:.925rem; color:#667085; margin-top:.25rem; }
-    .maint-modal .modal-footer{ border:0; justify-content:center; padding-top:0; }
-    .maint-modal .btn-ok{
-      --bs-btn-padding-y:.7rem; --bs-btn-padding-x:1.25rem; --bs-btn-border-radius:.8rem;
-      box-shadow:0 6px 18px rgba(16,185,129,.25);
-    }
-    
-    /* Animación para las botellas - Corregida para izquierda a derecha */
-    .wave-row {
-      display: flex;
-      animation: waveAnimation 20s linear infinite;
-      width: max-content;
-    }
-    
-    @keyframes waveAnimation {
-      0% { transform: translateX(-50%); }
-      100% { transform: translateX(0); }
-    }
-    
-    /* Asegurar que el contenido sea visible */
-    .hero {
-      min-height: 60vh;
-      overflow: hidden;
-    }
-    
-    /* Animaciones de revelado */
-    .reveal {
-      opacity: 0;
-      transform: translateY(20px);
-      transition: all 0.8s ease-out;
-    }
-    
-    .reveal.active {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    
-    /* Pausar animación al hacer hover */
-    .wave-strip:hover .wave-row {
-      animation-play-state: paused;
+    @media (prefers-reduced-motion:reduce){
+      .bottles-row{ animation:none; }
+      .bottle-img{ transition:none; }
+      .reveal{ transition:none; }
     }
   </style>
 @endpush
 
 @push('scripts')
-  <!-- Script para animaciones -->
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // Animación de revelado al hacer scroll
-      function revealElements() {
-        const reveals = document.querySelectorAll('.reveal');
-        
-        for (let i = 0; i < reveals.length; i++) {
-          const windowHeight = window.innerHeight;
-          const elementTop = reveals[i].getBoundingClientRect().top;
-          const elementVisible = 150;
-          
-          if (elementTop < windowHeight - elementVisible) {
-            reveals[i].classList.add('active');
-          }
-        }
-      }
-      
-      // Inicializar animaciones
-      window.addEventListener('scroll', revealElements);
-      revealElements(); // Verificar elementos al cargar
-      
-      // Efecto de inclinación para las tarjetas
-      const tiltElements = document.querySelectorAll('.tilt');
-      tiltElements.forEach(el => {
-        el.addEventListener('mousemove', (e) => {
-          const rect = el.getBoundingClientRect();
-          const x = e.clientX - rect.left;
-          const y = e.clientY - rect.top;
-          
-          const centerX = rect.width / 2;
-          const centerY = rect.height / 2;
-          
-          const angleY = (x - centerX) / 25;
-          const angleX = (centerY - y) / 25;
-          
-          el.style.transform = `perspective(1000px) rotateX(${angleX}deg) rotateY(${angleY}deg)`;
-        });
-        
-        el.addEventListener('mouseleave', () => {
-          el.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)';
-        });
-      });
-      
-      // Bloqueo y apertura del modal "bonito"
-      document.querySelectorAll('[data-maintenance="true"]').forEach(function (el) {
-        el.addEventListener('click', function (ev) {
-          ev.preventDefault();
-          const modalEl = document.getElementById('maintenanceModal');
-          if (modalEl && window.bootstrap) {
-            const m = bootstrap.Modal.getOrCreateInstance(modalEl, { backdrop: 'static', keyboard: true });
-            m.show();
-          }
-        }, { passive: false });
-        // Por estética, desactiva menú contextual
-        el.addEventListener('contextmenu', function(e){ e.preventDefault(); });
-      });
-    });
-  </script>
+<script>
+/* ===== Recorrido horizontal completo (reinicia desde derecha) ===== */
+function initBottleStrip(){
+  const viewport = document.getElementById('bottlesViewport');
+  const row = document.getElementById('bottlesRow');
+  if(!viewport || !row) return;
 
-  <!-- Modal bonito -->
-  <div class="modal fade maint-modal" id="maintenanceModal" tabindex="-1" aria-labelledby="maintenanceModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-      <div class="modal-content">
-        <div class="modal-header flex-column gap-3 pt-4">
-          <div class="maint-badge">
-            <i class="fas fa-tools"></i>
-          </div>
-          <h5 class="modal-title" id="maintenanceModalLabel">Sección en mantenimiento</h5>
-        </div>
-        <div class="modal-body">
-          Próximamente podrás consultar esta documentación técnica.
-          <div class="hint">Estamos preparando todo para brindarte la mejor experiencia.</div>
-        </div>
-        <div class="modal-footer pb-4">
-          <button type="button" class="btn btn-success btn-ok" data-bs-dismiss="modal">Entendido</button>
-        </div>
+  function rebuild(){
+    row.style.removeProperty('--start'); row.style.removeProperty('--end'); row.style.removeProperty('--dur');
+
+    const vwPx = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+    const rw = row.getBoundingClientRect().width;
+
+    // Empieza fuera del viewport a la derecha y sale por la izquierda
+    const start = vwPx;
+    const end   = -rw;
+    const distance = start + rw;
+
+    const speed = parseFloat(row.dataset.speed || '120'); // px/seg
+    const duration = Math.max(14, distance / speed);
+
+    row.style.setProperty('--start', `${start}px`);
+    row.style.setProperty('--end', `${end}px`);
+    row.style.setProperty('--dur', `${duration.toFixed(2)}s`);
+  }
+
+  let t;
+  const debounced = () => { clearTimeout(t); t = setTimeout(rebuild, 120); };
+  rebuild();
+  window.addEventListener('resize', debounced);
+
+  const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+  if (mq.matches) row.style.animationDuration = '0s';
+}
+
+/* ===== Reveal on scroll ===== */
+function revealOnScroll() {
+  const reveals = document.querySelectorAll('.reveal');
+  for (let i = 0; i < reveals.length; i++) {
+    const windowHeight = window.innerHeight;
+    const elementTop = reveals[i].getBoundingClientRect().top;
+    const elementVisible = 150;
+    if (elementTop < windowHeight - elementVisible) {
+      reveals[i].classList.add('in-view');
+    }
+  }
+}
+
+/* ===== Tilt para cards ===== */
+function initTiltEffect() {
+  const tiltElements = document.querySelectorAll('.tilt');
+  tiltElements.forEach(el => {
+    el.addEventListener('mousemove', (e) => {
+      const rect = el.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+      const rotateX = (y - centerY) / 10;
+      const rotateY = (centerX - x) / 10;
+      el.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+    });
+    el.addEventListener('mouseleave', () => {
+      el.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)';
+    });
+  });
+}
+
+/* ===== Modal mantenimiento ===== */
+function initMaintenanceModal() {
+  document.querySelectorAll('[data-maintenance="true"]').forEach(function (el) {
+    el.addEventListener('click', function (ev) {
+      ev.preventDefault();
+      const modalEl = document.getElementById('maintenanceModal');
+      if (modalEl && window.bootstrap) {
+        const m = bootstrap.Modal.getOrCreateInstance(modalEl, { backdrop: 'static', keyboard: true });
+        m.show();
+      }
+    }, { passive: false });
+    el.addEventListener('contextmenu', function(e){ e.preventDefault(); });
+  });
+}
+
+/* ===== DOM Ready ===== */
+document.addEventListener('DOMContentLoaded', function(){
+  initBottleStrip();
+  revealOnScroll();
+  window.addEventListener('scroll', revealOnScroll);
+  initTiltEffect();
+  initMaintenanceModal();
+});
+</script>
+
+<!-- Modal bonito -->
+<div class="modal fade maint-modal" id="maintenanceModal" tabindex="-1" aria-labelledby="maintenanceModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header flex-column gap-3 pt-4">
+        <div class="maint-badge"><i class="fas fa-tools"></i></div>
+        <h5 class="modal-title" id="maintenanceModalLabel">Sección en mantenimiento</h5>
+      </div>
+      <div class="modal-body">
+        Próximamente podrás consultar esta documentación técnica.
+        <div class="hint">Estamos preparando todo para brindarte la mejor experiencia.</div>
+      </div>
+      <div class="modal-footer pb-4">
+        <button type="button" class="btn btn-success btn-ok" data-bs-dismiss="modal">Entendido</button>
       </div>
     </div>
   </div>
+</div>
 @endpush
 
 @section('footer')

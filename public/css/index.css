@@ -2,7 +2,19 @@
 :root{
   --brand:#198754; --brand-700:#145c32; --ink:#0f172a; --muted:#6b7280; --card:#fff;
   --nav-h:72px; --nav-h-sm:64px; --nav-h-open:112px;
+
+  /* Alturas del hero */
+  --hero-height: clamp(560px, 78vh, 940px);       /* desktop */
+  --hero-height-sm: clamp(420px, 60vh, 820px);    /* móvil/tablet → muestra más imagen */
+
+  /* Tamaños botellas (MEDIANAS) */
+  --bottle-height-lg: clamp(210px, 22vh, 300px);
+  --bottle-height-sm: clamp(180px, 20vh, 240px);
+
+  /* Posición vertical de las botellas (centro del hero) */
+  --bottles-top: 50%;
 }
+
 :root{scroll-behavior:smooth;}
 section[id]{scroll-margin-top:84px;}
 img{max-width:100%;height:auto;}
@@ -15,83 +27,116 @@ img{max-width:100%;height:auto;}
 .reveal{opacity:0;transform:translateY(16px);transition:opacity .7s,transform .7s;}
 .reveal.in-view{opacity:1;transform:none;}
 
-/* ===== HERO ===== */
+/* =========================================================
+   HERO (sin franjas, imagen anclada abajo)
+========================================================= */
 .hero{
-  position:relative; display:flex; align-items:flex-start;
-  overflow:visible;                      /* nada se corta */
-  min-height:clamp(46vh,58vh,64vh);      /* no tapa el resto de secciones */
-  padding-top:0;
-  padding-bottom:clamp(64px,9vh,96px);   /* reserva para la tira */
-  isolation:isolate;
+  position: relative;
+  display: block;
+  overflow: hidden;
+  padding: 0;
+  isolation: isolate;
+  background: transparent;
 }
+/* Desktop: detrás del navbar transparente */
+@media (min-width: 992px){
+  .hero{ margin-top: calc(-1 * var(--nav-h)); }
+}
+/* Móvil/tablet: bajo el navbar blanco (se ve bien la imagen) */
+@media (max-width: 991.98px){
+  .hero{ margin-top: var(--nav-h-sm); }
+}
+
+.hero .hero-media{
+  position: relative;
+  width: 100%;
+  height: var(--hero-height);
+  overflow: hidden;   /* si recorta, será arriba/lateral; la base queda visible */
+  line-height: 0;
+}
+@media (max-width: 991.98px){
+  .hero .hero-media{ height: var(--hero-height-sm); }
+}
+
+/* Imagen del hero: llena el alto y ANCLADA abajo (no se corta la base) */
 .hero .hero-bg{
-  position:absolute; inset:0; width:100%; height:100%;
-  object-fit:cover; object-position:center center; z-index:0;
+  position: absolute;
+  left: 50%;
+  bottom: 0;                    /* ancla la base */
+  transform: translateX(-50%);
+  height: 100%;                 /* llena el alto del hero */
+  width: auto;
+  min-width: 100%;              /* evita bandas laterales en panorámicas */
+  max-width: none;
+  object-fit: cover;            /* cambia a 'contain' si no quieres recorte en absoluto */
+  object-position: center bottom;
+  display: block;
+  background: transparent;      /* sin borde/blanco */
 }
-.hero .container{position:relative; z-index:1; color:#fff;}
-
-.shape-divider{position:absolute;bottom:-1px;left:0;width:100%;line-height:0;z-index:1;}
-.shape-divider svg{display:block;width:calc(100% + 1px);height:72px;}
-.shape-divider path{fill:#f8f9fa;}
-
-@media (max-width:991.98px){
-  .hero{min-height:auto;margin-top:var(--nav-h-sm);}
-  body:has(#mainNav .navbar-collapse.show) .hero,
-  body.nav-open .hero{margin-top:var(--nav-h-open);}
-  .hero .hero-bg{position:static;display:block;width:100%;height:auto;object-fit:contain;object-position:right center;}
-}
-@media (min-width:577px) and (max-width:991.98px){
-  .hero{margin-top:var(--nav-h);}
-  body:has(#mainNav .navbar-collapse.show) .hero, body.nav-open .hero{margin-top:var(--nav-h-open);}
-  .hero .hero-bg{object-position:80% center;}
-}
-@media (min-width:992px) and (max-width:1199.98px){
-  .hero{min-height:56vh;}
-  .hero .hero-bg{object-fit:cover;object-position:60% center;}
+/* Ultra-wide: leve zoom para evitar bandas raras */
+@media (min-width: 1400px){
+  .hero .hero-bg{ transform: translateX(-50%) scale(1.04); }
 }
 
-/* ===== Fila de botellas: layout correcto ===== */
-.wave-row{
-  display:flex;
-  align-items:center;
-  gap:clamp(16px,3vw,28px);
-  height:100%;
-  padding-inline:clamp(12px,2vw,24px);
-  min-width:max-content;
-  will-change:transform;
-  transform:translate3d(0,0,0);
+/* =========================================================
+   Botellas (centradas en el hero, tamaño mediano)
+========================================================= */
+.bottles-strip{
+  position: absolute;
+  inset-inline: 0;
+  bottom: auto !important;
+  top: var(--bottles-top) !important;      /* centro del hero */
+  transform: translateY(-50%) !important;  /* centrado exacto */
+  z-index: 3;
+  pointer-events: none;
+}
+.bottles-viewport{
+  position: relative;
+  width: 100%;
+  overflow: visible;    /* sombras sin recorte */
+  padding-inline: 8px;
+}
+.bottles-row{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(40px, 6vw, 72px);
+  width: max-content;
+  will-change: transform;
+  animation: slideLoop var(--dur, 22s) linear infinite;
+  animation-play-state: running;
+  pointer-events: none;
+}
+.bottles-strip:hover .bottles-row{ animation-play-state: paused; }
+
+@keyframes slideLoop{
+  0%   { transform: translateX(var(--start, 100vw)); }
+  100% { transform: translateX(var(--end, -140px));  }
 }
 
-.wave-item{
-  --size:clamp(72px,7.2vw,96px);
-  flex:0 0 auto;                 /* cada botella mantiene su ancho */
-  position:relative; display:block; pointer-events:auto;
+.bottle-link{ display:block; flex:0 0 auto; text-decoration:none; pointer-events:auto; }
+.bottle-img{
+  display:block;
+  height: var(--bottle-height-lg) !important;
+  max-height: none !important;
+  width: auto !important;
+  max-width: none !important;
+  object-fit: contain;
+  filter: drop-shadow(0 20px 44px rgba(0,0,0,.32));
+  transition: transform .25s ease, filter .25s ease;
+  will-change: transform;
 }
-.wave-item img{
-  width:var(--size); height:auto; object-fit:contain; display:block;
-  transition:transform .25s ease;
+@media (max-width: 991.98px){
+  .bottle-img{ height: var(--bottle-height-sm) !important; }
 }
-.wave-item:hover img{transform:scale(1.06);}
-.wave-item::after{
-  content:attr(data-title);
-  position:absolute; left:50%; top:calc(100% + 8px); transform:translateX(-50%);
-  white-space:nowrap; font-size:.8rem; font-weight:700;
-  color:#fff; background:rgba(0,0,0,.35); padding:.25rem .5rem; border-radius:8px; backdrop-filter:blur(4px);
-  opacity:0; pointer-events:none; transition:opacity .2s, transform .2s;
-}
-.wave-item:hover::after{opacity:1;transform:translateX(-50%) translateY(-2px);}
-
-.wave-strip{
-  position:absolute; left:0; right:0;
-  bottom:clamp(10px,5vh,48px);
-  height:clamp(110px,16vh,150px);
-  z-index:2;
-  overflow-x:hidden;   /* recorta costados */
-  overflow-y:visible;  /* no corta labels/sombras */
-  pointer-events:none; /* la pista no captura hover */
+.bottle-link:hover .bottle-img{
+  transform: translateY(-6px) scale(1.08);
+  filter: drop-shadow(0 28px 52px rgba(0,0,0,.36));
 }
 
-/* ===== Resto del sitio ===== */
+/* =========================================================
+   Rail genérico (si lo usas)
+========================================================= */
 .rail-track{
   display:grid; grid-auto-flow:column; grid-auto-columns:85%;
   gap:16px; overflow:auto; scroll-snap-type:x mandatory; padding:8px 12px 16px;
@@ -102,6 +147,9 @@ img{max-width:100%;height:auto;}
 .rail-track::-webkit-scrollbar{height:8px;}
 .rail-track::-webkit-scrollbar-thumb{background:#ffffff2b;border-radius:8px;}
 
+/* =========================================================
+   Cards / Quick-links / Stats
+========================================================= */
 .rail-card{
   background:#fff; color:var(--ink); border-radius:14px; overflow:hidden; text-decoration:none;
   display:flex; gap:12px; align-items:center; scroll-snap-align:center;
@@ -119,33 +167,21 @@ img{max-width:100%;height:auto;}
   transition:transform .3s, box-shadow .3s, border-color .3s; border:1px solid #e5e7eb;
 }
 .feature-card:hover{transform:translateY(-4px);box-shadow:0 18px 40px rgba(0,0,0,.08);}
-.feature-card .icon-wrap{
-  width:64px;height:64px;display:grid;place-content:center;border-radius:14px;
-  background:linear-gradient(145deg,#e8f5ee,#f4fbf7);color:var(--brand);
-}
-
 .quick-link{
   display:flex;align-items:center;gap:12px;background:var(--card);padding:18px 20px;
   border-radius:16px;border:1px solid #e5e7eb;text-decoration:none;color:#0f172a;
   transition:transform .25s,box-shadow .25s,border-color .25s,translate .25s;
 }
 .quick-link:hover{transform:translateY(-3px);translate:2px -2px;box-shadow:0 12px 28px rgba(0,0,0,.08);border-color:#d1d5db;}
-.quick-link .ql-icon{width:46px;height:46px;display:grid;place-content:center;border-radius:12px;background:#eef7f1;color:var(--brand);}
-.quick-link .ql-text{font-weight:700;}
-.quick-link .ql-arrow{margin-left:auto;color:#9ca3af;}
 
 .stat{background:#fff;border:1px solid #e5e7eb;border-radius:18px;padding:26px 20px;}
 .stat-num{font-size:2.4rem;line-height:1;font-weight:900;color:#198754;}
 .stat-label{color:#6b7280;}
 
-#contacto-cta{isolation:isolate;}
-#contacto-cta .cta-pattern{
-  position:absolute; inset:0; background:
-    radial-gradient(transparent 20px,#00000011 21px) 0 0/40px 40px,
-    radial-gradient(transparent 12px,#0000000f 13px) 20px 20px/40px 40px;
-  mix-blend-mode:soft-light; opacity:.25; z-index:0;
-}
-
+/* =========================================================
+   Accesibilidad
+========================================================= */
 @media (prefers-reduced-motion:reduce){
-  .reveal,.rail-card,.feature-card,.btn-glow,.quick-link,.wave-row{transition:none; animation: none;}
+  .reveal, .rail-card, .feature-card, .btn-glow, .quick-link,
+  .bottles-row, .bottle-img{transition:none; animation:none;}
 }
