@@ -2,10 +2,12 @@
 
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
+
 use App\Http\Controllers\HomeController;
-use App\Http\Controllers\ProductoController;         // CRUD admin (layout auth)
+use App\Http\Controllers\ProductoController;          // CRUD admin (layout auth)
 use App\Http\Controllers\UsuarioController;
-use App\Http\Controllers\ProductPublicController;   // Listado/Detalle públicos
+use App\Http\Controllers\ProductPublicController;
+use App\Http\Controllers\Admin\FeaturedProductController;
 
 /**
  * ======================
@@ -42,8 +44,7 @@ Route::get('/productos', [ProductPublicController::class, 'index'])
 
 Route::get('/productos/{producto}', [ProductPublicController::class, 'show'])
     ->name('productos.show');
-// Si usas slug en lugar de id, ajusta el binding en el modelo o aquí:
-// ->where('producto', '^[A-Za-z0-9\-_]+$');
+// ->where('producto', '^[A-Za-z0-9\-_]+$'); // si usas slug, ajusta binding
 
 /**
  * ======================
@@ -54,21 +55,28 @@ Auth::routes();
 
 /**
  * ======================
- * ÁREA ADMIN (CON LOGIN) — CRUD EN SINGULAR: producto.*
+ * ÁREA ADMIN (CON LOGIN)
  * ======================
  */
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::get('/home', [HomeController::class, 'index'])->name('home');
 
     // CRUD admin de productos (layout auth)
     Route::resource('producto', ProductoController::class);
-    // Nombres generados:
-    // producto.index, producto.create, producto.store, producto.show,
-    // producto.edit, producto.update, producto.destroy
 
-    // Otros recursos administrativos
+    // Usuarios
     Route::resource('usuarios', UsuarioController::class);
 
-    // Si tu búsqueda ya es 100% en tiempo real (JS), NO necesitas esta ruta:
-    // Route::get('/producto/buscar', [ProductoController::class, 'buscar'])->name('producto.buscar');
+    /**
+     * ======================
+     * ADMIN: DESTACADOS (Featured Products)
+     * ======================
+     * Panel para seleccionar/ordenar productos destacados.
+     * Si tienes gates/policies, agrega 'can:admin' en el middleware.
+     */
+    Route::prefix('admin/destacados')->name('admin.destacados.')->group(function () {
+        Route::get('/',  [FeaturedProductController::class, 'index'])->name('index');
+        Route::post('/', [FeaturedProductController::class, 'store'])->name('store');
+        Route::delete('/{featuredProduct}', [FeaturedProductController::class, 'destroy'])->name('destroy');
+    });
 });

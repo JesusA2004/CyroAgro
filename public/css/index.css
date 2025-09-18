@@ -4,8 +4,8 @@
   --nav-h:72px; --nav-h-sm:64px; --nav-h-open:112px;
 
   /* Alturas del hero */
-  --hero-height: clamp(560px, 78vh, 940px);       /* desktop */
-  --hero-height-sm: clamp(420px, 60vh, 820px);    /* móvil/tablet → muestra más imagen */
+  --hero-height: clamp(560px, 78vh, 940px);        /* desktop */
+  --hero-height-sm: clamp(460px, 64vh, 820px);     /* móvil/tablet → muestra un poco más de imagen */
 
   /* Tamaños botellas (MEDIANAS) */
   --bottle-height-lg: clamp(210px, 22vh, 300px);
@@ -13,6 +13,9 @@
 
   /* Posición vertical de las botellas (centro del hero) */
   --bottles-top: 50%;
+
+  /* Zoom suave para ultra-wide (no recorta base gracias al transform-origin) */
+  --hero-zoom-lg: 1.02;
 }
 
 :root{scroll-behavior:smooth;}
@@ -58,24 +61,26 @@ img{max-width:100%;height:auto;}
   .hero .hero-media{ height: var(--hero-height-sm); }
 }
 
-/* Imagen del hero: llena el alto y ANCLADA abajo (no se corta la base) */
+/* Imagen del hero: llena el alto, ANCLADA y ESCALADA desde la base */
 .hero .hero-bg{
   position: absolute;
   left: 50%;
-  bottom: 0;                    /* ancla la base */
+  bottom: 0;                                 /* ancla la base */
   transform: translateX(-50%);
-  height: 100%;                 /* llena el alto del hero */
+  transform-origin: 50% 100%;                /* 👈 escala desde la base (no la corta) */
+  height: 100%;
   width: auto;
-  min-width: 100%;              /* evita bandas laterales en panorámicas */
+  min-width: 100%;                           /* evita bandas laterales en panorámicas */
   max-width: none;
-  object-fit: cover;            /* cambia a 'contain' si no quieres recorte en absoluto */
+  object-fit: cover;                         /* cambia a 'contain' si no quieres recorte en absoluto */
   object-position: center bottom;
   display: block;
-  background: transparent;      /* sin borde/blanco */
+  background: transparent;                   /* sin borde/blanco */
 }
-/* Ultra-wide: leve zoom para evitar bandas raras */
+
+/* Ultra-wide: zoom suave, sin cortar base */
 @media (min-width: 1400px){
-  .hero .hero-bg{ transform: translateX(-50%) scale(1.04); }
+  .hero .hero-bg{ transform: translateX(-50%) scale(var(--hero-zoom-lg)); }
 }
 
 /* =========================================================
@@ -186,4 +191,14 @@ img{max-width:100%;height:auto;}
   .bottles-row, .bottle-img{transition:none; animation:none;}
 }
 
+/* Defaults para que siempre se mueva aunque el JS aún no calcule nada */
+.bottles-row{
+  --start: 100vw;
+  --end: -120%;
+  --dur: 22s;
+}
+/* Si quieres ignorar el modo de “reducir movimiento” en esta única franja: */
+@media (prefers-reduced-motion: reduce){
+  .bottles-row{ animation: slideLoop var(--dur) linear infinite; } /* no la apagues */
+}
 

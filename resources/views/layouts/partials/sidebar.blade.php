@@ -19,6 +19,10 @@
         <div class="sb-nav-link-icon"><i class="fas fa-box-open"></i></div> Productos
       </a>
 
+      <a class="nav-link" href="{{ route('admin.destacados.index') }}">
+        <div class="sb-nav-link-icon"><i class="fas fa-star"></i></div> Productos destacados
+      </a>
+
       <div class="sb-sidenav-menu-heading text-white">Otros</div>
 
       <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePerfil"

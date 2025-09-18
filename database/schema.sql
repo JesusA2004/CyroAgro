@@ -1,3 +1,7 @@
+drop database if exists cyrodb;
+create database cyrodb;
+use cyrodb;
+
 -- Tabla de usuarios
 CREATE TABLE users (
     id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
@@ -54,4 +58,21 @@ CREATE TABLE productos (
     FotoCatalogo VARCHAR(255) DEFAULT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE featured_products (
+  id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  product_id BIGINT UNSIGNED NOT NULL UNIQUE,
+  position INT UNSIGNED NOT NULL DEFAULT 1,
+  is_active TINYINT(1) NOT NULL DEFAULT 1,
+  starts_at DATETIME NULL,
+  ends_at DATETIME NULL,
+  created_by BIGINT UNSIGNED NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
+  CONSTRAINT fk_fp_product FOREIGN KEY (product_id) REFERENCES productos(id) ON DELETE CASCADE,
+  INDEX idx_fp_active (is_active),
+  INDEX idx_fp_window (starts_at, ends_at),
+  INDEX idx_fp_sort (position)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

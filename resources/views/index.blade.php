@@ -10,11 +10,39 @@
     </picture>
 
     @php
-      $destacados = ($destacados ?? collect([
-        (object)['id'=>22,'titulo'=>'OMEX DP 98','img'=>'22.png'],
-        (object)['id'=>23,'titulo'=>'OMEX ZN 70','img'=>'23.png'],
-        (object)['id'=>20,'titulo'=>'OMEX BIO 20','img'=>'20.png'],
-      ]))->take(3);
+      use App\Models\Producto;
+      // Trae 2–4 destacados activos (limite 4). Ordena por 'position' si existe; si no, por created_at.
+      $destacados = Producto::query()
+          ->whereHas('featured', fn($q) => $q->where('is_active', 1))
+          ->with('featured:id,product_id,is_active,position,created_at')
+          ->join('featured_products','featured_products.product_id','=','productos.id')
+          ->orderByRaw("CASE WHEN featured_products.position IS NULL THEN 1 ELSE 0 END, featured_products.position ASC, featured_products.created_at ASC")
+          ->select('productos.id','productos.nombre as titulo','productos.fotoProducto')
+          ->limit(4)
+          ->get()
+          ->map(function($p){
+              // arma ruta segura desde fotoProducto
+              $rel = $p->fotoProducto ? 'img/'.ltrim($p->fotoProducto,'/') : 'img/FotosProducto/default.png';
+              return (object)[
+                'id'     => $p->id,
+                'titulo' => $p->titulo,
+                'img'    => $rel,
+              ];
+          });
+
+      // En caso extremo: si hay <2 activos, rellena con productos no destacados (opcional)
+      if ($destacados->count() < 2) {
+          $faltan = 2 - $destacados->count();
+          $fallback = Producto::whereDoesntHave('featured', fn($q)=>$q->where('is_active',1))
+              ->orderBy('nombre')
+              ->limit($faltan)
+              ->get(['id','nombre as titulo','fotoProducto'])
+              ->map(function($p){
+                  $rel = $p->fotoProducto ? 'img/'.ltrim($p->fotoProducto,'/') : 'img/FotosProducto/default.png';
+                  return (object)['id'=>$p->id,'titulo'=>$p->titulo,'img'=>$rel];
+              });
+          $destacados = $destacados->concat($fallback);
+      }
     @endphp
 
     <!-- Fila única: 3 botellas (transparente, dentro del header y bajo el navbar) -->
@@ -23,11 +51,11 @@
         <div class="bottles-row" id="bottlesRow" data-speed="120">
           @foreach ($destacados as $p)
             <a class="bottle-link"
-               href="{{ route('productos.index', ['open' => $p->id]) }}"
-               title="{{ $p->titulo }}" data-title="{{ $p->titulo }}" data-id="{{ $p->id }}">
+              href="{{ route('productos.index', ['open' => $p->id]) }}"
+              title="{{ $p->titulo }}" data-title="{{ $p->titulo }}" data-id="{{ $p->id }}">
               <img class="bottle-img"
-                   src="{{ asset('img/productosDestacados/'.$p->img) }}"
-                   alt="{{ $p->titulo }}" loading="lazy" decoding="async">
+                  src="{{ asset($p->img) }}"
+                  alt="{{ $p->titulo }}" loading="lazy" decoding="async">
             </a>
           @endforeach
         </div>
@@ -99,33 +127,30 @@
 @push('styles')
   <link href="{{ asset('css/index.css') }}" rel="stylesheet">
   <style>
-    /* ===== HERO: sin recortar laterales =====
-       - La imagen ocupa 100% de ancho y altura automática (no hay crop lateral).
-       - El header controla la altura con min/max y oculta sobrante vertical (si lo hay).
-    */
+    /* ===== HERO: sin recorte lateral (control alto con min/max) ===== */
     .hero{
       position:relative;
       display:block;
       overflow:hidden;                  /* si la imagen es muy alta, recortamos ARRIBA/ABAJO */
       min-height: clamp(48vh, 58vh, 68vh);
-      max-height: 80vh;                 /* controla “lo alto” del hero en pantallas grandes */
+      max-height: 80vh;
       padding: 0;
       isolation:isolate;
+      background: transparent;
     }
     .hero-media{display:block; width:100%; line-height:0;}
     .hero-bg{
-      position:relative;                /* en flujo, no absoluta */
+      position:relative;                /* en flujo */
       display:block;
       width:100%;
-      height:auto;                      /* no se recorta a los lados */
-      object-fit:unset;                 /* sin forzar fitting */
-      object-position:center top;       /* si hay recorte vertical, prioriza parte superior */
+      height:auto;
+      object-fit:unset;
+      object-position:center top;
       background:#fff;
-      /* Para que el hero tenga altura incluso si la imagen es bajita en móvil */
       min-height: 360px;
     }
 
-    /* ===== Botellas (igual que tenías, dentro del header) ===== */
+    /* ===== Botellas dentro del header ===== */
     .bottles-strip{
       position:absolute; left:0; right:0;
       top: calc(var(--nav-h, 72px) + 8px);
@@ -136,18 +161,26 @@
       .bottles-strip{ top: calc(var(--nav-h-sm, 64px) + 6px); }
     }
     .bottles-viewport{ position:relative; width:100%; overflow:hidden; padding-inline:8px; }
+
     .bottles-row{
       display:flex; align-items:center; gap: clamp(26px, 4vw, 44px);
       width:max-content; will-change: transform;
       animation: slideLoop var(--dur, 22s) linear infinite;
       animation-play-state: running;
       pointer-events:none;
+
+      /* Defaults para que se mueva aunque JS aún no calcule nada */
+      --start: 100vw;
+      --end: -120%;
+      --dur: 22s;
     }
     .bottles-strip:hover .bottles-row{ animation-play-state: paused; }
+
     @keyframes slideLoop{
-      0%   { transform: translateX(var(--start, 100vw)); }
-      100% { transform: translateX(var(--end, -140px));  }
+      0%   { transform: translateX(var(--start)); }
+      100% { transform: translateX(var(--end));  }
     }
+
     .bottle-link{ display:block; flex:0 0 auto; text-decoration:none; pointer-events:auto; }
     .bottle-img{
       display:block; height: clamp(120px, 16vh, 200px); width:auto; object-fit:contain;
@@ -160,7 +193,7 @@
       filter: drop-shadow(0 18px 34px rgba(0,0,0,.26));
     }
 
-    /* Reveal + utilidades que ya usas */
+    /* Reveal + utilidades */
     .reveal{ opacity:0; transform:translateY(16px); transition:opacity .7s, transform .7s; }
     .reveal.in-view{ opacity:1; transform:none; }
     .as-button{ border:none; background:transparent; padding:0; width:100%; text-align:inherit; }
@@ -173,27 +206,39 @@
     .ql-icon i{ font-size:1.25rem; } .ql-text{ font-weight:700; } .ql-arrow i{ opacity:.7; }
     .py-6{ padding-top:4rem; padding-bottom:4rem; }
 
+    /* En esta franja NO desactivamos la animación por reduce-motion */
     @media (prefers-reduced-motion:reduce){
-      .bottles-row{ animation:none; }
       .bottle-img{ transition:none; }
       .reveal{ transition:none; }
+      .bottles-row{ animation: slideLoop var(--dur) linear infinite; }
     }
   </style>
 @endpush
 
 @push('scripts')
 <script>
-/* ===== Recorrido horizontal completo (reinicia desde derecha) ===== */
+/* ===== Recorrido horizontal completo, robusto a carga de imágenes ===== */
 function initBottleStrip(){
   const viewport = document.getElementById('bottlesViewport');
   const row = document.getElementById('bottlesRow');
   if(!viewport || !row) return;
 
+  const imgs = Array.from(row.querySelectorAll('img'));
+
   function rebuild(){
-    row.style.removeProperty('--start'); row.style.removeProperty('--end'); row.style.removeProperty('--dur');
+    // limpiar antes de recomputar
+    row.style.removeProperty('--start');
+    row.style.removeProperty('--end');
+    row.style.removeProperty('--dur');
 
     const vwPx = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
-    const rw = row.getBoundingClientRect().width;
+    const rw = row.getBoundingClientRect().width || 0;
+
+    // Si aún no hay ancho (imágenes sin cargar), reintenta pronto
+    if (rw < 10) {
+      setTimeout(rebuild, 120);
+      return;
+    }
 
     // Empieza fuera del viewport a la derecha y sale por la izquierda
     const start = vwPx;
@@ -208,13 +253,40 @@ function initBottleStrip(){
     row.style.setProperty('--dur', `${duration.toFixed(2)}s`);
   }
 
+  // Rebuild al cargar cada imagen (clave para evitar rw=0)
+  let pending = imgs.length;
+  if (pending === 0) {
+    rebuild();
+  } else {
+    imgs.forEach(img => {
+      if (img.complete) {
+        pending--;
+      } else {
+        img.addEventListener('load', () => { pending--; if (pending === 0) rebuild(); }, { once:true });
+        img.addEventListener('error', () => { pending--; if (pending === 0) rebuild(); }, { once:true });
+      }
+    });
+    // Fallback por si el navegador no dispara load (cache/SVG)
+    setTimeout(rebuild, 400);
+  }
+
+  // Recalcular en resize y en load
   let t;
   const debounced = () => { clearTimeout(t); t = setTimeout(rebuild, 120); };
-  rebuild();
   window.addEventListener('resize', debounced);
+  window.addEventListener('load', rebuild);
 
+  // Si el usuario tiene reduce motion, mantenemos la animación en esta franja
   const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
-  if (mq.matches) row.style.animationDuration = '0s';
+  if (mq.matches) {
+    // Asegura que exista duración y no quede en 0s
+    const dur = getComputedStyle(row).getPropertyValue('--dur').trim() || '22s';
+    row.style.animationDuration = dur;
+  }
+
+  // Opcional: loop perfecto (duplica nodos para continuidad)
+  // const children = Array.from(row.children);
+  // children.forEach(el => row.appendChild(el.cloneNode(true)));
 }
 
 /* ===== Reveal on scroll ===== */
