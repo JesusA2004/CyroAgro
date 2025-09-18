@@ -5,29 +5,31 @@
 @endpush
 
 @section('content')
-<section id="contact-header" class="text-white text-center d-flex align-items-center justify-content-center">
-  <div class="container position-relative">
-  </div>
-</section>
+  {{-- HEADER con imagen de fondo --}}
+  <section id="contact-header"
+           class="text-white d-flex align-items-center justify-content-center">
+  </section>
 
-{{-- MAPA --}}
-<section id="mapa-cyr" class="bg-white py-5">
-  <div class="container text-center">
+  {{-- MAPA (sin margen superior para evitar franja) --}}
+  <section id="mapa-cyr" class="bg-white py-5 mt-0">
+    <div class="container text-center">
       <h2 class="section-title mb-5">Cobertura Nacional</h2>
       <p class="lead mb-5">Pasa el mouse por cada zona para conocer a nuestros representantes</p>
 
       <div class="mapa-container mx-auto" style="max-width: 900px;">
-          @include('includes.mapa-mexico')
+        @include('includes.mapa-mexico')
       </div>
 
       <div id="info-zona" class="mt-4 fw-bold fs-5 text-primary"></div>
-  </div>
+    </div>
 
-  {{-- Tarjeta flotante (tooltip) --}}
-  <div id="tarjeta-zona" class="card shadow-lg px-4 py-3 text-start mx-auto mt-4"
-       style="display: none; max-width: 400px;">
-      {{-- Botón cerrar (X) arriba a la derecha --}}
-      <button type="button" id="btn-cerrar" class="btn-close position-absolute top-0 end-0 m-2"
+    {{-- Tarjeta flotante (tooltip) --}}
+    <div id="tarjeta-zona"
+         class="card shadow-lg px-4 py-3 text-start mx-auto mt-4"
+         style="display: none; max-width: 400px;">
+      {{-- Botón cerrar (X) --}}
+      <button type="button" id="btn-cerrar"
+              class="btn-close position-absolute top-0 end-0 m-2"
               aria-label="Cerrar"></button>
 
       <h5 id="titulo-zona" class="fw-bold text-success mb-2"></h5>
@@ -36,40 +38,43 @@
       <p class="mb-0"><strong>Correo:</strong> <span id="correo-rep"></span></p>
 
       <div class="text-end mt-3">
-          <button id="btn-copiar" class="btn btn-sm btn-outline-primary">
-              <i class="fas fa-copy"></i> Copiar datos
-          </button>
+        <button id="btn-copiar" class="btn btn-sm btn-outline-primary">
+          <i class="fas fa-copy"></i> Copiar datos
+        </button>
       </div>
-  </div>
-
-  <div class="clearfix mb-5"></div>
-</section>
-
-<section id="contact-form" class="py-5 bg-light">
-  <div class="container">
-    <div class="text-center mb-5">
-      <h2>Formulario de contacto</h2>
-      <p class="text-muted">Por favor completa el siguiente formulario y nos pondremos en contacto contigo lo antes posible.</p>
     </div>
-    <form action="#" method="POST" class="row g-4">
-      <div class="col-md-4">
-        <input type="text" name="name" class="form-control" placeholder="Tu nombre" required>
+
+    <div class="clearfix mb-5"></div>
+  </section>
+
+  {{-- FORMULARIO --}}
+  <section id="contact-form" class="py-5 bg-light mt-0">
+    <div class="container">
+      <div class="text-center mb-5">
+        <h2>Formulario de contacto</h2>
+        <p class="text-muted">Por favor completa el siguiente formulario y nos pondremos en contacto contigo lo antes posible.</p>
       </div>
-      <div class="col-md-4">
-        <input type="email" name="email" class="form-control" placeholder="Correo electrónico" required>
-      </div>
-      <div class="col-md-4">
-        <input type="text" name="subject" class="form-control" placeholder="Asunto" required>
-      </div>
-      <div class="col-12">
-        <textarea name="message" class="form-control" rows="6" placeholder="Mensaje" required></textarea>
-      </div>
-      <div class="col-12 text-center">
-        <button type="submit" class="btn btn-primary px-5">Enviar mensaje</button>
-      </div>
-    </form>
-  </div>
-</section>
+
+      <form action="#" method="POST" class="row g-4">
+        @csrf
+        <div class="col-md-4">
+          <input type="text" name="name" class="form-control" placeholder="Tu nombre" required>
+        </div>
+        <div class="col-md-4">
+          <input type="email" name="email" class="form-control" placeholder="Correo electrónico" required>
+        </div>
+        <div class="col-md-4">
+          <input type="text" name="subject" class="form-control" placeholder="Asunto" required>
+        </div>
+        <div class="col-12">
+          <textarea name="message" class="form-control" rows="6" placeholder="Mensaje" required></textarea>
+        </div>
+        <div class="col-12 text-center">
+          <button type="submit" class="btn btn-primary px-5">Enviar mensaje</button>
+        </div>
+      </form>
+    </div>
+  </section>
 @endsection
 
 @push('scripts')

@@ -1,8 +1,10 @@
+{{-- resources/views/productos/index.blade.php --}}
 @extends('layouts.public')
 
 @section('content')
 @php
   use Illuminate\Support\Str;
+
   $toList = function($text) {
       if (!$text) return [];
       return collect(explode(',', $text))
@@ -13,14 +15,20 @@
   };
 @endphp
 
-<div class="hero-bg-gradient"></div>
+{{-- HEADER con imagen de fondo y overlay (usa los estilos de infoProductos.css) --}}
+<header id="products-header"
+        class="mb-3"
+        style="--nav-offset:72px; --header-img: url('{{ asset('img/banner/PRODUCTOS.png') }}');">
+    </div>
+  </div>
+</header>
 
 <section class="section-products">
-  <div class="container-fluid px-4">
-    {{-- ENCABEZADO --}}
+  <div class="container-fluid px-5">
+    {{-- ENCABEZADO / BUSCADOR + SELECTOR RÁPIDO --}}
     <div class="row align-items-end mb-4">
       <div class="col-12 col-lg-6">
-        <h1 class="h2 fw-bold mb-3">Productos</h1>
+        <h2 class="h2 fw-bold mb-3">Productos</h2>
         <div class="input-group mb-2">
           <span class="input-group-text bg-body"><i class="fas fa-search"></i></span>
           <input id="p-search" type="search" class="form-control form-control-lg" placeholder="Buscar por nombre…">
@@ -72,9 +80,11 @@
     <div id="p-grid" class="row gy-4 gx-3 gx-xl-4">
       @foreach($productos as $p)
         @php
-          $img = $p->FotoCatalogo ?: $p->fotoProducto;
+          // Listas normalizadas
           $listaControl = $toList($p->controla);
           $listaCultivo = $toList($p->usoRecomendado);
+
+          // JSON para el modal
           $json = [
             'id'            => $p->id,
             'nombre'        => $p->nombre,
@@ -88,10 +98,14 @@
             'controla'      => $p->controla,
             'fichaTecnica'  => $p->fichaTecnica,
             'hojaSeguridad' => $p->hojaSeguridad,
-            'fotoProducto'  => $p->fotoProducto,
+            'fotoProducto'  => $p->fotoProducto,   // ← usamos solo BD: fotoProducto
             'presentacion'  => $p->presentacion,
             'FotoCatalogo'  => $p->FotoCatalogo,
           ];
+
+          // Ruta de imagen (solo fotoProducto)
+          $imgBd  = $p->fotoProducto;
+          $srcRel = $imgBd ? 'img/' . ltrim($imgBd, '/') : 'img/FotosProducto/default.png';
         @endphp
 
         <div class="col-12 col-sm-6 col-lg-4 col-xl-3 col-xxl-2 p-card-wrap"
@@ -105,14 +119,8 @@
 
           <article class="p-card h-100 d-flex flex-column text-center">
             <div class="p-media">
-            @php
-              // Solo desde BD: fotoProducto (p.ej. "/FotosProducto/ProluxAdherente.png")
-              $imgBd  = $p->fotoProducto;
-              $srcRel = $imgBd ? 'img/' . ltrim($imgBd, '/') : 'img/FotosProducto/default.png';
-            @endphp
-
-            <img src="{{ asset($srcRel) }}?v={{ optional($p->updated_at)->timestamp }}"
-                alt="{{ $p->nombre }}" loading="lazy" decoding="async">
+              <img src="{{ asset($srcRel) }}?v={{ optional($p->updated_at)->timestamp }}"
+                   alt="{{ $p->nombre }}" loading="lazy" decoding="async">
             </div>
 
             <h3 class="product-title fw-bold mb-1">{{ $p->nombre }}</h3>
@@ -136,7 +144,7 @@
   </div>
 </section>
 
-{{-- JS Filtros --}}
+{{-- Datos para filtros desde el servidor --}}
 <script>
 window.availableFilters = {
   segmento: @json($segmentos->map(fn($s) => trim($s))->values()),
@@ -153,7 +161,7 @@ window.assetRoot = "{{ asset('') }}";
     <div class="modal-content detail-modal">
       <div class="modal-body p-0">
 
-        {{-- Encabezado personalizado sin banner --}}
+        {{-- Encabezado del detail (sin banner, limpio) --}}
         <header class="detail-header container py-4">
           <div class="row align-items-start">
             <div class="col-12 col-lg-4 mb-3 mb-lg-0">
@@ -170,7 +178,7 @@ window.assetRoot = "{{ asset('') }}";
           </button>
         </header>
 
-        {{-- Cuerpo de la ficha --}}
+        {{-- Cuerpo --}}
         <section class="detail-body container py-4 py-lg-5">
           <div class="row g-4">
             <div class="col-12 col-lg-6">
@@ -198,7 +206,7 @@ window.assetRoot = "{{ asset('') }}";
               </div>
             </div>
 
-            {{-- Botones deshabilitados: fichas y hojas de seguridad --}}
+            {{-- Botones temporalmente deshabilitados --}}
             <div class="col-12 d-flex gap-2 flex-wrap">
               <button id="d-ficha" type="button" class="btn btn-success" disabled>
                 <i class="far fa-file-alt me-2"></i> Ficha técnica (en mantenimiento)
@@ -209,6 +217,7 @@ window.assetRoot = "{{ asset('') }}";
             </div>
           </div>
         </section>
+
       </div>
     </div>
   </div>
@@ -216,14 +225,15 @@ window.assetRoot = "{{ asset('') }}";
 @endsection
 
 @push('styles')
-<link rel="stylesheet" href="{{ asset('css/infoProductos.css') }}">
+{{-- Carga tu CSS con "cache-busting" para evitar caché del navegador --}}
+<link rel="stylesheet" href="{{ asset('css/infoProductos.css') }}?v={{ @filemtime(public_path('css/infoProductos.css')) }}">
 <style>
-  /* Fallback para el modal si no hay Bootstrap */
+  /* Fallback para el modal si no hay Bootstrap (no rompe si sí está) */
   .modal.vanilla-open { display:block; }
   .modal.vanilla-open .modal-dialog { transform:none !important; }
   .modal-backdrop.vanilla { position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:1040; }
 
-  /* Cabecera mejorada */
+  /* Cabecera del modal */
   .detail-modal .detail-header {
     background-color: #ffffff;
     position: relative;
@@ -236,13 +246,8 @@ window.assetRoot = "{{ asset('') }}";
     max-height: 260px;
     object-fit: contain;
   }
-  .detail-modal .detail-header h2 {
-    font-size: 2.2rem;
-  }
-  .detail-modal .tagline {
-    font-size: 1.1rem;
-    color: #6c757d;
-  }
+  .detail-modal .detail-header h2 { font-size: 2.2rem; }
+  .detail-modal .tagline { font-size: 1.1rem; color: #6c757d; }
 
   /* Cuerpo con fondo sutil */
   .detail-modal .detail-body {
@@ -256,64 +261,28 @@ window.assetRoot = "{{ asset('') }}";
     padding: 1.5rem;
     box-shadow: 0 4px 10px rgba(0,0,0,0.05);
   }
-  .detail-modal .detail-block h3 {
-    font-size: 1.3rem;
-  }
-  .detail-modal dl dt {
-    font-weight: 600;
-    color: #052c65;
-  }
-  .detail-modal dl dd {
-    font-weight: 500;
-    color: #333;
-  }
-  /* Control list */
+  .detail-modal .detail-block h3 { font-size: 1.3rem; }
+  .detail-modal dl dt { font-weight: 600; color: #052c65; }
+  .detail-modal dl dd { font-weight: 500; color: #333; }
+
+  /* Listas */
   .control-list li {
-    margin-bottom: .25rem;
-    position: relative;
-    padding-left: 1em;
+    margin-bottom: .25rem; position: relative; padding-left: 1em;
   }
   .control-list li::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 8px;
-    width: 6px;
-    height: 6px;
-    background-color: #16a34a;
-    border-radius: 50%;
+    content: ''; position: absolute; left: 0; top: 8px; width: 6px; height: 6px;
+    background-color: #16a34a; border-radius: 50%;
   }
-
-  /* Cultivos list */
-  .cultivos-list {
-    margin: 0;
-    padding: 0;
-    column-count: 1;
-  }
-  @media (min-width: 768px) {
-    .cultivos-list { column-count: 2; }
-  }
-  @media (min-width: 992px) {
-    .cultivos-list { column-count: 3; }
-  }
-  @media (min-width: 1200px) {
-    .cultivos-list { column-count: 4; }
-  }
+  .cultivos-list { margin: 0; padding: 0; column-count: 1; }
+  @media (min-width: 768px) { .cultivos-list { column-count: 2; } }
+  @media (min-width: 992px) { .cultivos-list { column-count: 3; } }
+  @media (min-width: 1200px){ .cultivos-list { column-count: 4; } }
   .cultivos-list li {
-    position: relative;
-    padding-left: 1em;
-    margin-bottom: .3rem;
-    line-height: 1.4;
+    position: relative; padding-left: 1em; margin-bottom: .3rem; line-height: 1.4;
   }
   .cultivos-list li::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 8px;
-    width: 6px;
-    height: 6px;
-    background-color: #16a34a;
-    border-radius: 50%;
+    content: ''; position: absolute; left: 0; top: 8px; width: 6px; height: 6px;
+    background-color: #16a34a; border-radius: 50%;
   }
 </style>
 @endpush
@@ -370,6 +339,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     applyFilters();
   });
+
   valueSelect.addEventListener('change', ()=>{
     state.classValue = valueSelect.value || '';
     applyFilters();
@@ -459,7 +429,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Manejador de cierre: cierra también en modo fallback
+  // Cierre (también en fallback)
   modalEl.querySelectorAll('[data-bs-dismiss="modal"]').forEach(btn => {
     btn.addEventListener('click', ev => {
       if (!hasBootstrap) {
@@ -475,6 +445,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // Abrir modal con datos de la card
   grid.addEventListener('click', (e)=>{
     const btn = e.target.closest('.p-view');
     if(!btn) return;

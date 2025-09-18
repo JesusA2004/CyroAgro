@@ -1,6 +1,6 @@
 /* Fondo con imagen y gradiente */
 .login-background {
-    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.9)), url('../img/bg_login.jpg');
+    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.9)), url('../img/bannerContacto.png');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;

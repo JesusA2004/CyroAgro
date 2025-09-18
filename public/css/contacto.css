@@ -1,67 +1,144 @@
-/* ===== Banner de encabezado ===== */
-/* Desktop: se corta de ARRIBA (anclado abajo) usando cover */
+/* =============== TOKENS / VARIABLES =============== */
+:root{
+  --brand:#198754;
+  --brand-700:#14532d;
+  --ink:#0f172a;
+
+  /* Imagen del header */
+  --header-img: url('../img/banner/VENTAS.png');
+
+  /* Relación de aspecto del banner (alto = ratio * ancho) */
+  --banner-ratio: 0.34; /* ajusta si tu PNG/JPG tiene otra proporción */
+
+  /* Si tu navbar es fija, pon su alto (0 si no) */
+  --nav-offset: 0px;
+}
+
+/* =============== HEADER (UNA SOLA IMAGEN, SIN FRANJAS) =============== */
 #contact-header{
-  background: url('../img/banner/BANNER%202.png') bottom center / cover no-repeat;
-  height: clamp(260px, 30vw, 420px);
   position: relative;
+  display:block;
   color:#fff;
-  overflow:hidden;
+  isolation:isolate;
+
+  /* altura basada en la relación del banner */
+  height: var(--header-h-desktop);
+
+  /* mostrar SIEMPRE la imagen completa, sin recortes */
+  background-image: var(--header-img);
+  background-position: center bottom;  /* desktop: anclado abajo */
+  background-repeat: no-repeat;
+  background-size: contain;
+
+  /* si hay navbar fija arriba */
+  padding-top: max(var(--nav-offset), env(safe-area-inset-top, 0px));
+
+  /* sin huecos externos */
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+  border: 0;
+  outline: 0;
 }
-#contact-header .overlay{
-  background: rgba(0, 0, 0, 0.5);
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-}
+
+/* Contenido dentro del header (opcional) */
 #contact-header .container{
-  z-index: 2;
-  animation: fadeInTop 1s ease-in-out both;
+  position:relative;
+  z-index:1;
+  animation: fadeInTop 0.8s ease both;
 }
-/* Móvil/tablet: que se vea COMPLETA (contain) y se adapte a pantalla */
+
+/* =============== RESPONSIVE (TABLET ≤ 992px) =============== */
 @media (max-width: 992px){
   #contact-header{
-    background-position: center center;
-    background-size: contain;         /* muestra la imagen completa */
-    height: clamp(220px, 38vw, 340px);/* altura flexible para evitar recortes */
+    /* ALTURA EXACTA según relación → evita la franja en 992px */
+    height: var(--header-h-tablet);
+    background-position: center top; /* ancla ARRIBA para que no quede hueco superior */
+    background-size: contain;
+    margin-top: 0 !important;
+    padding-top: 0 !important;
   }
 }
 
-@keyframes fadeInTop { from{opacity:0; transform:translateY(-30px)} to{opacity:1; transform:translateY(0)} }
+/* =============== RESPONSIVE (MOBILE ≤ 576px) =============== */
+@media (max-width: 576px){
+  #contact-header{
+    height: var(--header-h-mobile);
+    background-position: center top;
+    background-size: contain;
+  }
+}
 
-/* ===== Mapa responsive genérico (si usas iframe en otra sección) ===== */
-.map-responsive { overflow:hidden; padding-bottom:56.25%; position:relative; height:0; }
-.map-responsive iframe { position:absolute; left:0; top:0; width:100%; height:100%; border-radius:10px; }
+/* =============== ELIMINAR ESPACIO BAJO EL HEADER =============== */
+#contact-header + section,
+#contact-header + .section,
+#contact-header + .container,
+#contact-header + .container-fluid,
+main > section:first-of-type{
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
 
-/* ===== Formulario ===== */
+/* =============== ANIMACIÓN SUAVE =============== */
+@keyframes fadeInTop {
+  from { opacity:0; transform:translateY(-24px) }
+  to   { opacity:1; transform:translateY(0) }
+}
+
+/* =============== RESTO (tu CSS existente) =============== */
+
+/* Mapa (iframe genérico) */
+.map-responsive{ overflow:hidden; padding-bottom:56.25%; position:relative; height:0; }
+.map-responsive iframe{ position:absolute; left:0; top:0; width:100%; height:100%; border-radius:10px; }
+
+/* Formulario */
 #contact-form input, #contact-form textarea{
-  border-radius:.5rem; border:1px solid #ced4da; transition: box-shadow .3s ease, border-color .3s ease;
+  border-radius:.5rem; border:1px solid #ced4da;
+  transition: box-shadow .3s ease, border-color .3s ease;
 }
 #contact-form input:focus, #contact-form textarea:focus{
   border-color:#198754; box-shadow:0 0 0 .2rem rgba(25,135,84,.25);
 }
-/* Botón */
 #contact-form button{
-  border-radius:30px; transition:all .3s ease; box-shadow:0 4px 15px rgba(0,0,0,.2);
+  border-radius:30px; box-shadow:0 4px 15px rgba(0,0,0,.2);
+  transition:transform .25s ease, box-shadow .25s ease, background-color .25s ease;
 }
 #contact-form button:hover{
-  background-color:#14532d; transform:scale(1.05); box-shadow:0 6px 20px rgba(0,0,0,.3);
+  background-color:#14532d; transform:translateY(-1px) scale(1.03);
+  box-shadow:0 8px 22px rgba(0,0,0,.28);
 }
 
-/* ===== Fondo general ===== */
-body{ background:linear-gradient(to bottom,#f8f9fa,#ffffff); animation:bodyFade 1.5s ease; font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+/* Fondo / tipografía */
+body{
+  background:linear-gradient(to bottom,#f8f9fa,#ffffff);
+  animation:bodyFade 1.2s ease;
+  font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
 @keyframes bodyFade{ from{opacity:0} to{opacity:1} }
 
-/* ===== Encabezado interno opcional ===== */
-#inner-headline{ background:linear-gradient(to right,#e9ecef,#f8f9fa); border-bottom:2px solid #dee2e6; animation:slideDown 1.2s ease; }
+/* Encabezado interno (opcional) */
+#inner-headline{
+  background:linear-gradient(to right,#e9ecef,#f8f9fa);
+  border-bottom:2px solid #dee2e6;
+  animation:slideDown .9s ease;
+}
 @keyframes slideDown{ from{opacity:0; transform:translateY(-30px)} to{opacity:1; transform:translateY(0)} }
 #inner-headline h2{ font-weight:700; font-size:2rem; color:#343a40; }
 
-/* ===== Carrusel (si aplica) ===== */
-#aboutCarousel .carousel-item img{ object-fit:cover; height:350px; border-radius:12px; animation:fadeSlideIn 1.2s ease-in-out both; }
+/* Carrusel (si aplica) */
+#aboutCarousel .carousel-item img{
+  object-fit:cover;
+  height:350px;
+  border-radius:12px;
+  animation:fadeSlideIn 1.2s ease-in-out both;
+}
 @keyframes fadeSlideIn{ from{opacity:0; transform:translateY(30px)} to{opacity:1; transform:translateY(0)} }
 
-/* ===== Team cards (si aplican) ===== */
-.team-card{ transition:transform .3s ease, box-shadow .3s ease; border-radius:12px; overflow:hidden; background:#fff; animation:zoomInCard .8s ease-in-out; }
+/* Team cards (si aplican) */
+.team-card{
+  transition:transform .3s ease, box-shadow .3s ease;
+  border-radius:12px; overflow:hidden; background:#fff;
+  animation:zoomInCard .8s ease-in-out;
+}
 .team-card:hover{ transform:translateY(-5px) scale(1.02); box-shadow:0 12px 30px rgba(0,0,0,.2); }
 @keyframes zoomInCard{ from{opacity:0; transform:scale(.95)} to{opacity:1; transform:scale(1)} }
 .team-card h5{ font-weight:700; font-size:1.2rem; color:#2e2e2e; }
@@ -69,82 +146,68 @@ body{ background:linear-gradient(to bottom,#f8f9fa,#ffffff); animation:bodyFade 
 .team-card .card-text a{ color:#2d6a4f; text-decoration:none; transition:color .3s ease; }
 .team-card .card-text a:hover{ color:#1b4332; text-decoration:underline; }
 
-/* ===== Encabezados de sección ===== */
-section h2{ font-size:2rem; margin-bottom:1rem; color:#2c3e50; position:relative; }
+/* Títulos de sección */
+section h2{
+  font-size:2rem; margin-bottom:1rem; color:#2c3e50; position:relative;
+}
 section h2::after{
   content:""; display:block; width:60px; height:3px; background-color:#198754;
   margin:10px auto 0; border-radius:2px; animation: growLine 1s ease-in-out;
 }
 @keyframes growLine{ from{width:0} to{width:60px} }
 
-/* ===== Utilidades ===== */
+/* Utilidades */
 .texto-justificado{ text-align: justify; }
 .divider{ width:60px; height:4px; background:#fff; border-radius:2px; animation:growLine 1.2s ease-in-out both; }
 
-/* =========================================================
-   MAPA: RESPONSIVE SIN CAMBIAR TUS COLORES NI EFECTOS
-   ========================================================= */
-
-/* No alterar tus estilos de colores/hover */
-.container path {
-  fill: #237a29;
-  stroke: #ffffff;
-  stroke-width: 2px;
-}
-.container :hover{
-  fill: #ff0310;
-  stroke: #ffffff;
-  stroke-width: 2px;
-}
-
-/* Contenedor y SVG responsivo */
+/* Mapa SVG (tus colores) */
 #mapa-cyr{ position:relative; }
 #mapa-cyr .mapa-container{ position:relative; width:100%; }
-#mapa-cyr .mapa-container svg{
-  display:block;
-  width:100%;
-  height:auto;         /* mantiene proporciones del mapa */
-  max-width:100%;
-}
+#mapa-cyr .mapa-container svg{ display:block; width:100%; height:auto; max-width:100%; }
+.container path{ fill:#237a29; stroke:#ffffff; stroke-width:2px; }
+.container :hover{ fill:#ff0310; stroke:#ffffff; stroke-width:2px; }
 
-/* Tooltip/card flotante */
+/* Tooltip flotante */
 #tarjeta-zona{
-  position: absolute;
-  left: var(--tt-left, 16px);
-  top:  var(--tt-top,  16px);
-  max-width: 360px;
-  border-radius: 14px;
-  border: 1px solid rgba(0,0,0,.06);
-  background: rgba(255,255,255,.96);
-  backdrop-filter: blur(6px);
-  box-shadow: 0 14px 30px rgba(0,0,0,.18);
-  padding: .85rem 1rem;
-  pointer-events: none;
-  transform-origin: 12px 12px;
-  transform: translateY(-6px) scale(.98);
-  opacity: 0;
-  z-index: 5;
+  position:absolute; left:var(--tt-left,16px); top:var(--tt-top,16px); max-width:360px;
+  border-radius:14px; border:1px solid rgba(0,0,0,.06); background:rgba(255,255,255,.96);
+  backdrop-filter:blur(6px); box-shadow:0 14px 30px rgba(0,0,0,.18);
+  padding:.85rem 1rem; pointer-events:none; transform-origin:12px 12px;
+  transform:translateY(-6px) scale(.98); opacity:0; z-index:5;
 }
-#tarjeta-zona.pinned{ pointer-events: auto; }
+#tarjeta-zona.pinned{ pointer-events:auto; }
 #tarjeta-zona h5{ color:#14532d; margin-bottom:.35rem; }
-
 #tarjeta-zona::after{
-  content:"";
-  position:absolute;
-  width:0; height:0;
-  border:10px solid transparent;
-  border-right-color: rgba(255,255,255,.96);
-  left:-20px; top:14px;
-  filter: drop-shadow(-2px 0 2px rgba(0,0,0,.06));
+  content:""; position:absolute; width:0; height:0; border:10px solid transparent;
+  border-right-color:rgba(255,255,255,.96); left:-20px; top:14px;
+  filter:drop-shadow(-2px 0 2px rgba(0,0,0,.06));
 }
 #tarjeta-zona.show{ animation: ttIn .18s ease-out both; }
 @keyframes ttIn{ from{opacity:0; transform: translateY(-8px) scale(.96);} to{opacity:1; transform: translateY(0) scale(1);} }
-#tarjeta-zona.at-right::after{ left:-20px; right:auto; border-right-color: rgba(255,255,255,.96); border-left-color: transparent; }
-#tarjeta-zona.at-left::after { left:auto; right:-20px; border-left-color: rgba(255,255,255,.96);  border-right-color: transparent; }
-#tarjeta-zona.at-top::after  { left:14px; top:auto; bottom:-20px; border:10px solid transparent; border-top-color: rgba(255,255,255,.96); }
-#tarjeta-zona.at-bottom::after{ left:14px; top:-20px; border:10px solid transparent; border-bottom-color: rgba(255,255,255,.96); }
+#tarjeta-zona.at-right::after{ left:-20px; right:auto; border-right-color:rgba(255,255,255,.96); border-left-color:transparent; }
+#tarjeta-zona.at-left::after { left:auto; right:-20px; border-left-color:rgba(255,255,255,.96);  border-right-color:transparent; }
+#tarjeta-zona.at-top::after  { left:14px; top:auto; bottom:-20px; border:10px solid transparent; border-top-color:rgba(255,255,255,.96); }
+#tarjeta-zona.at-bottom::after{ left:14px; top:-20px; border:10px solid transparent; border-bottom-color:rgba(255,255,255,.96); }
 
-/* Tooltip más cómodo en pantallas pequeñas */
+:root{
+  /* ... */
+  --banner-ratio: 0.3603; /* 738 / 2048 → ratio exacto */
+  --header-h-desktop: clamp(360px, calc(100vw * var(--banner-ratio)), 720px);
+  --header-h-tablet:  clamp(260px, calc(100vw * var(--banner-ratio)), 520px);
+  --header-h-mobile:  clamp(250px, calc(100vw * var(--banner-ratio)), 500px);
+}
+
+#contact-header{
+  height: var(--header-h-desktop);
+  background-image: var(--header-img);   /* usa VENTAS.png si ya cambiaste */
+  background-repeat: no-repeat;
+  background-position: center top;
+  background-size: contain;               /* muestra TODO sin recortar */
+}
+
+@media (max-width: 992px){
+  #contact-header{ height: var(--header-h-tablet); }
+}
 @media (max-width: 576px){
-  #tarjeta-zona{ max-width: 88vw; font-size: .95rem; }
+  #contact-header{ height: var(--header-h-mobile); }
 }
