@@ -201,4 +201,3 @@ img{max-width:100%;height:auto;}
 @media (prefers-reduced-motion: reduce){
   .bottles-row{ animation: slideLoop var(--dur) linear infinite; } /* no la apagues */
 }
-

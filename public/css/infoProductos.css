@@ -21,26 +21,24 @@
   --elev: 0 10px 24px rgba(0,0,0,.08);
   --elev-lg: 0 18px 40px rgba(0,0,0,.12);
   --trs: .24s cubic-bezier(.2,.8,.2,1);
+
+  /* Relación de aspecto de tu imagen (alto/ancho) */
+  --header-ratio: 0.357;
 }
 
 /* =========================================================
    HEADER DE SECCIÓN — #products-header
-   - Desktop: background-cover anclado abajo (evita huecos)
-   - Mobile : background-contain mostrando imagen completa
-   - Evita que “invada” la navbar con --nav-offset
 ========================================================= */
 #products-header{
   position: relative;
   height: var(--header-h-desktop);
   color:#fff;
   overflow: clip;
-  /* Fondo base (si la imagen no cubre, que NO sea blanco) */
   background-image: var(--header-img);
   background-position: bottom center;
   background-repeat: no-repeat;
   background-size: cover;
   isolation:isolate;
-  /* espacio por navbar fija, si la usas */
   padding-top: var(--nav-offset);
 }
 
@@ -53,7 +51,7 @@
   animation: hdrBreath 6s ease-in-out infinite;
 }
 
-/* Textura/grain sutil + partículas */
+/* Textura/grain sutil */
 #products-header::after{
   content:"";
   position:absolute; inset:-2px;
@@ -64,61 +62,61 @@
   animation: grainMove 10s linear infinite;
 }
 
-/* Contenido del header */
-#products-header .ph-inner{
-  position:relative; z-index:3;
-  animation: fadeInTop .9s ease both;
-}
-#products-header .hdr-title{
-  font-weight: 900;
-  letter-spacing:.3px;
-  transform: translateZ(0);
-}
-#products-header .hdr-sub{
-  color: #e9ecef;
-  text-shadow: 0 2px 12px rgba(0,0,0,.35);
-}
+/* Contenido */
+#products-header .ph-inner{ position:relative; z-index:3; animation: fadeInTop .9s ease both; }
+#products-header .hdr-title{ font-weight:900; letter-spacing:.3px; transform: translateZ(0); }
+#products-header .hdr-sub{ color:#e9ecef; text-shadow: 0 2px 12px rgba(0,0,0,.35); }
+#products-header .divider{ width:72px; height:4px; background:var(--brand); border-radius:2px; animation:growLine .9s ease .1s both; }
 
-/* Línea verde decorativa */
-#products-header .divider{
-  width: 72px; height: 4px; background: var(--brand);
-  border-radius: 2px; animation: growLine .9s ease .1s both;
-}
-
-/* Parallax básico en desktop (si el navegador lo permite) */
+/* =========================================================
+   PARALLAX Y RESPONSIVE
+========================================================= */
 @media (min-width: 992px){
   #products-header{ background-attachment: fixed; }
 }
 
-/* Responsive header: mostrar la imagen COMPLETA en móvil */
+/* Móvil: siempre mostrar la imagen completa */
 @media (max-width: 992px){
   #products-header{
     height: var(--header-h-mobile);
     background-position: center center;
-    background-size: contain;          
+    background-size: contain;
   }
 }
 
-/* Breadcrumb minimal opcional (si lo usas en el header) */
-.ph-breadcrumb ol{ display:flex; gap:.5rem; padding:0; margin:0; list-style:none; }
-.ph-breadcrumb li{ opacity:.9 }
-.ph-breadcrumb a{ color:#e2f7eb; text-decoration:none; }
-.ph-breadcrumb a:hover{ text-decoration:underline; }
-.ph-breadcrumb li+li::before{
-  content:"/"; display:inline-block; margin:0 .5rem; opacity:.7;
+/* RANGO INTERMEDIO (media pantalla: 993px – 1399px) */
+@media (min-width: 993px) and (max-width: 1399px){
+  #products-header{
+    height: calc(100vw * var(--header-ratio)); /* respeta proporción */
+    background-size: contain;                  /* evita recorte */
+    background-position: center bottom;
+    background-attachment: scroll;
+  }
+}
+
+/* Fullscreen y ultra-wide (ya funcionaba bien, lo dejamos igual) */
+@media (min-width: 1400px) and (min-aspect-ratio: 16/9){
+  #products-header{
+    height: calc(100vw * var(--header-ratio));
+    background-size: contain;
+    background-position: center bottom;
+    background-attachment: scroll;
+  }
+}
+@media (min-width: 1920px) and (min-aspect-ratio: 21/9){
+  #products-header{
+    height: calc(100vw * var(--header-ratio));
+    background-size: contain;
+    background-position: center bottom;
+    background-attachment: scroll;
+  }
 }
 
 /* =========================================================
    LISTADO DE PRODUCTOS (chips, filtros, cards, modal)
 ========================================================= */
+.section-products{ padding:2rem 0 3.2rem; margin-top:0.5rem; }
 
-/* Sección */
-.section-products{ 
-  padding:2rem 0 3.2rem; 
-  margin-top:0.5rem; 
-}
-
-/* Chips de segmentos */
 .segments-nav{ display:flex; flex-wrap:wrap; gap:.6rem; overflow-x:auto; padding-bottom:.2rem; }
 .segments-nav .seg-chip{
   background:#f3f5f7; color:#334155; border-radius:999px;
@@ -130,7 +128,6 @@
 .segments-nav .seg-chip:hover{ transform:translateY(-2px); border-color:#d7dde5; box-shadow: var(--elev); }
 .segments-nav .seg-chip.active{ background:var(--brand); color:#fff; border-color:var(--brand); box-shadow: 0 10px 26px rgba(25,135,84,.25); }
 
-/* Filtros */
 .classification-row .form-label{ font-weight:700; color:var(--ink); margin-bottom:.35rem; }
 .classification-row .form-select{
   border-radius:999px; padding:.6rem 2.4rem .6rem .9rem; border:1px solid #dfe5ec;
@@ -138,7 +135,6 @@
 }
 .classification-row .form-select:focus{ border-color: var(--brand); box-shadow: 0 0 0 .2rem rgba(25,135,84,.2); }
 
-/* Tarjeta de producto */
 .p-card{
   background:var(--card); border:1px solid var(--bd); border-radius:16px;
   padding:1.25rem; box-shadow:0 10px 24px rgba(0,0,0,.04);
@@ -152,39 +148,30 @@
   filter: blur(6px); transform: translate(18px,18px) scale(.9);
   opacity:.0; transition: opacity var(--trs), transform var(--trs);
 }
-.p-card:hover{
-  transform:translateY(-4px);
-  box-shadow: var(--elev-lg);
-  border-color:#d1d5db;
-}
+.p-card:hover{ transform:translateY(-4px); box-shadow: var(--elev-lg); border-color:#d1d5db; }
 .p-card:hover::after{ opacity:.9; transform: translate(0,0) scale(1); }
 
 .product-title{ font-size:1.08rem; font-weight:800; color:var(--ink); }
 
-/* Imagen alta sin recorte */
 .p-media{
   display:flex; align-items:center; justify-content:center;
   height:260px; padding:14px; margin-bottom:.95rem;
-  background:linear-gradient(180deg,#fafafa,#f7faf8); border-radius:14px; overflow:hidden;
-  border:1px solid #eef2f7;
+  background:linear-gradient(180deg,#fafafa,#f7faf8);
+  border-radius:14px; overflow:hidden; border:1px solid #eef2f7;
 }
 .p-media img{
   height:100%; width:auto; max-width:100%;
-  object-fit:contain; image-rendering:auto; filter: drop-shadow(0 12px 28px rgba(0,0,0,.18));
+  object-fit:contain; image-rendering:auto;
+  filter: drop-shadow(0 12px 28px rgba(0,0,0,.18));
   transition: transform var(--trs);
 }
 .p-card:hover .p-media img{ transform: translateY(-4px) scale(1.02); }
 
 #p-empty{ border-radius:12px; }
-
-/* Badges inline */
 .p-badges{ display:flex; gap:.4rem; flex-wrap:wrap; }
 .p-badges .badge{ border:1px solid #e6f4ea; background:#f3fcf6; color:#14532d; font-weight:700; }
-
-/* Botones */
 .p-actions .btn{ border-radius:999px; padding:.55rem 1.05rem; }
 
-/* Modal detalle */
 .detail-modal{ border:0; border-radius:0; overflow:hidden; }
 .detail-hero{ min-height:340px; position:relative; }
 .detail-banner{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; filter:brightness(.75); transform:scale(1.03); }
@@ -221,17 +208,14 @@
 /* =========================================================
    HERO DEGRADADO (opcional)
 ========================================================= */
-.hero-bg-gradient{
-  width:100%; height:10vh;
-  margin-bottom:1rem;
-}
+.hero-bg-gradient{ width:100%; height:10vh; margin-bottom:1rem; }
 
 /* =========================================================
    ANIMACIONES / KEYFRAMES
 ========================================================= */
 @keyframes fadeInTop { from{opacity:0; transform:translateY(-24px)} to{opacity:1; transform:translateY(0)} }
 @keyframes growLine   { from{width:0} to{width:72px} }
-@keyframes hdrBreath  { 0%,100%{ filter: none } 50%{ filter: saturate(1.08) brightness(1.02) } }
+@keyframes hdrBreath  { 0%,100%{ filter:none } 50%{ filter:saturate(1.08) brightness(1.02) } }
 @keyframes grainMove  { 0%{ transform:translate3d(0,0,0) } 100%{ transform:translate3d(-160px,-160px,0) } }
 
 /* =========================================================
@@ -255,9 +239,10 @@
   border-radius: 8px;
 }
 
+/* Ajuste del espacio bajo el header en móvil */
 @media (max-width: 992px){
   .section-products {
-    margin-top: 0 !important; /* elimina espacio entre header y productos */
-    padding-top: 0.5rem;        /* opcional */
+    margin-top: 0 !important;
+    padding-top: .5rem;
   }
 }

@@ -1,6 +1,6 @@
-drop database if exists cyrodb;
-create database cyrodb;
-use cyrodb;
+drop database if exists cyrobd;
+create database cyrobd;
+use cyrobd;
 
 -- Tabla de usuarios
 CREATE TABLE users (
