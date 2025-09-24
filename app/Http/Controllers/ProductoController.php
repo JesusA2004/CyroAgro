@@ -14,33 +14,28 @@ use Illuminate\Support\Facades\DB;
 
 class ProductoController extends Controller
 {
-
     /**
-     * Mostrar listado de productos con paginación.
+     * Listado de productos con filtros y paginación.
      */
     public function index(Request $request)
     {
         $q = trim((string) $request->get('q', ''));
 
-        // Base
         $base = Producto::query();
         if ($q !== '') {
             $base->where('nombre', 'like', "%{$q}%");
         }
 
-        // Vista completa (paginada)
         $productos = $base->orderBy('nombre')->paginate(12);
 
-        // === Datasets para filtros (usados por tu Blade) ===
-        $segmentos   = Producto::whereNotNull('segmento')
-                        ->where('segmento','<>','')
-                        ->distinct()->orderBy('segmento')->pluck('segmento');
+        $segmentos = Producto::whereNotNull('segmento')
+            ->where('segmento','<>','')
+            ->distinct()->orderBy('segmento')->pluck('segmento');
 
-        $categorias  = Producto::whereNotNull('categoria')
-                        ->where('categoria','<>','')
-                        ->distinct()->orderBy('categoria')->pluck('categoria');
+        $categorias = Producto::whereNotNull('categoria')
+            ->where('categoria','<>','')
+            ->distinct()->orderBy('categoria')->pluck('categoria');
 
-        // Controles y Cultivos: a partir de campos CSV
         $controles = Producto::whereNotNull('controla')->pluck('controla')
             ->flatMap(function ($s) {
                 return collect(explode(',', (string)$s))->map(fn($v) => trim($v));
@@ -53,7 +48,6 @@ class ProductoController extends Controller
             })
             ->filter()->unique()->values();
 
-        // AJAX: devuelve TODOS los matches (sin paginar) para reemplazar el grid
         if ($request->ajax() && $q !== '') {
             $matches = Producto::where('nombre', 'like', "%{$q}%")
                         ->orderBy('nombre')->get();
@@ -61,7 +55,6 @@ class ProductoController extends Controller
             return response()
                 ->view('producto.partials.cards', [
                     'productos'  => $matches,
-                    // por si tu partial también usa estos:
                     'segmentos'  => $segmentos,
                     'categorias' => $categorias,
                     'controles'  => $controles,
@@ -70,12 +63,11 @@ class ProductoController extends Controller
                 ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
         }
 
-        // Render normal
         return view('producto.index', compact('productos','segmentos','categorias','controles','cultivos'));
     }
 
     /**
-     * Formulario para crear un nuevo producto.
+     * Formulario de creación.
      */
     public function create(): View
     {
@@ -85,33 +77,43 @@ class ProductoController extends Controller
     }
 
     /**
-     * Almacenar un nuevo producto.
+     * Persistir nuevo producto.
+     * PDFs:
+     *  - fichaTecnica_file => /public/fichasTecnicas => BD: fichasTecnicas/<archivo>.pdf
+     *  - hojaSeguridad_file => /public/hojasSeguridad => BD: hojasSeguridad/<archivo>.pdf
+     * Imagen:
+     *  - foto => /public/img/FotosProducto => BD: img/FotosProducto/<archivo>.<ext>
      */
     public function store(ProductoRequest $request): RedirectResponse
     {
         $data = $request->validated();
 
-        // quién creó/modificó (opcional)
         $data['creadoPor']     = Auth::user()->name ?? 'Administrador';
         $data['modificadoPor'] = Auth::user()->name ?? 'Administrador';
 
-        // === FOTO (nuevo) ===
+        // PDFs opcionales (si no llegan, conservamos hidden si existiera)
+        $data['fichaTecnica'] = $this->handlePdfUpload(
+            $request,
+            'fichaTecnica_file',
+            'fichasTecnicas',
+            keepIfEmpty: $request->input('fichaTecnica')
+        );
+
+        $data['hojaSeguridad'] = $this->handlePdfUpload(
+            $request,
+            'hojaSeguridad_file',
+            'hojasSeguridad',
+            keepIfEmpty: $request->input('hojaSeguridad')
+        );
+
+        // Imagen opcional
         if ($request->hasFile('foto')) {
-            $file = $request->file('foto');
-
-            $ext      = strtolower($file->getClientOriginalExtension());
-            $baseName = Str::slug($data['nombre'] ?? pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME));
-            $filename = $baseName . '-' . time() . '.' . $ext;
-
-            $dest = public_path('img/FotosProducto');
-            if (!is_dir($dest)) { @mkdir($dest, 0775, true); }
-
-            // mueve a /public/img/FotosProducto
-            $file->move($dest, $filename);
-
-            // guarda URL pública en la columna correcta
-            $data['fotoProducto'] = '/img/FotosProducto/' . $filename;
+            $data['fotoProducto'] = $this->handleImageUpload($request, 'foto', 'img/FotosProducto');
         }
+
+        // Fechas "legacy" si las usas
+        $data['fechaCreacion']      = now()->toDateString();
+        $data['fechaActualizacion'] = now()->toDateString();
 
         Producto::create($data);
 
@@ -120,7 +122,7 @@ class ProductoController extends Controller
     }
 
     /**
-     * Mostrar los detalles de un producto.
+     * Ver detalle.
      */
     public function show(Producto $producto): View
     {
@@ -128,7 +130,7 @@ class ProductoController extends Controller
     }
 
     /**
-     * Formulario para editar un producto existente.
+     * Formulario de edición.
      */
     public function edit(Producto $producto): View
     {
@@ -136,86 +138,158 @@ class ProductoController extends Controller
     }
 
     /**
-     * Actualizar la información de un producto.
+     * Actualizar producto.
+     * Reemplaza PDFs/imagen si llegan; conserva rutas si no.
      */
     public function update(ProductoRequest $request, Producto $producto): RedirectResponse
     {
         $data = $request->validated();
-        $data['modificadoPor'] = Auth::user()->name ?? 'Administrador';
+        $data['modificadoPor']      = Auth::user()->name ?? 'Administrador';
+        $data['fechaActualizacion'] = now()->toDateString();
 
-        // Acepta <input name="foto"> o <input name="fotoProducto">
-        $file = $request->file('foto') ?? $request->file('fotoProducto');
+        // PDFs: si viene archivo nuevo, sube y borra anterior local (si fue nuestro)
+        $newFicha = $this->handlePdfUpload(
+            $request,
+            'fichaTecnica_file',
+            'fichasTecnicas',
+            keepIfEmpty: $producto->fichaTecnica
+        );
 
-        // Actualiza primero los campos normales
-        $producto->fill($data);
-
-        if ($file && $file->isValid()) {
-            $ext      = strtolower($file->getClientOriginalExtension() ?: 'png');
-            $baseName = Str::slug($data['nombre'] ?? $producto->nombre ?? pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME));
-            $filename = $baseName . '-' . time() . '.' . $ext;
-
-            $dest = public_path('img/FotosProducto');
-            if (!is_dir($dest)) { @mkdir($dest, 0775, true); }
-            $file->move($dest, $filename);
-
-            // Borra foto anterior (si estaba en el mismo directorio)
-            if (!empty($producto->fotoProducto)) {
-                $old = public_path(ltrim($producto->fotoProducto, '/'));
-                if (str_starts_with($producto->fotoProducto, '/img/FotosProducto/') && file_exists($old)) {
-                    @unlink($old);
-                }
-            }
-
-            $newPath = '/FotosProducto/' . $filename;
-
-            // 1) Fuerza el UPDATE directo en BD (por si $fillable u otros bloquean)
-            DB::table('productos')
-                ->where('id', $producto->id)
-                ->update([
-                    'fotoProducto' => $newPath,
-                    'updated_at'   => now(),
-                ]);
-
-            // 2) Refresca el valor en el modelo para que la vista lo traiga correcto
-            $producto->setAttribute('fotoProducto', $newPath);
+        if ($newFicha !== $producto->fichaTecnica) {
+            $this->deletePublicFileIfLocal($producto->fichaTecnica, ['fichasTecnicas']);
+            $data['fichaTecnica'] = $newFicha;
         }
 
-        // Guarda el resto de cambios del producto
-        $producto->save();
+        $newHoja = $this->handlePdfUpload(
+            $request,
+            'hojaSeguridad_file',
+            'hojasSeguridad',
+            keepIfEmpty: $producto->hojaSeguridad
+        );
+
+        if ($newHoja !== $producto->hojaSeguridad) {
+            $this->deletePublicFileIfLocal($producto->hojaSeguridad, ['hojasSeguridad']);
+            $data['hojaSeguridad'] = $newHoja;
+        }
+
+        // Imagen (opcional): reemplaza y borra la anterior si era local en nuestro folder
+        if ($request->hasFile('foto')) {
+            $newFoto = $this->handleImageUpload($request, 'foto', 'img/FotosProducto');
+            if (!empty($producto->fotoProducto) && $newFoto !== $producto->fotoProducto) {
+                $this->deletePublicFileIfLocal($producto->fotoProducto, ['img/FotosProducto']);
+            }
+            $data['fotoProducto'] = $newFoto;
+        }
+
+        $producto->update($data);
 
         return Redirect::route('producto.index')
             ->with('success', 'Producto actualizado correctamente.');
     }
 
     /**
-     * Eliminar un producto.
+     * Eliminar producto (y opcionalmente sus archivos locales).
      */
     public function destroy(Producto $producto): RedirectResponse
     {
+        // Limpieza opcional: elimina archivos si están en nuestros folders locales
+        $this->deletePublicFileIfLocal($producto->fichaTecnica, ['fichasTecnicas']);
+        $this->deletePublicFileIfLocal($producto->hojaSeguridad, ['hojasSeguridad']);
+        $this->deletePublicFileIfLocal($producto->fotoProducto, ['img/FotosProducto']);
+
         $producto->delete();
 
         return Redirect::route('producto.index')
             ->with('success', 'Producto eliminado correctamente.');
     }
 
+    /**
+     * Búsqueda para reemplazar grid por AJAX.
+     */
     public function buscar(Request $request)
     {
         $q = trim((string) $request->get('q', ''));
 
-        $query = \App\Models\Producto::query();
-
+        $query = Producto::query();
         if ($q !== '') {
             $query->where('nombre', 'like', "%{$q}%");
         }
 
-        // Trae todos los que machean (o limita si prefieres)
         $productos = $query->orderBy('nombre', 'asc')->get();
 
-        // Devolvemos solo las cards como HTML (partial)
-        // Para evitar problemas con la caché del navegador:
         return response()
             ->view('producto.partials.cards', compact('productos'))
             ->header('Cache-Control', 'no-store, no-cache, must-revalidate, max-age=0');
     }
 
+    /**
+     * Sube un PDF al directorio público indicado y devuelve la ruta relativa guardable en BD.
+     * - $publicSubdir: ejemplo 'fichasTecnicas' o 'hojasSeguridad'
+     * - Si no hay archivo y existe keepIfEmpty, devuelve esa ruta
+     */
+    private function handlePdfUpload(Request $request, string $inputName, string $publicSubdir, ?string $keepIfEmpty = null): ?string
+    {
+        if (!$request->hasFile($inputName)) {
+            return $keepIfEmpty;
+        }
+
+        $file = $request->file($inputName);
+        if (!$file || !$file->isValid()) {
+            return $keepIfEmpty;
+        }
+
+        $base = Str::slug($request->input('nombre', 'documento'));
+        $filename = $base . '-' . now()->format('YmdHis') . '.' . strtolower($file->getClientOriginalExtension() ?: 'pdf');
+
+        $destAbs = public_path($publicSubdir);
+        if (!is_dir($destAbs)) {
+            @mkdir($destAbs, 0755, true);
+        }
+
+        $file->move($destAbs, $filename);
+
+        // Ruta relativa (sin slash inicial) para usar con asset()
+        return $publicSubdir . '/' . $filename;
+    }
+
+    /**
+     * Sube imagen a /public/{publicSubdir} y devuelve ruta relativa (sin slash inicial).
+     * - $publicSubdir: ejemplo 'img/FotosProducto'
+     */
+    private function handleImageUpload(Request $request, string $inputName, string $publicSubdir): string
+    {
+        $img = $request->file($inputName);
+        $base = Str::slug($request->input('nombre', 'producto'));
+        $filename = $base . '-' . now()->format('YmdHis') . '.' . strtolower($img->getClientOriginalExtension() ?: 'png');
+
+        $destAbs = public_path($publicSubdir);
+        if (!is_dir($destAbs)) {
+            @mkdir($destAbs, 0755, true);
+        }
+
+        $img->move($destAbs, $filename);
+
+        return $publicSubdir . '/' . $filename;
+    }
+
+    /**
+     * Borra un archivo del disco público si su ruta está dentro de alguno de los prefijos permitidos.
+     * - $relativePath: ej. 'fichasTecnicas/abc.pdf' o 'img/FotosProducto/xyz.png'
+     * - $allowedPrefixes: ej. ['fichasTecnicas','hojasSeguridad','img/FotosProducto']
+     */
+    private function deletePublicFileIfLocal(?string $relativePath, array $allowedPrefixes = []): void
+    {
+        if (empty($relativePath)) return;
+
+        $clean = ltrim($relativePath, '/');
+        foreach ($allowedPrefixes as $prefix) {
+            if (Str::startsWith($clean, trim($prefix, '/').'/')) {
+                $abs = public_path($clean);
+                if (is_file($abs) && file_exists($abs)) {
+                    @unlink($abs);
+                }
+                break;
+            }
+        }
+    }
 }
