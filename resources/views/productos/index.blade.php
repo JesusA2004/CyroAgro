@@ -84,28 +84,34 @@
           $listaControl = $toList($p->controla);
           $listaCultivo = $toList($p->usoRecomendado);
 
-          // JSON para el modal
+          // JSON para el modal (usamos tal cual lo de BD)
           $json = [
-            'id'            => $p->id,
-            'nombre'        => $p->nombre,
-            'segmento'      => $p->segmento,
-            'categoria'     => $p->categoria,
-            'registro'      => $p->registro,
-            'contenido'     => $p->contenido,
-            'usoRecomendado'=> $p->usoRecomendado,
-            'dosisSugerida' => $p->dosisSugerida,
-            'intervaloAplicacion' => $p->intervaloAplicacion,
-            'controla'      => $p->controla,
-            'fichaTecnica'  => $p->fichaTecnica,
-            'hojaSeguridad' => $p->hojaSeguridad,
-            'fotoProducto'  => $p->fotoProducto,   // ← usamos solo BD: fotoProducto
-            'presentacion'  => $p->presentacion,
-            'FotoCatalogo'  => $p->FotoCatalogo,
+            'id'                 => $p->id,
+            'nombre'             => $p->nombre,
+            'segmento'           => $p->segmento,
+            'categoria'          => $p->categoria,
+            'registro'           => $p->registro,
+            'contenido'          => $p->contenido,
+            'usoRecomendado'     => $p->usoRecomendado,
+            'dosisSugerida'      => $p->dosisSugerida,
+            'intervaloAplicacion'=> $p->intervaloAplicacion,
+            'controla'           => $p->controla,
+            'fichaTecnica'       => $p->fichaTecnica,   // ← rutas PDF desde BD
+            'hojaSeguridad'      => $p->hojaSeguridad,  // ← rutas PDF desde BD
+            'fotoProducto'       => $p->fotoProducto,
+            'presentacion'       => $p->presentacion,
+            'FotoCatalogo'       => $p->FotoCatalogo,
+            'updated_at'         => optional($p->updated_at)->timestamp,
           ];
 
-          // Ruta de imagen (solo fotoProducto)
-          $imgBd  = $p->fotoProducto;
-          $srcRel = $imgBd ? 'img/' . ltrim($imgBd, '/') : 'img/FotosProducto/default.png';
+          // Ruta de imagen
+          // Si en la BD tienes solo el nombre de archivo, aquí le anteponemos "/img/"
+          $imgBd = $p->fotoProducto;
+          if ($imgBd) {
+              $srcRel = 'img/' . ltrim($imgBd, '/'); // fuerza prefijo "img/"
+          } else {
+              $srcRel = 'img/FotosProducto/default.png';
+          }
         @endphp
 
         <div class="col-12 col-sm-6 col-lg-4 col-xl-3 col-xxl-2 p-card-wrap"
@@ -206,14 +212,14 @@ window.assetRoot = "{{ asset('') }}";
               </div>
             </div>
 
-            {{-- Botones temporalmente deshabilitados --}}
+            {{-- Botones PDF desde BD --}}
             <div class="col-12 d-flex gap-2 flex-wrap">
-              <button id="d-ficha" type="button" class="btn btn-success" disabled>
-                <i class="far fa-file-alt me-2"></i> Ficha técnica (en mantenimiento)
-              </button>
-              <button id="d-hoja" type="button" class="btn btn-outline-success" disabled>
-                <i class="fas fa-lock me-2"></i> Hoja de seguridad (en mantenimiento)
-              </button>
+              <a id="d-ficha" class="btn btn-success d-none" target="_blank" rel="noopener">
+                <i class="far fa-file-pdf me-2"></i> Ficha técnica (PDF)
+              </a>
+              <a id="d-hoja" class="btn btn-outline-success d-none" target="_blank" rel="noopener">
+                <i class="far fa-file-pdf me-2"></i> Hoja de seguridad (PDF)
+              </a>
             </div>
           </div>
         </section>
@@ -299,10 +305,22 @@ document.addEventListener('DOMContentLoaded', () => {
     .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
     .replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
 
+  function isAbsUrl(p){ return /^https?:\/\//i.test(p || ''); }
+
   function normalizeImgPath(p){
     if(!p) return null;
-    p = p.replace(/^\/+/, '');
-    return p.replace(/^Fotos(Productos?|Catalogo)\//i, 'img/FotosProducto/');
+    if (isAbsUrl(p)) return p;                  // si ya es URL completa
+    p = p.replace(/^\/+/, '');                  // quita leading /
+    p = p.replace(/^public\//i, '');            // quita public/
+    return p;                                   // relativo a /public
+  }
+
+  function normalizePdfPath(p){
+    if(!p) return null;
+    if (isAbsUrl(p)) return p;                  // URL absoluta (S3, CDN, etc.)
+    p = p.replace(/^\/+/, '');                  // quita leading /
+    p = p.replace(/^public\//i, '');            // quita public/
+    return p;                                   // relativo usable por asset()
   }
 
   const assetRoot = (window.assetRoot || '/').replace(/\/?$/, '/');
@@ -429,7 +447,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Cierre (también en fallback)
+  // Cierre (fallback también)
   modalEl.querySelectorAll('[data-bs-dismiss="modal"]').forEach(btn => {
     btn.addEventListener('click', ev => {
       if (!hasBootstrap) {
@@ -438,7 +456,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   });
-
   modalEl.addEventListener('click', (e)=>{
     if (!hasBootstrap && (e.target.matches('[data-bs-dismiss="modal"]') || e.target === modalEl)) {
       closeModal();
@@ -467,6 +484,29 @@ document.addEventListener('DOMContentLoaded', () => {
     fillList('#d-control',  (data.controla || '').split(',').map(s=>s.trim()).filter(Boolean));
     fillCultivos('#d-cultivos', (data.usoRecomendado || '').split(',').map(s=>s.trim()).filter(Boolean));
 
+    // === PDFs desde BD ===
+    const fichaEl = document.getElementById('d-ficha');
+    const hojaEl  = document.getElementById('d-hoja');
+
+    const fichaUrl = normalizePdfPath(data.fichaTecnica || '');
+    const hojaUrl  = normalizePdfPath(data.hojaSeguridad || '');
+
+    if (fichaUrl) {
+      fichaEl.href = isAbsUrl(fichaUrl) ? fichaUrl : (assetRoot + fichaUrl);
+      fichaEl.classList.remove('d-none');
+    } else {
+      fichaEl.classList.add('d-none');
+      fichaEl.removeAttribute('href');
+    }
+
+    if (hojaUrl) {
+      hojaEl.href = isAbsUrl(hojaUrl) ? hojaUrl : (assetRoot + hojaUrl);
+      hojaEl.classList.remove('d-none');
+    } else {
+      hojaEl.classList.add('d-none');
+      hojaEl.removeAttribute('href');
+    }
+
     openModal();
   });
 
@@ -474,8 +514,9 @@ document.addEventListener('DOMContentLoaded', () => {
   function setText(sel, v){ const el = document.querySelector(sel); if(el) el.textContent = v; }
   function setSrc(sel, v){
     const el = document.querySelector(sel); if(!el) return;
-    const normalized = normalizeImgPath(v);
-    el.src = assetRoot + (normalized || 'img/placeholder.png');
+    let url = normalizeImgPath(v);
+    if (!url) url = 'img/placeholder.png';
+    el.src = isAbsUrl(url) ? url : (assetRoot + url);
   }
   function fillList(sel, arr){
     const el = document.querySelector(sel); if(!el) return;
