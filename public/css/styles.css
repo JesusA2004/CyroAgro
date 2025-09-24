@@ -10879,6 +10879,7 @@ p {
   padding-top: 1rem;
   padding-bottom: 1rem;
   background-color: white;
+
 }
 #mainNav .navbar-toggler {
   padding: 0.75rem;
@@ -11472,6 +11473,67 @@ section#contact form#contactForm :-ms-input-placeholder {
   }
 }
 
-/* Mata la regla heredada que pintaba #mainNav de negro (#212529) */
-#mainNav.navbar-shrink{ background:#fff !important; } /* hard kill */
-/* …porque en tu css original existe una versión oscura. :contentReference[oaicite:2]{index=2} */
+/* ===== NAVBAR: fallback inmediato + estados ===== */
+
+/* 0) Fallback: al cargar, antes de que el JS ponga .navbar-shrink */
+#mainNav{
+  background: rgba(0,0,0,.42) !important; /* negro translúcido visible desde el primer ms */
+}
+
+/* 1) Con scroll (mantén lo que ya tienes en blanco) */
+#mainNav.navbar-shrink{
+  background:#fff !important; /* tu estado actual al scrollear */
+}
+
+/* 2) Sin scroll (reposo): franja negra translúcida + algo de grosor */
+#mainNav:not(.navbar-shrink){
+  background: rgba(0,0,0,.42) !important;
+  backdrop-filter: saturate(120%) blur(6px);
+  -webkit-backdrop-filter: saturate(120%) blur(6px);
+  border-bottom: 1px solid rgba(255,255,255,.08);
+  padding-top: .70rem;
+  padding-bottom: .70rem;
+  transition: background-color .2s ease, padding .2s ease;
+}
+
+/* Texto y hover en REPOSO (negro translúcido) */
+#mainNav:not(.navbar-shrink) .navbar-brand,
+#mainNav:not(.navbar-shrink) .nav-link{
+  color:#fff !important;
+}
+#mainNav:not(.navbar-shrink) .navbar-nav .nav-link{
+  padding: .35rem .75rem;
+  transition: color .15s ease, text-shadow .15s ease;
+}
+#mainNav:not(.navbar-shrink) .navbar-nav .nav-link:hover,
+#mainNav:not(.navbar-shrink) .navbar-nav .nav-link:focus,
+#mainNav:not(.navbar-shrink) .navbar-nav .nav-link.active{
+  color:#ffc800 !important; /* dorado */
+  text-shadow: 0 0 6px rgba(255,200,0,.55), 0 0 12px rgba(255,200,0,.35);
+}
+
+/* Toggler legible en reposo */
+#mainNav:not(.navbar-shrink) .navbar-toggler{
+  border-color: rgba(255,255,255,.35);
+}
+#mainNav:not(.navbar-shrink) .navbar-toggler-icon{
+  filter: invert(1) opacity(.9);
+}
+
+/* Hover dorado TAMBIÉN en el estado shrink (blanco), sin tocar el color base */
+#mainNav.navbar-shrink .navbar-nav .nav-link{
+  transition: color .15s ease, text-shadow .15s ease;
+}
+#mainNav.navbar-shrink .navbar-nav .nav-link:hover,
+#mainNav.navbar-shrink .navbar-nav .nav-link:focus,
+#mainNav.navbar-shrink .navbar-nav .nav-link.active{
+  color:#ffc800 !important;
+  text-shadow: 0 0 6px rgba(255,200,0,.40), 0 0 10px rgba(255,200,0,.25);
+}
+
+/* Refuerzo en desktop (algunos temas lo vuelven transparente en XL) */
+@media (min-width: 992px){
+  #mainNav:not(.navbar-shrink){
+    background: rgba(0,0,0,.42) !important;
+  }
+}

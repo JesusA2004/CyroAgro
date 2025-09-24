@@ -3,18 +3,18 @@
   --brand:#198754; --brand-700:#145c32; --ink:#0f172a; --muted:#6b7280; --card:#fff;
   --nav-h:72px; --nav-h-sm:64px; --nav-h-open:112px;
 
-  /* Alturas del hero */
-  --hero-height: clamp(560px, 78vh, 940px);        /* desktop */
-  --hero-height-sm: clamp(460px, 64vh, 820px);     /* móvil/tablet → muestra un poco más de imagen */
+  /* Alturas del hero (fallback si quieres limitar) */
+  --hero-height: clamp(560px, 78vh, 940px);
+  --hero-height-sm: clamp(460px, 64vh, 820px);
 
-  /* Tamaños botellas (MEDIANAS) */
-  --bottle-height-lg: clamp(210px, 22vh, 300px);
-  --bottle-height-sm: clamp(180px, 20vh, 240px);
+  /* Proporción real del banner (ajusta si no es 2048x738) */
+  --hero-aspect-w: 2048;
+  --hero-aspect-h: 738;
 
-  /* Posición vertical de las botellas (centro del hero) */
-  --bottles-top: 50%;
+  /* Tamaños botellas — base (móvil OK) */
+  --bottle-height-lg: clamp(72px, 9vmin, 140px);
+  --bottle-height-sm: clamp(60px, 12vmin, 110px);
 
-  /* Zoom suave para ultra-wide (no recorta base gracias al transform-origin) */
   --hero-zoom-lg: 1.02;
 }
 
@@ -31,7 +31,7 @@ img{max-width:100%;height:auto;}
 .reveal.in-view{opacity:1;transform:none;}
 
 /* =========================================================
-   HERO (sin franjas, imagen anclada abajo)
+   HERO (imagen COMPLETA, sin recortes)
 ========================================================= */
 .hero{
   position: relative;
@@ -41,11 +41,9 @@ img{max-width:100%;height:auto;}
   isolation: isolate;
   background: transparent;
 }
-/* Desktop: detrás del navbar transparente */
 @media (min-width: 992px){
   .hero{ margin-top: calc(-1 * var(--nav-h)); }
 }
-/* Móvil/tablet: bajo el navbar blanco (se ve bien la imagen) */
 @media (max-width: 991.98px){
   .hero{ margin-top: var(--nav-h-sm); }
 }
@@ -53,94 +51,81 @@ img{max-width:100%;height:auto;}
 .hero .hero-media{
   position: relative;
   width: 100%;
-  height: var(--hero-height);
-  overflow: hidden;   /* si recorta, será arriba/lateral; la base queda visible */
+  aspect-ratio: var(--hero-aspect-w) / var(--hero-aspect-h);
   line-height: 0;
 }
 @media (max-width: 991.98px){
-  .hero .hero-media{ height: var(--hero-height-sm); }
+  .hero .hero-media{ aspect-ratio: auto; }
 }
 
-/* Imagen del hero: llena el alto, ANCLADA y ESCALADA desde la base */
 .hero .hero-bg{
-  position: absolute;
-  left: 50%;
-  bottom: 0;                                 /* ancla la base */
-  transform: translateX(-50%);
-  transform-origin: 50% 100%;                /* 👈 escala desde la base (no la corta) */
-  height: 100%;
-  width: auto;
-  min-width: 100%;                           /* evita bandas laterales en panorámicas */
-  max-width: none;
-  object-fit: cover;                         /* cambia a 'contain' si no quieres recorte en absoluto */
-  object-position: center bottom;
+  position: relative;
   display: block;
-  background: transparent;                   /* sin borde/blanco */
-}
-
-/* Ultra-wide: zoom suave, sin cortar base */
-@media (min-width: 1400px){
-  .hero .hero-bg{ transform: translateX(-50%) scale(var(--hero-zoom-lg)); }
+  width: 100%;
+  height: auto;
+  object-fit: contain;          /* imagen completa siempre */
+  object-position: center top;
+  background: transparent;
 }
 
 /* =========================================================
-   Botellas (centradas en el hero, tamaño mediano)
+   Botellas — fijas en esquina inferior derecha (sin animación)
 ========================================================= */
 .bottles-strip{
   position: absolute;
-  inset-inline: 0;
-  bottom: auto !important;
-  top: var(--bottles-top) !important;      /* centro del hero */
-  transform: translateY(-50%) !important;  /* centrado exacto */
+  right: clamp(10px, 3vw, 36px);
+  bottom: calc(env(safe-area-inset-bottom, 0px) + clamp(8px, 2vw, 22px));
+  left: auto; top: auto;
   z-index: 3;
-  pointer-events: none;
+  pointer-events: none;          /* no bloquea el hero */
 }
 .bottles-viewport{
   position: relative;
-  width: 100%;
-  overflow: visible;    /* sombras sin recorte */
-  padding-inline: 8px;
+  width: min(42vw, 520px);       /* área que escala con viewport */
+  pointer-events: auto;          /* enlaces clicables */
 }
 .bottles-row{
   display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: clamp(40px, 6vw, 72px);
-  width: max-content;
-  will-change: transform;
-  animation: slideLoop var(--dur, 22s) linear infinite;
-  animation-play-state: running;
-  pointer-events: none;
+  flex-wrap: wrap;               /* si llegan 3-4, que hagan segunda fila */
+  align-items: flex-end;
+  justify-content: flex-end;     /* pegadas a la derecha */
+  gap: clamp(10px, 2.2vw, 18px);
 }
-.bottles-strip:hover .bottles-row{ animation-play-state: paused; }
-
-@keyframes slideLoop{
-  0%   { transform: translateX(var(--start, 100vw)); }
-  100% { transform: translateX(var(--end, -140px));  }
-}
-
-.bottle-link{ display:block; flex:0 0 auto; text-decoration:none; pointer-events:auto; }
+.bottle-link{ display:block; flex:0 0 auto; text-decoration:none; }
 .bottle-img{
   display:block;
-  height: var(--bottle-height-lg) !important;
-  max-height: none !important;
-  width: auto !important;
-  max-width: none !important;
+  height: var(--bottle-height-lg);
+  width: auto;
   object-fit: contain;
-  filter: drop-shadow(0 20px 44px rgba(0,0,0,.32));
-  transition: transform .25s ease, filter .25s ease;
-  will-change: transform;
+  filter: drop-shadow(0 16px 36px rgba(0,0,0,.24));
 }
+
+/* ===== Móvil (como ya te gusta) ===== */
 @media (max-width: 991.98px){
-  .bottle-img{ height: var(--bottle-height-sm) !important; }
+  .bottle-img{ height: var(--bottle-height-sm); }  /* mantiene tamaño phone */
+  .bottles-viewport{ width: min(64vw, 420px); }
 }
-.bottle-link:hover .bottle-img{
-  transform: translateY(-6px) scale(1.08);
-  filter: drop-shadow(0 28px 52px rgba(0,0,0,.36));
+
+/* ===== Escalado progresivo SOLO en pantallas grandes ===== */
+@media (min-width: 992px){
+  :root{ --bottle-height-lg: clamp(100px, 10vmin, 180px); }
+  .bottles-viewport{ width: min(48vw, 600px); }
+}
+@media (min-width: 1200px){
+  :root{ --bottle-height-lg: clamp(120px, 11vmin, 210px); }
+  .bottles-viewport{ width: min(46vw, 660px); }
+}
+@media (min-width: 1400px){
+  :root{ --bottle-height-lg: clamp(140px, 12vmin, 240px); }
+  .bottles-viewport{ width: min(44vw, 720px); }
+}
+@media (min-width: 1600px){
+  :root{ --bottle-height-lg: clamp(160px, 13vmin, 270px); }
+  .bottles-viewport{ width: min(42vw, 780px); }
 }
 
 /* =========================================================
-   Rail genérico (si lo usas)
+   Rail genérico
 ========================================================= */
 .rail-track{
   display:grid; grid-auto-flow:column; grid-auto-columns:85%;
@@ -150,13 +135,13 @@ img{max-width:100%;height:auto;}
 @media (min-width:576px){ .rail-track{grid-auto-columns:66%;} }
 @media (min-width:992px){ .rail-track{grid-auto-columns:100%;} }
 .rail-track::-webkit-scrollbar{height:8px;}
-.rail-track::-webkit-scrollbar-thumb{background:#ffffff2b;border-radius:8px;}
+.rail-track::-webkit-scrollbar-thumb{border-radius:8px;}
 
 /* =========================================================
    Cards / Quick-links / Stats
 ========================================================= */
 .rail-card{
-  background:#fff; color:var(--ink); border-radius:14px; overflow:hidden; text-decoration:none;
+  border-radius:14px; overflow:hidden; text-decoration:none;
   display:flex; gap:12px; align-items:center; scroll-snap-align:center;
   border:1px solid #e5e7eb; transition:transform .25s, box-shadow .25s, border-color .25s; padding:10px;
 }
@@ -187,17 +172,5 @@ img{max-width:100%;height:auto;}
    Accesibilidad
 ========================================================= */
 @media (prefers-reduced-motion:reduce){
-  .reveal, .rail-card, .feature-card, .btn-glow, .quick-link,
-  .bottles-row, .bottle-img{transition:none; animation:none;}
-}
-
-/* Defaults para que siempre se mueva aunque el JS aún no calcule nada */
-.bottles-row{
-  --start: 100vw;
-  --end: -120%;
-  --dur: 22s;
-}
-/* Si quieres ignorar el modo de “reducir movimiento” en esta única franja: */
-@media (prefers-reduced-motion: reduce){
-  .bottles-row{ animation: slideLoop var(--dur) linear infinite; } /* no la apagues */
+  .reveal{ transition: none; }
 }
