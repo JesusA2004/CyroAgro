@@ -35,7 +35,11 @@
       <h5 id="titulo-zona" class="fw-bold text-success mb-2"></h5>
       <p class="mb-1"><strong>Representante:</strong> <span id="nombre-rep"></span></p>
       <p class="mb-1"><strong>Teléfono:</strong> <span id="tel-rep"></span></p>
-      <p class="mb-0"><strong>Correo:</strong> <span id="correo-rep"></span></p>
+
+      {{-- Cambio: correo como <a> clicable (mailto) --}}
+      <p class="mb-0"><strong>Correo:</strong>
+        <a id="correo-rep" href="#" class="link-primary text-break" rel="noopener noreferrer"></a>
+      </p>
 
       <div class="text-end mt-3">
         <button id="btn-copiar" class="btn btn-sm btn-outline-primary">
@@ -85,7 +89,7 @@
   const titulo   = document.getElementById('titulo-zona');
   const nombre   = document.getElementById('nombre-rep');
   const tel      = document.getElementById('tel-rep');
-  const correo   = document.getElementById('correo-rep');
+  const correo   = document.getElementById('correo-rep'); // <a>
   const btnCopy  = document.getElementById('btn-copiar');
   const btnClose = document.getElementById('btn-cerrar');
   const mapaContainer = document.querySelector('#mapa-cyr .mapa-container');
@@ -94,36 +98,49 @@
 
   card.style.display = 'block';
 
+  // === ZONAS ===
   const zonas = {
     'Zona Noroeste': {
       estados: ['MXSON','MXSIN','MXCHH'],
-      nombre: 'Maira Olivas Olivas',
-      tel: '7772338212',
-      correo: 'maira@ultraquimia.com'
+      nombre: 'Gabriel Hernández Zazueta',
+      tel: '6161010081',
+      correo: 'gabriel.hernandez@cyr-agroquimica.com'
     },
     'Zona Bajío': {
       estados: ['MXGUA','MXQRO','MXSLP','MXMIC'],
       nombre: 'Gustavo Rico Resendiz',
       tel: '7773841658',
-      correo: 'gustavo.cyr@hotmail.com'
+      correo: 'gustavo.rico@cyr-agroquimica.com'
     },
     'Zona Centro': {
       estados: ['MXCMX','MXMOR','MXPUE','MXMEX'],
-      nombre: 'Oficina',
-      tel: '7773218657 / 7773271756',
-      correo: 'rosascordero@yahoo.com.mx'
+      nombre: 'Juan Mondragón Castillo',
+      tel: '7771682049',
+      correo: 'juan.mondragon@cyr-agroquimica.com'
     },
     'Zona Sureste': {
       estados: ['MXVER','MXCHP','MXOAX','MXTAB','MXCAM','MXYUC','MXROO'],
-      nombre: 'Mario Alejos Peraza',
-      tel: '9992400412',
-      correo: 'mariopti@hotmail.com'
+      nombre: 'Ivan Alejos Farias',
+      tel: '9991287617',
+      correo: 'ivan.alejos@cyr-agroquimica.com'
     },
-    'Zona Baja California': {
+    'Zona Pacifico': {
       estados: ['MXBCN','MXBCS'],
-      nombre: 'Gabriel Hernández',
-      tel: '6161010081',
-      correo: 'ing_gabihz@hotmail.com'
+      nombre: 'Maira Olivas Olivas',
+      tel: '7772338212',
+      correo: 'maira.olivas@cyr-agroquimica.com'
+    },
+
+    // Zona donde no hay representante
+    'Zona Oficina': {
+      estados: [
+        'MXNAY','MXJAL','MXCOL','MXDUR','MXZAC','MXAGU',
+        'MXHID','MXTLA','MXTAM','MXNLE','MXCOA','MXGRO',
+        'MXQUE'
+      ],
+      nombre: 'OFICINA CONTACTO',
+      tel: '7773218657',
+      correo: 'contacto@cyr-agroquimica.com' 
     }
   };
 
@@ -136,7 +153,11 @@
     titulo.textContent = zona;
     nombre.textContent = info.nombre;
     tel.textContent    = info.tel;
-    correo.textContent = info.correo;
+
+    // Correo clicable (mailto)
+    const email = (info.correo || '').trim();
+    correo.textContent = email;
+    correo.href = email ? ('mailto:' + email) : '#';
   }
 
   function positionNearPath(pathEl) {
@@ -177,6 +198,7 @@
     if (!pinned) card.classList.remove('show');
   }
 
+  // Wire eventos por estado
   Object.entries(zonas).forEach(([zona, info]) => {
     info.estados.forEach(id => {
       const estado = document.getElementById(id);
