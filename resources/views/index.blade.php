@@ -12,37 +12,42 @@
     @php
       use App\Models\Producto;
 
-      // === Destacados desde BD (hasta 4) ===
-      $destacados = Producto::query()
+      // === Destacados activos (EXACTAMENTE 3) ===
+      $base = Producto::query()
           ->whereHas('featured', fn($q) => $q->where('is_active', 1))
           ->with('featured:id,product_id,is_active,position,created_at')
           ->join('featured_products','featured_products.product_id','=','productos.id')
-          ->orderByRaw("CASE WHEN featured_products.position IS NULL THEN 1 ELSE 0 END, featured_products.position ASC, featured_products.created_at ASC")
-          ->select('productos.id','productos.nombre as titulo','productos.fotoProducto')
-          ->limit(4)
-          ->get()
-          ->map(function($p){
-              $rel = $p->fotoProducto ? 'img/'.ltrim($p->fotoProducto,'/') : 'img/FotosProducto/default.png';
-              return (object)['id'=>$p->id,'titulo'=>$p->titulo,'img'=>$rel];
-          });
+          ->orderByRaw("CASE WHEN featured_products.position IS NULL THEN 1 ELSE 0 END,
+                        featured_products.position ASC,
+                        featured_products.created_at ASC")
+          ->select('productos.id','productos.nombre as titulo','productos.fotoProducto');
 
-      // Fallback si hay menos de 2
-      if ($destacados->count() < 2) {
-          $faltan = 2 - $destacados->count();
-          $fallback = Producto::whereDoesntHave('featured', fn($q)=>$q->where('is_active',1))
+      $destacados = $base->limit(3)->get()->map(function($p){
+          $img = $p->fotoProducto;
+          $rel = $img ? 'img/'.ltrim($img,'/') : 'img/FotosProducto/default.png';
+          return (object)['id'=>$p->id,'titulo'=>$p->titulo,'img'=>$rel];
+      });
+
+      if ($destacados->count() < 3) {
+          $faltan = 3 - $destacados->count();
+          $idsTomados = $destacados->pluck('id')->all();
+          $fallback = Producto::whereNotIn('id',$idsTomados)
               ->orderBy('nombre')
               ->limit($faltan)
               ->get(['id','nombre as titulo','fotoProducto'])
               ->map(function($p){
-                  $rel = $p->fotoProducto ? 'img/'.ltrim($p->fotoProducto,'/') : 'img/FotosProducto/default.png';
+                  $img = $p->fotoProducto;
+                  $rel = $img ? 'img/'.ltrim($img,'/') : 'img/FotosProducto/default.png';
                   return (object)['id'=>$p->id,'titulo'=>$p->titulo,'img'=>$rel];
               });
-          $destacados = $destacados->concat($fallback);
+          $destacados = $destacados->concat($fallback)->values();
       }
+      $destacados = $destacados->take(3)->values();
     @endphp
 
-    <!-- Botellas QUIETAS en la esquina inferior-derecha del header -->
-    <div class="bottles-strip" aria-label="Productos destacados">
+    <!-- Botellas centradas BAJO el logo -->
+    <div class="bottles-strip" aria-label="Productos destacados"
+         style="left:57%; right:auto; transform:translateX(-50%);">
       <div class="bottles-viewport">
         <div class="bottles-row">
           @foreach ($destacados as $p)
@@ -126,7 +131,7 @@
 
 @push('scripts')
 <script>
-/* ===== Reveal on scroll (para el resto del index) ===== */
+/* ===== Reveal on scroll ===== */
 function revealOnScroll() {
   const reveals = document.querySelectorAll('.reveal');
   for (let i = 0; i < reveals.length; i++) {
@@ -139,7 +144,7 @@ function revealOnScroll() {
   }
 }
 
-/* ===== Tilt ligero para las feature-cards ===== */
+/* ===== Tilt ligero ===== */
 function initTiltEffect() {
   const tiltElements = document.querySelectorAll('.tilt');
   tiltElements.forEach(el => {
@@ -155,11 +160,44 @@ function initTiltEffect() {
   });
 }
 
-/* ===== DOM Ready ===== */
+/* ===== Posición y tamaño responsive de las botellas (sin añadir CSS extra) ===== */
+function positionFeaturedBottles() {
+  const strip = document.querySelector('.bottles-strip');
+  const imgs  = document.querySelectorAll('.bottle-img');
+  if (!strip) return;
+
+  const w = window.innerWidth || document.documentElement.clientWidth;
+
+  if (w >= 1200) {
+    // Pantalla grande: más a la derecha y botellas más grandes
+    strip.style.left = '67%';
+    imgs.forEach(img => { 
+      img.style.width = '120px';
+      img.style.height = 'auto';     // mantiene proporción
+      img.style.maxHeight = '160px'; // opcional: límite superior
+    });
+  } else {
+    // Pantalla pequeña/mediana
+    strip.style.left = '57%';
+    imgs.forEach(img => { 
+      img.style.width = ''; 
+      img.style.height = ''; 
+      img.style.maxHeight = ''; 
+    });
+  }
+
+  // Mantén centrado respecto al punto de anclaje
+  strip.style.right = 'auto';
+  strip.style.transform = 'translateX(-50%)';
+}
+
 document.addEventListener('DOMContentLoaded', function(){
   revealOnScroll();
   window.addEventListener('scroll', revealOnScroll);
   initTiltEffect();
+
+  positionFeaturedBottles();
+  window.addEventListener('resize', positionFeaturedBottles);
 });
 </script>
 @endpush
