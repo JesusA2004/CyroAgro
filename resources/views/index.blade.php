@@ -64,7 +64,7 @@
     </div>
   </header>
 
-  <!-- LÍNEAS DE PRODUCTO -->
+  <!-- LÍNEAS DE PRODUCTO (cada card redirige con filtro preseleccionado) -->
   <section id="lineas" class="py-6 bg-body-tertiary">
     <div class="container">
       <div class="text-center mb-4">
@@ -72,21 +72,30 @@
         <p class="text-muted reveal">Explora nuestras categorías principales</p>
       </div>
 
+      @php
+        // SOLO estas cuatro categorías, una por DIV:
+        $lineas = [
+          ['icon'=>'fa-seedling', 'title'=>'Biofungicida',   'desc'=>'Nutrición vegetal eficiente.',          'class'=>'categoria', 'value'=>'biofungicida'],
+          ['icon'=>'fa-seedling', 'title'=>'Bioestimulante', 'desc'=>'Estimula crecimiento y vigor.',         'class'=>'categoria', 'value'=>'bioestimulante'],
+          ['icon'=>'fa-flask',    'title'=>'Coadyuvante',    'desc'=>'Mejora cobertura y adherencia.',        'class'=>'categoria', 'value'=>'coadyuvante'],
+          ['icon'=>'fa-flask',    'title'=>'Aminoacidos',    'desc'=>'Mayor fijación y compatibilidad.',      'class'=>'categoria', 'value'=>'aminoacidos'],
+        ];
+      @endphp
+
       <div class="row g-4">
-        @foreach ([
-          ['icon'=>'fa-seedling','title'=>'Fertilizantes y Bioestimulantes','desc'=>'Formulaciones para nutrición eficiente y vigor vegetal.'],
-          ['icon'=>'fa-flask','title'=>'Coadyuvantes y Bioadhesivos','desc'=>'Mejoran cobertura, adherencia y compatibilidad.'],
-          ['icon'=>'fa-shield-alt','title'=>'Protección de Cultivos','desc'=>'Manejo integrado con soluciones confiables.'],
-          ['icon'=>'fa-leaf','title'=>'Orgánicos y Especialidades','desc'=>'Opciones certificables y de baja huella ambiental.'],
-        ] as $i => $card)
+        @foreach ($lineas as $i => $card)
         <div class="col-12 col-sm-6 col-lg-3">
-          <div class="feature-card h-100 p-4 reveal tilt" style="--d:{{ $i * 80 }}ms">
-            <div class="icon-wrap mb-3">
-              <i class="fas {{ $card['icon'] }} fa-2x"></i>
+          <a href="{{ route('productos.index', ['class'=>$card['class'], 'value'=>$card['value']]) }}"
+             class="text-decoration-none text-reset">
+            <div class="feature-card h-100 p-4 reveal tilt" style="--d:{{ $i * 80 }}ms">
+              <div class="icon-wrap mb-3">
+                <i class="fas {{ $card['icon'] }} fa-2x"></i>
+              </div>
+              <h3 class="h5 fw-bold mb-2">{{ $card['title'] }}</h3>
+              <p class="text-muted mb-3">{{ $card['desc'] }}</p>
+              <button type="button" class="btn btn-success">Ver productos</button>
             </div>
-            <h3 class="h5 fw-bold mb-2">{{ $card['title'] }}</h3>
-            <p class="text-muted mb-0">{{ $card['desc'] }}</p>
-          </div>
+          </a>
         </div>
         @endforeach
       </div>
@@ -109,11 +118,7 @@
           ['title'=>'Registros OMRI','icon'=>'fa-seedling'],
         ] as $i => $item)
         <div class="col-12 col-sm-6 col-lg-3">
-          <button type="button"
-                  class="quick-link reveal hover-shift as-button"
-                  style="--d:{{ $i * 80 }}ms"
-                  data-maintenance="true"
-                  aria-haspopup="dialog">
+          <button type="button" class="quick-link reveal hover-shift as-button" style="--d:{{ $i * 80 }}ms" data-maintenance="true" aria-haspopup="dialog">
             <span class="ql-icon"><i class="fas {{ $item['icon'] }}"></i></span>
             <span class="ql-text">{{ $item['title'] }}</span>
             <span class="ql-arrow"><i class="fas fa-arrow-right"></i></span>
@@ -131,27 +136,22 @@
 
 @push('scripts')
 <script>
-/* ===== Reveal on scroll ===== */
 function revealOnScroll() {
   const reveals = document.querySelectorAll('.reveal');
   for (let i = 0; i < reveals.length; i++) {
     const windowHeight = window.innerHeight;
     const elementTop = reveals[i].getBoundingClientRect().top;
     const elementVisible = 150;
-    if (elementTop < windowHeight - elementVisible) {
-      reveals[i].classList.add('in-view');
-    }
+    if (elementTop < windowHeight - elementVisible) reveals[i].classList.add('in-view');
   }
 }
-
-/* ===== Tilt ligero ===== */
 function initTiltEffect() {
   const tiltElements = document.querySelectorAll('.tilt');
   tiltElements.forEach(el => {
     el.addEventListener('mousemove', (e) => {
       const r = el.getBoundingClientRect();
-      const rotateX = ( (e.clientY - r.top) - r.height/2) / 14;
-      const rotateY = ( r.width/2 - (e.clientX - r.left)) / 14;
+      const rotateX = ((e.clientY - r.top) - r.height/2) / 14;
+      const rotateY = (r.width/2 - (e.clientX - r.left)) / 14;
       el.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
     });
     el.addEventListener('mouseleave', () => {
@@ -159,45 +159,25 @@ function initTiltEffect() {
     });
   });
 }
-
-/* ===== Posición y tamaño responsive de las botellas (sin añadir CSS extra) ===== */
 function positionFeaturedBottles() {
   const strip = document.querySelector('.bottles-strip');
   const imgs  = document.querySelectorAll('.bottle-img');
   if (!strip) return;
-
   const w = window.innerWidth || document.documentElement.clientWidth;
-
   if (w >= 1200) {
-    // Pantalla grande: más a la derecha y botellas más grandes
-    strip.style.left = '67%';
-    imgs.forEach(img => { 
-      img.style.width = '120px';
-      img.style.height = 'auto';     // mantiene proporción
-      img.style.maxHeight = '160px'; // opcional: límite superior
-    });
+    strip.style.left = '60%';
+    imgs.forEach(img => { img.style.width = '120px'; img.style.height = 'auto'; img.style.maxHeight = '160px'; });
   } else {
-    // Pantalla pequeña/mediana
     strip.style.left = '57%';
-    imgs.forEach(img => { 
-      img.style.width = ''; 
-      img.style.height = ''; 
-      img.style.maxHeight = ''; 
-    });
+    imgs.forEach(img => { img.style.width = ''; img.style.height = ''; img.style.maxHeight = ''; });
   }
-
-  // Mantén centrado respecto al punto de anclaje
   strip.style.right = 'auto';
   strip.style.transform = 'translateX(-50%)';
 }
-
 document.addEventListener('DOMContentLoaded', function(){
-  revealOnScroll();
-  window.addEventListener('scroll', revealOnScroll);
+  revealOnScroll(); window.addEventListener('scroll', revealOnScroll);
   initTiltEffect();
-
-  positionFeaturedBottles();
-  window.addEventListener('resize', positionFeaturedBottles);
+  positionFeaturedBottles(); window.addEventListener('resize', positionFeaturedBottles);
 });
 </script>
 @endpush

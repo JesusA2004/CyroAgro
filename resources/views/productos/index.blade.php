@@ -13,11 +13,13 @@
           ->values()
           ->all();
   };
+
+  // Lee query params para preselección inicial
+  $initialClass = Str::lower(request()->query('class', ''));
+  $initialValue = Str::slug(request()->query('value', ''));
 @endphp
 
-{{-- HEADER con imagen de fondo y overlay (usa los estilos de infoProductos.css) --}}
-<header id="products-header"
-        class="mb-3"
+<header id="products-header" class="mb-3"
         style="--nav-offset:72px; --header-img: url('{{ asset('img/banner/PRODUCTOS.png') }}');">
     </div>
   </div>
@@ -25,7 +27,7 @@
 
 <section class="section-products">
   <div class="container-fluid px-5">
-    {{-- ENCABEZADO / BUSCADOR + SELECTOR RÁPIDO --}}
+    {{-- Encabezado --}}
     <div class="row align-items-end mb-4">
       <div class="col-12 col-lg-6">
         <h2 class="h2 fw-bold mb-3">Productos</h2>
@@ -47,7 +49,7 @@
       </div>
     </div>
 
-    {{-- BARRA DE SEGMENTOS --}}
+    {{-- Chips de segmentos --}}
     <div class="segments-nav mb-4">
       <button class="seg-chip active" data-seg="">Todos</button>
       @foreach($segmentos as $seg)
@@ -55,7 +57,7 @@
       @endforeach
     </div>
 
-    {{-- SELECTORES --}}
+    {{-- Selectores de clasificación/valor --}}
     <div class="row g-3 mb-4 align-items-end classification-row">
       <div class="col-12 col-md-4 col-xl-3">
         <label for="class-select" class="form-label fw-bold">Clasificación</label>
@@ -76,15 +78,13 @@
 
     <div id="p-empty" class="alert alert-light border d-none">No se encontraron productos con esos filtros.</div>
 
-    {{-- GRID --}}
+    {{-- Grid --}}
     <div id="p-grid" class="row gy-4 gx-3 gx-xl-4">
       @foreach($productos as $p)
         @php
-          // Listas normalizadas
           $listaControl = $toList($p->controla);
           $listaCultivo = $toList($p->usoRecomendado);
 
-          // JSON para el modal (usamos tal cual lo de BD)
           $json = [
             'id'                 => $p->id,
             'nombre'             => $p->nombre,
@@ -96,22 +96,16 @@
             'dosisSugerida'      => $p->dosisSugerida,
             'intervaloAplicacion'=> $p->intervaloAplicacion,
             'controla'           => $p->controla,
-            'fichaTecnica'       => $p->fichaTecnica,   // ← rutas PDF desde BD
-            'hojaSeguridad'      => $p->hojaSeguridad,  // ← rutas PDF desde BD
+            'fichaTecnica'       => $p->fichaTecnica,
+            'hojaSeguridad'      => $p->hojaSeguridad,
             'fotoProducto'       => $p->fotoProducto,
             'presentacion'       => $p->presentacion,
             'FotoCatalogo'       => $p->FotoCatalogo,
             'updated_at'         => optional($p->updated_at)->timestamp,
           ];
 
-          // Ruta de imagen
-          // Si en la BD tienes solo el nombre de archivo, aquí le anteponemos "/img/"
           $imgBd = $p->fotoProducto;
-          if ($imgBd) {
-              $srcRel = 'img/' . ltrim($imgBd, '/'); // fuerza prefijo "img/"
-          } else {
-              $srcRel = 'img/FotosProducto/default.png';
-          }
+          $srcRel = $imgBd ? 'img/' . ltrim($imgBd, '/') : 'img/FotosProducto/default.png';
         @endphp
 
         <div class="col-12 col-sm-6 col-lg-4 col-xl-3 col-xxl-2 p-card-wrap"
@@ -135,7 +129,7 @@
             </div>
 
             <div class="mt-auto">
-              <button class="btn btn-success btn-lg w-100 p-view" data-id="{{ $p->id }}">
+              <button type="button" class="btn btn-success btn-lg w-100 p-view" data-id="{{ $p->id }}">
                 Ver producto
               </button>
             </div>
@@ -150,7 +144,7 @@
   </div>
 </section>
 
-{{-- Datos para filtros desde el servidor --}}
+{{-- Datos para filtros desde el servidor + filtro inicial --}}
 <script>
 window.availableFilters = {
   segmento: @json($segmentos->map(fn($s) => trim($s))->values()),
@@ -159,15 +153,14 @@ window.availableFilters = {
   cultivo: @json($cultivos->map(fn($c) => trim($c))->values()),
 };
 window.assetRoot = "{{ asset('') }}";
+window.initialFilter = { class: @json($initialClass), value: @json($initialValue) };
 </script>
 
-{{-- MODAL DETALLE --}}
+{{-- Modal --}}
 <div class="modal fade" id="pModal" tabindex="-1" aria-hidden="true">
   <div class="modal-dialog modal-fullscreen-lg-down modal-xl">
     <div class="modal-content detail-modal">
       <div class="modal-body p-0">
-
-        {{-- Encabezado del detail (sin banner, limpio) --}}
         <header class="detail-header container py-4">
           <div class="row align-items-start">
             <div class="col-12 col-lg-4 mb-3 mb-lg-0">
@@ -184,7 +177,6 @@ window.assetRoot = "{{ asset('') }}";
           </button>
         </header>
 
-        {{-- Cuerpo --}}
         <section class="detail-body container py-4 py-lg-5">
           <div class="row g-4">
             <div class="col-12 col-lg-6">
@@ -212,7 +204,6 @@ window.assetRoot = "{{ asset('') }}";
               </div>
             </div>
 
-            {{-- Botones PDF desde BD --}}
             <div class="col-12 d-flex gap-2 flex-wrap">
               <a id="d-ficha" class="btn btn-success d-none" target="_blank" rel="noopener">
                 <i class="far fa-file-pdf me-2"></i> Ficha técnica (PDF)
@@ -231,64 +222,43 @@ window.assetRoot = "{{ asset('') }}";
 @endsection
 
 @push('styles')
-{{-- Carga tu CSS con "cache-busting" para evitar caché del navegador --}}
 <link rel="stylesheet" href="{{ asset('css/infoProductos.css') }}?v={{ @filemtime(public_path('css/infoProductos.css')) }}">
 <style>
-  /* Fallback para el modal si no hay Bootstrap (no rompe si sí está) */
   .modal.vanilla-open { display:block; }
   .modal.vanilla-open .modal-dialog { transform:none !important; }
   .modal-backdrop.vanilla { position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:1040; }
 
-  /* Cabecera del modal */
-  .detail-modal .detail-header {
-    background-color: #ffffff;
-    position: relative;
-    padding: 2rem 1.5rem;
-    border-radius: 0 0 .75rem .75rem;
-  }
-  .detail-modal .detail-bottle {
-    max-width: 100%;
-    height: auto;
-    max-height: 260px;
-    object-fit: contain;
-  }
-  .detail-modal .detail-header h2 { font-size: 2.2rem; }
-  .detail-modal .tagline { font-size: 1.1rem; color: #6c757d; }
+  .detail-modal .detail-header { background:#fff; position:relative; padding:2rem 1.5rem; border-radius:0 0 .75rem .75rem; }
+  .detail-modal .detail-bottle { max-width:100%; height:auto; max-height:260px; object-fit:contain; }
+  .detail-modal .detail-header h2 { font-size:2.2rem; }
+  .detail-modal .tagline { font-size:1.1rem; color:#6c757d; }
 
-  /* Cuerpo con fondo sutil */
-  .detail-modal .detail-body {
-    background: #f8f9fb;
-    border-radius: 0 0 1rem 1rem;
-    padding: 2rem;
-  }
-  .detail-modal .detail-block {
-    background: #ffffff;
-    border-radius: .75rem;
-    padding: 1.5rem;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-  }
-  .detail-modal .detail-block h3 { font-size: 1.3rem; }
-  .detail-modal dl dt { font-weight: 600; color: #052c65; }
-  .detail-modal dl dd { font-weight: 500; color: #333; }
+  .detail-modal .detail-body { background:#f8f9fb; border-radius:0 0 1rem 1rem; padding:2rem; }
+  .detail-modal .detail-block { background:#fff; border-radius:.75rem; padding:1.5rem; box-shadow:0 4px 10px rgba(0,0,0,.05); }
+  .detail-modal .detail-block h3 { font-size:1.3rem; }
+  .detail-modal dl dt { font-weight:600; color:#052c65; }
+  .detail-modal dl dd { font-weight:500; color:#333; }
 
-  /* Listas */
-  .control-list li {
-    margin-bottom: .25rem; position: relative; padding-left: 1em;
-  }
-  .control-list li::before {
-    content: ''; position: absolute; left: 0; top: 8px; width: 6px; height: 6px;
-    background-color: #16a34a; border-radius: 50%;
-  }
-  .cultivos-list { margin: 0; padding: 0; column-count: 1; }
+  .control-list li { margin-bottom:.25rem; position:relative; padding-left:1em; }
+  .control-list li::before { content:''; position:absolute; left:0; top:8px; width:6px; height:6px; background-color:#16a34a; border-radius:50%; }
+
+  .cultivos-list { margin:0; padding:0; column-count:1; }
   @media (min-width: 768px) { .cultivos-list { column-count: 2; } }
   @media (min-width: 992px) { .cultivos-list { column-count: 3; } }
   @media (min-width: 1200px){ .cultivos-list { column-count: 4; } }
-  .cultivos-list li {
-    position: relative; padding-left: 1em; margin-bottom: .3rem; line-height: 1.4;
-  }
-  .cultivos-list li::before {
-    content: ''; position: absolute; left: 0; top: 8px; width: 6px; height: 6px;
-    background-color: #16a34a; border-radius: 50%;
+  .cultivos-list li { position:relative; padding-left:1em; margin-bottom:.3rem; line-height:1.4; }
+  .cultivos-list li::before { content:''; position:absolute; left:0; top:8px; width:6px; height:6px; background-color:#16a34a; border-radius:50%; }
+
+  /* Asegura que el botón capture todo el click */
+  .p-card { position: relative; }
+  .p-card .p-view {
+    position: relative;
+    z-index: 5;
+    pointer-events: auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
   }
 </style>
 @endpush
@@ -306,22 +276,8 @@ document.addEventListener('DOMContentLoaded', () => {
     .replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
 
   function isAbsUrl(p){ return /^https?:\/\//i.test(p || ''); }
-
-  function normalizeImgPath(p){
-    if(!p) return null;
-    if (isAbsUrl(p)) return p;                  // si ya es URL completa
-    p = p.replace(/^\/+/, '');                  // quita leading /
-    p = p.replace(/^public\//i, '');            // quita public/
-    return p;                                   // relativo a /public
-  }
-
-  function normalizePdfPath(p){
-    if(!p) return null;
-    if (isAbsUrl(p)) return p;                  // URL absoluta (S3, CDN, etc.)
-    p = p.replace(/^\/+/, '');                  // quita leading /
-    p = p.replace(/^public\//i, '');            // quita public/
-    return p;                                   // relativo usable por asset()
-  }
+  function normalizeImgPath(p){ if(!p) return null; if (isAbsUrl(p)) return p; p = p.replace(/^\/+/, ''); p = p.replace(/^public\//i, ''); return p; }
+  function normalizePdfPath(p){ if(!p) return null; if (isAbsUrl(p)) return p; p = p.replace(/^\/+/, ''); p = p.replace(/^public\//i, ''); return p; }
 
   const assetRoot = (window.assetRoot || '/').replace(/\/?$/, '/');
 
@@ -349,8 +305,10 @@ document.addEventListener('DOMContentLoaded', () => {
     if(attr && window.availableFilters && window.availableFilters[attr]){
       window.availableFilters[attr].forEach(v=>{
         const opt = document.createElement('option');
-        opt.value = slugify(v);
+        const slug = slugify(v);
+        opt.value = slug;
         opt.textContent = v;
+        opt.dataset.slug = slug;
         valueSelect.appendChild(opt);
       });
       valueSelect.disabled = false;
@@ -386,6 +344,30 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // === Filtro inicial desde ?class=&value= ===
+  (function applyInitialFilter(){
+    const init = window.initialFilter || {};
+    if (!init.class || !init.value) return;
+
+    classSelect.value = init.class;
+    classSelect.dispatchEvent(new Event('change'));
+
+    const trySelect = () => {
+      const opts = Array.from(valueSelect.options);
+      if (opts.length <= 1) { setTimeout(trySelect, 25); return; }
+      const byValue = opts.find(o => o.value === init.value);
+      const byTextSlug = opts.find(o => slugify(o.textContent) === init.value);
+      const target = byValue || byTextSlug;
+      if (target) {
+        valueSelect.value = target.value;
+        state.classAttr = init.class;
+        state.classValue = target.value;
+        applyFilters();
+      }
+    };
+    trySelect();
+  })();
+
   function applyFilters(){
     let visible = 0;
     cards.forEach(card=>{
@@ -420,123 +402,72 @@ document.addEventListener('DOMContentLoaded', () => {
   const hasBootstrap = !!(window.bootstrap && bootstrap.Modal);
   const modal = hasBootstrap ? new bootstrap.Modal(modalEl) : null;
 
-  function openModal(){
-    if (hasBootstrap) {
-      modal.show();
-    } else {
-      modalEl.classList.add('vanilla-open', 'show');
-      modalEl.style.display = 'block';
-      modalEl.removeAttribute('aria-hidden');
-      const backdrop = document.createElement('div');
-      backdrop.className = 'modal-backdrop vanilla';
-      backdrop.id = 'pModalBackdrop';
-      document.body.appendChild(backdrop);
-      document.body.style.overflow = 'hidden';
-    }
-  }
-  function closeModal(){
-    if (hasBootstrap) {
-      modal.hide();
-    } else {
-      modalEl.classList.remove('vanilla-open', 'show');
-      modalEl.style.display = 'none';
-      modalEl.setAttribute('aria-hidden','true');
-      const bd = document.getElementById('pModalBackdrop');
-      if (bd) bd.remove();
-      document.body.style.overflow = '';
-    }
-  }
+  function openModal(){ if (hasBootstrap) modal.show(); else { modalEl.classList.add('vanilla-open','show'); modalEl.style.display='block'; modalEl.removeAttribute('aria-hidden'); const b=document.createElement('div'); b.className='modal-backdrop vanilla'; b.id='pModalBackdrop'; document.body.appendChild(b); document.body.style.overflow='hidden'; } }
+  function closeModal(){ if (hasBootstrap) modal.hide(); else { modalEl.classList.remove('vanilla-open','show'); modalEl.style.display='none'; modalEl.setAttribute('aria-hidden','true'); const bd=document.getElementById('pModalBackdrop'); if(bd) bd.remove(); document.body.style.overflow=''; } }
 
-  // Cierre (fallback también)
-  modalEl.querySelectorAll('[data-bs-dismiss="modal"]').forEach(btn => {
-    btn.addEventListener('click', ev => {
-      if (!hasBootstrap) {
-        ev.preventDefault();
-        closeModal();
-      }
-    });
+  modalEl.querySelectorAll('[data-bs-dismiss="modal"]').forEach(btn=>{
+    btn.addEventListener('click', ev => { if (!hasBootstrap) { ev.preventDefault(); closeModal(); } });
   });
-  modalEl.addEventListener('click', (e)=>{
-    if (!hasBootstrap && (e.target.matches('[data-bs-dismiss="modal"]') || e.target === modalEl)) {
-      closeModal();
-    }
-  });
+  modalEl.addEventListener('click', (e)=>{ if (!hasBootstrap && (e.target.matches('[data-bs-dismiss="modal"]') || e.target === modalEl)) closeModal(); });
 
-  // Abrir modal con datos de la card
-  grid.addEventListener('click', (e)=>{
-    const btn = e.target.closest('.p-view');
-    if(!btn) return;
-    const wrap = btn.closest('.p-card-wrap');
-    if(!wrap) return;
-
+  // ==== ABRIR MODAL (listeners DIRECTOS al botón) ====
+  const openFromButton = (btn) => {
+    const wrap = btn.closest('.p-card-wrap'); if(!wrap) return;
     const data = JSON.parse(wrap.dataset.json || '{}');
 
-    // Rellenar datos
     setSrc('#d-botella', data.FotoCatalogo || data.fotoProducto || '');
     setText('#d-titulo', data.nombre || '');
     setText('#d-cat', [data.segmento, data.categoria].filter(Boolean).join(' • ') || '—');
-    setText('#d-registro',     data.registro || '—');
-    setText('#d-contenido',    data.contenido || '—');
-    setText('#d-dosis',        data.dosisSugerida || '—');
-    setText('#d-intervalo',    data.intervaloAplicacion || '—');
+    setText('#d-registro', data.registro || '—');
+    setText('#d-contenido', data.contenido || '—');
+    setText('#d-dosis', data.dosisSugerida || '—');
+    setText('#d-intervalo', data.intervaloAplicacion || '—');
     setText('#d-presentacion', data.presentacion || '—');
 
     fillList('#d-control',  (data.controla || '').split(',').map(s=>s.trim()).filter(Boolean));
     fillCultivos('#d-cultivos', (data.usoRecomendado || '').split(',').map(s=>s.trim()).filter(Boolean));
 
-    // === PDFs desde BD ===
     const fichaEl = document.getElementById('d-ficha');
     const hojaEl  = document.getElementById('d-hoja');
-
     const fichaUrl = normalizePdfPath(data.fichaTecnica || '');
     const hojaUrl  = normalizePdfPath(data.hojaSeguridad || '');
 
-    if (fichaUrl) {
-      fichaEl.href = isAbsUrl(fichaUrl) ? fichaUrl : (assetRoot + fichaUrl);
-      fichaEl.classList.remove('d-none');
-    } else {
-      fichaEl.classList.add('d-none');
-      fichaEl.removeAttribute('href');
-    }
+    if (fichaUrl) { fichaEl.href = isAbsUrl(fichaUrl) ? fichaUrl : (assetRoot + fichaUrl); fichaEl.classList.remove('d-none'); }
+    else { fichaEl.classList.add('d-none'); fichaEl.removeAttribute('href'); }
 
-    if (hojaUrl) {
-      hojaEl.href = isAbsUrl(hojaUrl) ? hojaUrl : (assetRoot + hojaUrl);
-      hojaEl.classList.remove('d-none');
-    } else {
-      hojaEl.classList.add('d-none');
-      hojaEl.removeAttribute('href');
-    }
+    if (hojaUrl) { hojaEl.href = isAbsUrl(hojaUrl) ? hojaUrl : (assetRoot + hojaUrl); hojaEl.classList.remove('d-none'); }
+    else { hojaEl.classList.add('d-none'); hojaEl.removeAttribute('href'); }
 
     openModal();
+  };
+
+  // 1) Directo en cada botón (click + teclado)
+  document.querySelectorAll('.p-view').forEach(btn=>{
+    btn.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); openFromButton(btn); });
+    btn.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openFromButton(btn); }
+    });
+  });
+
+  // 2) También dejamos la delegación como respaldo
+  grid.addEventListener('click', (e)=>{
+    const btn = e.target.closest('.p-view'); if(!btn) return;
+    e.preventDefault(); e.stopPropagation();
+    openFromButton(btn);
   });
 
   // Helpers
   function setText(sel, v){ const el = document.querySelector(sel); if(el) el.textContent = v; }
-  function setSrc(sel, v){
-    const el = document.querySelector(sel); if(!el) return;
-    let url = normalizeImgPath(v);
-    if (!url) url = 'img/placeholder.png';
+  function setSrc(sel, v){ const el = document.querySelector(sel); if(!el) return;
+    let url = normalizeImgPath(v); if (!url) url = 'img/placeholder.png';
     el.src = isAbsUrl(url) ? url : (assetRoot + url);
   }
-  function fillList(sel, arr){
-    const el = document.querySelector(sel); if(!el) return;
-    el.innerHTML = '';
-    (arr || []).forEach(t=>{
-      const li = document.createElement('li');
-      li.textContent = t;
-      el.appendChild(li);
-    });
+  function fillList(sel, arr){ const el = document.querySelector(sel); if(!el) return;
+    el.innerHTML = ''; (arr || []).forEach(t=>{ const li = document.createElement('li'); li.textContent = t; el.appendChild(li); });
   }
-  function fillCultivos(sel, arr){
-    const el = document.querySelector(sel); if(!el) return;
-    el.innerHTML = '';
-    (arr || []).forEach(t=>{
-      const li = document.createElement('li');
-      li.textContent = t;
-      el.appendChild(li);
-    });
+  function fillCultivos(sel, arr){ const el = document.querySelector(sel); if(!el) return;
+    el.innerHTML = ''; (arr || []).forEach(t=>{ const li = document.createElement('li'); li.textContent = t; el.appendChild(li); });
   }
-
 });
 </script>
 @endpush
