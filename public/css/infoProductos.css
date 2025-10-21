@@ -9,118 +9,57 @@
   --card:#fff;
   --bd:#e5e7eb;
 
-  /* Header (puedes cambiar la imagen aquí) */
+  /* Header (imagen) */
   --header-img: url('../img/banner/PRODUCTOS.png');
   --header-h-desktop: clamp(380px, 48vw, 640px);
   --header-h-mobile:  clamp(280px, 55vw, 460px);
 
-  /* Altura de navbar fija (si aplica). Úsala como padding-top. */
   --nav-offset: 0px;
-
-  /* Motion */
   --elev: 0 10px 24px rgba(0,0,0,.08);
   --elev-lg: 0 18px 40px rgba(0,0,0,.12);
   --trs: .24s cubic-bezier(.2,.8,.2,1);
 
-  /* Relación de aspecto de tu imagen (alto/ancho) */
   --header-ratio: 0.357;
 }
 
 /* =========================================================
-   HEADER DE SECCIÓN — #products-header
+   HEADER — SIN OVERLAY OSCURO
 ========================================================= */
 #products-header{
   position: relative;
   height: var(--header-h-desktop);
   color:#fff;
-  overflow: clip;
   background-image: var(--header-img);
   background-position: bottom center;
   background-repeat: no-repeat;
   background-size: cover;
-  isolation:isolate;
   padding-top: var(--nav-offset);
+  overflow: clip;
 }
-
-/* Overlay gradiente + “breathing” sutil */
-#products-header::before{
-  content:"";
-  position:absolute; inset:0;
-  mix-blend-mode: multiply;
-  z-index:1;
-  animation: hdrBreath 6s ease-in-out infinite;
-}
-
-/* Textura/grain sutil */
-#products-header::after{
-  content:"";
-  position:absolute; inset:-2px;
-  background-size:160px 160px;
-  opacity:.6;
-  z-index:2;
-  pointer-events:none;
-  animation: grainMove 10s linear infinite;
-}
-
-/* Contenido */
-#products-header .ph-inner{ position:relative; z-index:3; animation: fadeInTop .9s ease both; }
-#products-header .hdr-title{ font-weight:900; letter-spacing:.3px; transform: translateZ(0); }
-#products-header .hdr-sub{ color:#e9ecef; text-shadow: 0 2px 12px rgba(0,0,0,.35); }
-#products-header .divider{ width:72px; height:4px; background:var(--brand); border-radius:2px; animation:growLine .9s ease .1s both; }
+#products-header::before,
+#products-header::after{ content:""; position:absolute; inset:0; background:none !important; opacity:0 !important; }
 
 /* =========================================================
    PARALLAX Y RESPONSIVE
 ========================================================= */
-@media (min-width: 992px){
-  #products-header{ background-attachment: fixed; }
-}
-
-/* Móvil: siempre mostrar la imagen completa */
+@media (min-width: 992px){ #products-header{ background-attachment: scroll; } }
 @media (max-width: 992px){
-  #products-header{
-    height: var(--header-h-mobile);
-    background-position: center center;
-    background-size: contain;
-  }
+  #products-header{ height: var(--header-h-mobile); background-position: center center; background-size: contain; }
 }
-
-/* RANGO INTERMEDIO (media pantalla: 993px – 1399px) */
-@media (min-width: 993px) and (max-width: 1399px){
-  #products-header{
-    height: calc(100vw * var(--header-ratio)); /* respeta proporción */
-    background-size: contain;                  /* evita recorte */
-    background-position: center bottom;
-    background-attachment: scroll;
-  }
-}
-
-/* Fullscreen y ultra-wide (ya funcionaba bien, lo dejamos igual) */
-@media (min-width: 1400px) and (min-aspect-ratio: 16/9){
-  #products-header{
-    height: calc(100vw * var(--header-ratio));
-    background-size: contain;
-    background-position: center bottom;
-    background-attachment: scroll;
-  }
-}
-@media (min-width: 1920px) and (min-aspect-ratio: 21/9){
-  #products-header{
-    height: calc(100vw * var(--header-ratio));
-    background-size: contain;
-    background-position: center bottom;
-    background-attachment: scroll;
-  }
+@media (min-width: 993px) and (max-width: 1399px),
+       (min-width: 1400px) and (min-aspect-ratio: 16/9){
+  #products-header{ height: calc(100vw * var(--header-ratio)); background-size: contain; background-position: center bottom; }
 }
 
 /* =========================================================
-   LISTADO DE PRODUCTOS (chips, filtros, cards, modal)
+   LISTADO (chips, filtros, cards, modal)
 ========================================================= */
-.section-products{ padding:2rem 0 3.2rem; margin-top:0.5rem; }
+.section-products{ padding:2rem 0 3rem; margin-top:.5rem; }
 
 .segments-nav{ display:flex; flex-wrap:wrap; gap:.6rem; overflow-x:auto; padding-bottom:.2rem; }
 .segments-nav .seg-chip{
   background:#f3f5f7; color:#334155; border-radius:999px;
-  padding:.7rem 1.15rem; border:1px solid #e2e8f0;
+  padding:.65rem 1.05rem; border:1px solid #e2e8f0;
   font-weight:700; cursor:pointer; white-space:nowrap;
   transition: background var(--trs), box-shadow var(--trs), transform var(--trs), border-color var(--trs);
   box-shadow: 0 4px 10px rgba(0,0,0,.03);
@@ -130,16 +69,17 @@
 
 .classification-row .form-label{ font-weight:700; color:var(--ink); margin-bottom:.35rem; }
 .classification-row .form-select{
-  border-radius:999px; padding:.6rem 2.4rem .6rem .9rem; border:1px solid #dfe5ec;
+  border-radius:999px; padding:.6rem 2.2rem .6rem .9rem; border:1px solid #dfe5ec;
   transition:border var(--trs), box-shadow var(--trs);
 }
 .classification-row .form-select:focus{ border-color: var(--brand); box-shadow: 0 0 0 .2rem rgba(25,135,84,.2); }
 
+/* ====================== CARD ====================== */
 .p-card{
   background:var(--card); border:1px solid var(--bd); border-radius:16px;
-  padding:1.25rem; box-shadow:0 10px 24px rgba(0,0,0,.04);
+  padding:1.1rem; box-shadow:0 10px 24px rgba(0,0,0,.04);
   transition:transform var(--trs), box-shadow var(--trs), border-color var(--trs);
-  position:relative; overflow:hidden;
+  position:relative; overflow:hidden; height:100%;
 }
 .p-card::after{
   content:""; position:absolute; inset:auto -30% -30% auto;
@@ -148,101 +88,145 @@
   filter: blur(6px); transform: translate(18px,18px) scale(.9);
   opacity:.0; transition: opacity var(--trs), transform var(--trs);
 }
-.p-card:hover{ transform:translateY(-4px); box-shadow: var(--elev-lg); border-color:#d1d5db; }
+.p-card:hover{ transform:translateY(-3px); box-shadow: var(--elev-lg); border-color:#d1d5db; }
 .p-card:hover::after{ opacity:.9; transform: translate(0,0) scale(1); }
 
-.product-title{ font-size:1.08rem; font-weight:800; color:var(--ink); }
+.product-title{ font-size:1.06rem; font-weight:800; color:var(--ink); }
 
+/* === IMAGEN DE LA CARD ===
+   No se recorta: sin clipping y con contain real */
 .p-media{
   display:flex; align-items:center; justify-content:center;
-  height:260px; padding:14px; margin-bottom:.95rem;
-  background:linear-gradient(180deg,#fafafa,#f7faf8);
-  border-radius:14px; overflow:hidden; border:1px solid #eef2f7;
+  height:200px;                 /* ↓ más compacto para reducir hueco */
+  padding:10px; margin-bottom:.8rem;
+  background:linear-gradient(180deg,#fbfbfb,#f6faf7);
+  border-radius:14px; border:1px solid #eef2f7;
+  overflow: visible;            /* ✨ evita cortar sombra/alto de la imagen */
 }
 .p-media img{
-  height:100%; width:auto; max-width:100%;
-  object-fit:contain; image-rendering:auto;
-  filter: drop-shadow(0 12px 28px rgba(0,0,0,.18));
+  max-width:100%;
+  max-height:100%;
+  width:auto; height:auto;
+  object-fit:contain;
+  image-rendering:auto;
+  filter: drop-shadow(0 10px 24px rgba(0,0,0,.16));
+  transition: transform .25s ease;
+}
+.p-card:hover .p-media img{ transform: scale(1.02); } /* sin translate para no “tocar” bordes */
+
+/* === CUERPO DE CARD (menos espacio y botón alineado) === */
+.p-body{
+  display:flex; flex-direction:column; gap:.45rem; text-align:center; height:100%;
+}
+.p-badges{ display:flex; gap:.4rem; flex-wrap:wrap; justify-content:center; min-height:1.6rem; }
+.p-badges .badge{
+  border:1px solid #e6f4ea; background:#f3fcf6; color:#14532d; font-weight:700;
+  transition: transform var(--trs), box-shadow var(--trs);
+}
+.p-badges .badge:hover{ transform: translateY(-1px); box-shadow:0 6px 14px rgba(20,83,45,.12); }
+
+.presentacion-list{
+  display:flex; flex-wrap:wrap; gap:.35rem; list-style:none; padding:0; margin:.15rem 0 .2rem 0;
+  align-items:flex-start; align-content:flex-start;
+  min-height: 1.4rem;          /* pequeño colchón para evitar brincos */
+}
+.presentacion-list .chip{
+  display:inline-block;
+  background:#fff; border:1px solid #e5e7eb; color:#334155;
+  padding:.28rem .6rem; border-radius:999px; font-weight:600; font-size:.78rem; line-height:1.1;
+  transition: background var(--trs), border-color var(--trs), transform var(--trs);
+}
+.presentacion-list .chip:hover{ background:#f8fafc; border-color:#dbe2ea; transform: translateY(-1px); }
+
+.p-actions{ margin-top:auto; }                   /* mantiene alineación de botones */
+.p-actions .btn{
+  border-radius:999px; padding:.6rem 1.05rem; font-weight:700;
+  transition: transform var(--trs), box-shadow var(--trs), background-color var(--trs);
+}
+.p-actions .btn:hover{ transform: translateY(-1px); box-shadow: 0 10px 22px rgba(25,135,84,.25); }
+
+/* ====================== MODAL ====================== */
+.detail-modal{ border:0; border-radius:0; overflow:hidden; background:#fff; }
+.detail-header{ background:#fff; }
+.detail-body{ background:#f8f9fb; }
+
+.detail-bottle{
+  max-width:400px; width:100%; height:auto; object-fit:contain;
+  filter:drop-shadow(0 18px 40px rgba(0,0,0,.2));
   transition: transform var(--trs);
 }
-.p-card:hover .p-media img{ transform: translateY(-4px) scale(1.02); }
+.detail-bottle:hover{ transform: scale(1.015); }
 
-#p-empty{ border-radius:12px; }
-.p-badges{ display:flex; gap:.4rem; flex-wrap:wrap; }
-.p-badges .badge{ border:1px solid #e6f4ea; background:#f3fcf6; color:#14532d; font-weight:700; }
-.p-actions .btn{ border-radius:999px; padding:.55rem 1.05rem; }
+/* Marca MUCHO más grande y visible */
+.brand-holder{ min-height:110px; }
+.detail-brand{
+  max-height:110px; width:auto; height:auto; object-fit:contain; display:block;
+  filter: drop-shadow(0 6px 14px rgba(0,0,0,.12));
+  transition: transform var(--trs), opacity var(--trs);
+}
+.detail-brand:hover{ transform: translateY(-2px); }
+@media (min-width: 992px){
+  .brand-holder{ min-height:160px; }
+  .detail-brand{ max-height:160px; }
+}
 
-.detail-modal{ border:0; border-radius:0; overflow:hidden; }
-.detail-hero{ min-height:340px; position:relative; }
-.detail-banner{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; filter:brightness(.75); transform:scale(1.03); }
-.detail-hero-overlay{ position:absolute; inset:0; background:linear-gradient(180deg, rgba(0,0,0,.25), rgba(0,0,0,.55)); }
-.detail-hero-content{ position:relative; z-index:2; padding:2.2rem 0; }
-.detail-bottle{ max-width:320px; width:100%; height:auto; object-fit:contain; filter:drop-shadow(0 18px 40px rgba(0,0,0,.4)); transition: transform var(--trs); }
-.detail-bottle:hover{ transform: translateY(-6px) scale(1.02); }
-.btn-close-detail{ position:absolute; top:10px; right:12px; z-index:3; border-radius:999px; box-shadow:0 8px 20px rgba(0,0,0,.25); }
+/* Backdrop CLARO (sin negro) */
+.modal-backdrop.show{ background: rgba(248, 250, 252, .9); backdrop-filter: blur(2px); }
+.modal-backdrop.vanilla{ background: rgba(248, 250, 252, .9) !important; backdrop-filter: blur(2px); }
 
-.detail-body .detail-block{ background:#fff; border:1px solid var(--bd); border-radius:16px; padding:1.25rem; box-shadow:0 10px 24px rgba(0,0,0,.05); }
-.icon-list{ list-style:none; padding:0; margin:0; columns:2; column-gap:1.5rem; }
-.icon-list li{ margin-bottom:.5rem; position:relative; padding-left:1.2rem; line-height:1.45; }
-.icon-list li::before{ content:""; position:absolute; left:0; top:.45rem; width:.55rem; height:.55rem; border-radius:50%; background:var(--brand); }
-.tags{ display:flex; flex-wrap:wrap; gap:.5rem; }
-.tags .tag{ background:#f0fdf4; color:#14532d; border:1px solid #bbf7d0; border-radius:999px; padding:.35rem .7rem; font-weight:700; font-size:.86rem; }
+.detail-body .detail-block{
+  background:#fff; border:1px solid var(--bd); border-radius:16px; padding:1.15rem 1.25rem;
+  box-shadow:0 10px 24px rgba(0,0,0,.05);
+}
+
+/* Bullet lists */
+.control-list, .cultivos-list { list-style:none; margin:0; padding-left:0; }
+.control-list li, .cultivos-list li { margin-bottom:.5rem; position:relative; padding-left:1.2rem; line-height:1.45; }
+.control-list li::before, .cultivos-list li::before { content:""; position:absolute; left:0; top:.45rem; width:.55rem; height:.55rem; border-radius:50%; background:var(--brand); }
+
+/* Columnas responsive en cultivos */
+@media (min-width: 576px) { .cultivos-list { columns: 2; } }
+@media (min-width: 992px) { .cultivos-list { columns: 3; } }
+@media (min-width:1200px){ .cultivos-list { columns: 4; } }
 
 /* =========================================================
    RESPONSIVE
 ========================================================= */
-@media (max-width: 1199.98px){
-  .p-media{ height:240px; }
-}
+@media (max-width: 1199.98px){ .p-media{ height:190px; } }
 @media (max-width: 991.98px){
-  #products-header .hdr-title{ font-size:1.65rem; }
-  #products-header .hdr-sub{ font-size:.95rem; }
-  .icon-list{ columns:1; }
-  .detail-bottle{ max-width:260px; }
-  .p-media{ height:220px; }
+  .detail-bottle{ max-width:340px; }
+  .p-media{ height:180px; }
+  .brand-holder{ min-height:120px; }
+  .detail-brand{ max-height:120px; }
 }
-@media (max-width: 575.98px){
-  .p-media{ height:200px; }
-}
+@media (max-width: 575.98px){ .p-media{ height:170px; } }
 
 /* =========================================================
-   HERO DEGRADADO (opcional)
+   ACCESIBILIDAD
 ========================================================= */
-.hero-bg-gradient{ width:100%; height:10vh; margin-bottom:1rem; }
-
-/* =========================================================
-   ANIMACIONES / KEYFRAMES
-========================================================= */
-@keyframes fadeInTop { from{opacity:0; transform:translateY(-24px)} to{opacity:1; transform:translateY(0)} }
-@keyframes growLine   { from{width:0} to{width:72px} }
-@keyframes hdrBreath  { 0%,100%{ filter:none } 50%{ filter:saturate(1.08) brightness(1.02) } }
-@keyframes grainMove  { 0%{ transform:translate3d(0,0,0) } 100%{ transform:translate3d(-160px,-160px,0) } }
-
-/* =========================================================
-   ACCESIBILIDAD / REDUCED MOTION
-========================================================= */
-@media (prefers-reduced-motion: reduce){
-  #products-header, #products-header::before, #products-header::after,
-  .p-card, .p-media img, .detail-bottle {
-    animation: none !important;
-    transition: none !important;
-  }
-  #products-header{ background-attachment: scroll; }
-}
-
-/* =========================================================
-   FOCUS VISUAL (tecla TAB)
-========================================================= */
-:focus-visible{
-  outline: 3px solid rgba(25,135,84,.65);
-  outline-offset: 2px;
-  border-radius: 8px;
-}
+:focus-visible{ outline: 3px solid rgba(25,135,84,.65); outline-offset: 2px; border-radius: 8px; }
 
 /* Ajuste del espacio bajo el header en móvil */
-@media (max-width: 992px){
-  .section-products {
-    margin-top: 0 !important;
-    padding-top: .5rem;
-  }
+@media (max-width: 992px){ .section-products { margin-top: 0 !important; padding-top: .5rem; } }
+
+/* ===== Compat que no rompe nada (puedes borrar si quieres) ===== */
+.p-card{ border-radius: 1rem; overflow:hidden; border:1px solid #eef2f4; background:#fff; transition:.15s; }
+.p-card:hover{ transform: translateY(-2px); box-shadow:0 12px 28px rgba(2,18,36,.08); }
+.p-media{ background:#fff; display:grid; place-items:center; padding:1rem; }
+.p-media img{ width:auto; height:auto; max-width:100%; max-height:180px; object-fit:contain; }
+.p-body{ padding:1rem 1rem 1.15rem; }
+
+.seg-chip{
+  border: 1px solid #d1e7dd; background:#f6fffa; color:#0f5132;
+  border-radius: 999px; padding:.5rem 1rem; font-weight:600; cursor:pointer;
+  transition: all .15s ease-in-out;
 }
+.seg-chip:hover{ background:#d1e7dd; }
+.seg-chip.active{ background:#0f5132; color:#fff; border-color:#0f5132; }
+
+.detail-modal .detail-header { background:#fff; position:relative; padding:2rem 1.5rem; border-radius:0 0 .75rem .75rem; }
+.detail-modal .detail-bottle { max-width:100%; height:auto; max-height:300px; object-fit:contain; }
+.detail-modal .detail-body { background:#f8f9fb; border-radius:0 0 1rem 1rem; padding:2rem; }
+.detail-modal .detail-block { background:#fff; border-radius:.75rem; padding:1.5rem; box-shadow:0 4px 10px rgba(0,0,0,0.05); }
+.detail-modal dl dt { font-weight:600; color:#052c65; }
+.detail-modal dl dd { font-weight:500; color:#333; }

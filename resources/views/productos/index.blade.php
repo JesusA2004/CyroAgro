@@ -23,18 +23,16 @@
   $initialValue = Str::slug(request()->query('value', ''));
 @endphp
 
-{{-- HEADER con imagen de fondo y overlay (no se mueve) --}}
+{{-- HEADER limpio, sin overlay oscuro --}}
 <header id="products-header"
         class="mb-3"
         style="--nav-offset:72px; --header-img: url('{{ asset('img/banner/PRODUCTOS.png') }}');">
-    </div>
-  </div>
 </header>
 
 <section class="section-products">
   <div class="container-fluid px-5">
 
-    {{-- ENCABEZADO / BUSCADOR + SELECTOR RÁPIDO --}}
+    {{-- BUSCADOR + SELECTOR RÁPIDO --}}
     <div class="row align-items-end mb-4 g-3">
       <div class="col-12 col-lg-7">
         <div class="input-group input-group-lg shadow-sm">
@@ -55,7 +53,7 @@
       </div>
     </div>
 
-    {{-- BARRA DE SEGMENTOS --}}
+    {{-- SEGMENTOS --}}
     <div class="segments-nav mb-4 d-flex flex-wrap gap-2">
       <button class="seg-chip active" data-seg="">Todos</button>
       @foreach($segmentos as $seg)
@@ -90,8 +88,9 @@
         @php
           $listaControl = $toList($p->controla);
           $listaCultivo = $toList($p->usoRecomendado);
+          $listaPres    = $toList($p->presentacion);
 
-          // JSON para el modal (solo fotoProducto)
+          // JSON para el modal (usar fotoProducto)
           $json = [
             'id'                 => $p->id,
             'nombre'             => $p->nombre,
@@ -105,12 +104,12 @@
             'controla'           => $p->controla,
             'fichaTecnica'       => $p->fichaTecnica,
             'hojaSeguridad'      => $p->hojaSeguridad,
-            'fotoProducto'       => $p->fotoProducto, // ***importante***
+            'fotoProducto'       => $p->fotoProducto,
             'presentacion'       => $p->presentacion,
             'updated_at'         => optional($p->updated_at)->timestamp,
           ];
 
-          // Imagen de card (sin recortes). Si en BD es "FotosProducto/..." lo prefijamos con "img/"
+          // Imagen de card
           $imgBd = $p->fotoProducto;
           $srcRel = $imgBd ? 'img/' . ltrim($imgBd, '/') : 'img/FotosProducto/default.png';
         @endphp
@@ -130,25 +129,31 @@
                    alt="Imagen de {{ $p->nombre }}" loading="lazy" decoding="async">
             </div>
 
-            <div class="p-body d-flex flex-column text-center">
-              <h3 class="product-title fw-bold mb-1 text-truncate" title="{{ $p->nombre }}">{{ $p->nombre }}</h3>
-              <div class="small text-muted mb-2">
-                {{ $p->segmento ?? '—' }} @if($p->categoria) • {{ $p->categoria }} @endif
+            {{-- IMPORTANTE: estructura preparada para que el botón quede a la misma altura --}}
+            <div class="p-body">
+              <h3 class="product-title fw-bold mb-0 text-truncate" title="{{ $p->nombre }}">{{ $p->nombre }}</h3>
+
+              {{-- Segmento / Categoría como badges --}}
+              <div class="p-badges">
+                <span class="badge rounded-pill px-3 py-2">{{ $p->segmento ?? '—' }}</span>
+                @if($p->categoria)
+                  <span class="badge rounded-pill px-3 py-2">{{ $p->categoria }}</span>
+                @endif
               </div>
 
-              <div class="d-flex justify-content-center flex-wrap gap-1 mb-3">
-                @foreach(array_slice($listaControl,0,2) as $c)
-                  <span class="chip chip-green" title="{{ $c }}">{{ Str::limit($c, 28) }}</span>
-                @endforeach
-                @foreach(array_slice($listaCultivo,0,1) as $c)
-                  <span class="chip chip-gray" title="{{ $c }}">{{ Str::limit($c, 26) }}</span>
-                @endforeach
-              </div>
+              {{-- Presentación en chips --}}
+              @if(count($listaPres))
+                <ul class="presentacion-list">
+                  @foreach($listaPres as $pp)
+                    <li class="chip" title="{{ $pp }}">{{ $pp }}</li>
+                  @endforeach
+                </ul>
+              @else
+                <div class="presentacion-list"></div>
+              @endif
 
-              <div class="mt-auto">
-                <button class="btn btn-success btn-lg w-100 p-view" data-id="{{ $p->id }}">
-                  Ver producto
-                </button>
+              <div class="p-actions">
+                <button class="btn btn-success btn-lg w-100 p-view" data-id="{{ $p->id }}">Ver producto</button>
               </div>
             </div>
           </article>
@@ -180,17 +185,22 @@ window.initialFilter = { class: @json($initialClass), value: @json($initialValue
     <div class="modal-content detail-modal">
       <div class="modal-body p-0">
 
-        <header class="detail-header container py-4">
+        <header class="detail-header container py-4 position-relative">
           <div class="row align-items-start gy-3">
             <div class="col-12 col-md-5 col-lg-4">
               <img id="d-botella" class="detail-bottle" src="" alt="">
             </div>
             <div class="col-12 col-md-7 col-lg-8">
               <h2 class="fw-bold text-primary mb-2" id="d-titulo">Título</h2>
-              <p class="tagline text-muted mb-2">Llevamos hasta ti productos de alta <span class="fw-bolder">calidad</span>.</p>
               <div class="badge bg-success-subtle text-success-emphasis fw-semibold px-3 py-2" id="d-cat">CATEGORÍA</div>
+
+              {{-- IMAGEN DE MARCA (se carga dinámicamente desde /public/img/marcas/NOMBRE EN MAYUSCULA.png) --}}
+              <div class="brand-holder mt-3">
+                <img id="d-marca" class="detail-brand d-none" alt="Marca del producto">
+              </div>
             </div>
           </div>
+
           <button type="button" class="btn btn-light btn-close-detail position-absolute top-0 end-0 m-3"
                   data-bs-dismiss="modal" aria-label="Cerrar">
             <i class="fas fa-times"></i>
@@ -207,7 +217,8 @@ window.initialFilter = { class: @json($initialClass), value: @json($initialValue
                   <dt class="col-5">Contenido</dt><dd class="col-7" id="d-contenido">—</dd>
                   <dt class="col-5">Dosis sugerida</dt><dd class="col-7" id="d-dosis">—</dd>
                   <dt class="col-5">Intervalo de aplicación</dt><dd class="col-7" id="d-intervalo">—</dd>
-                  <dt class="col-5">Presentación</dt><dd class="col-7" id="d-presentacion">—</dd>
+                  <dt class="col-5">Presentación</dt>
+                  <dd class="col-7"><ul id="d-presentacion" class="presentacion-list m-0 p-0"></ul></dd>
                 </dl>
               </div>
             </div>
@@ -242,61 +253,7 @@ window.initialFilter = { class: @json($initialClass), value: @json($initialValue
 @endsection
 
 @push('styles')
-{{-- Carga tu CSS con "cache-busting" para evitar caché del navegador --}}
 <link rel="stylesheet" href="{{ asset('css/infoProductos.css') }}?v={{ @filemtime(public_path('css/infoProductos.css')) }}">
-<style>
-  /* Fallback modal (si no hay Bootstrap) */
-  .modal.vanilla-open { display:block; }
-  .modal.vanilla-open .modal-dialog { transform:none !important; }
-  .modal-backdrop.vanilla { position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:1040; }
-
-  /* Cards */
-  .p-card{ border-radius: 1rem; overflow:hidden; border:1px solid #eef2f4; background:#fff;
-           box-shadow:0 6px 16px rgba(2,18,36,.05); transition:.15s; }
-  .p-card:hover{ transform: translateY(-2px); box-shadow:0 12px 28px rgba(2,18,36,.08); }
-  .p-media{ background:#fff; display:grid; place-items:center; padding:1rem; }
-  .p-media img{ width:auto; height:auto; max-width:100%; max-height:180px; object-fit:contain; } /* sin recorte */
-  .p-body{ padding:1rem 1rem 1.25rem; }
-
-  .chip{ display:inline-block; font-size:.75rem; padding:.25rem .5rem; border-radius:999px;
-         border:1px solid #e5e7eb; background:#f9fafb; white-space:nowrap; max-width:100%;
-         overflow:hidden; text-overflow:ellipsis; }
-  .chip-green{ border-color:#d1fae5; background:#ecfdf5; color:#065f46; }
-  .chip-gray{  border-color:#e5e7eb; background:#f3f4f6; color:#374151; }
-
-  /* Segment chips */
-  .seg-chip{
-    border: 1px solid #d1e7dd; background:#f6fffa; color:#0f5132;
-    border-radius: 999px; padding:.5rem 1rem; font-weight:600; cursor:pointer;
-    transition: all .15s ease-in-out;
-  }
-  .seg-chip:hover{ background:#d1e7dd; }
-  .seg-chip.active{ background:#0f5132; color:#fff; border-color:#0f5132; }
-
-  /* Modal */
-  .detail-modal .detail-header { background:#fff; position:relative; padding:2rem 1.5rem; border-radius:0 0 .75rem .75rem; }
-  .detail-modal .detail-bottle { max-width:100%; height:auto; max-height:280px; object-fit:contain; }
-  .detail-modal .tagline { font-size:1.1rem; color:#6c757d; }
-  .detail-modal .detail-body { background:#f8f9fb; border-radius:0 0 1rem 1rem; padding:2rem; }
-  .detail-modal .detail-block { background:#fff; border-radius:.75rem; padding:1.5rem; box-shadow:0 4px 10px rgba(0,0,0,0.05); }
-  .detail-modal dl dt { font-weight:600; color:#052c65; }
-  .detail-modal dl dd { font-weight:500; color:#333; }
-
-  /* Listas (sin doble bullet) */
-  .control-list, .cultivos-list { list-style:none; margin:0; padding-left:0; }
-  .control-list li, .cultivos-list li {
-    position: relative; padding-left: 1em; margin-bottom: .3rem; line-height: 1.45;
-  }
-  .control-list li::before, .cultivos-list li::before {
-    content: ''; position: absolute; left: 0; top: 8px; width: 6px; height: 6px;
-    background-color: #16a34a; border-radius: 50%;
-  }
-
-  /* Columnas responsive en cultivos */
-  @media (min-width: 576px) { .cultivos-list { columns: 2; } }
-  @media (min-width: 992px) { .cultivos-list { columns: 3; } }
-  @media (min-width:1200px){ .cultivos-list { columns: 4; } }
-</style>
 @endpush
 
 @push('scripts')
@@ -311,12 +268,18 @@ document.addEventListener('DOMContentLoaded', () => {
     .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
     .replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'');
 
+  const capFirst = (s) => {
+    s = (s || '').toString().trim();
+    if (!s) return s;
+    return s.charAt(0).toUpperCase() + s.slice(1);
+  };
+
   function isAbsUrl(p){ return /^https?:\/\//i.test(p || ''); }
   function normalizePath(p){
     if(!p) return null;
     if (isAbsUrl(p)) return p;
     p = p.replace(/^\/+/, '').replace(/^public\//i, '');
-    if (!/^img\//i.test(p)) p = 'img/' + p; // asegura ruta pública
+    if (!/^img\//i.test(p)) p = 'img/' + p;
     return p;
   }
   const assetRoot = (window.assetRoot || '/').replace(/\/?$/, '/');
@@ -335,6 +298,33 @@ document.addEventListener('DOMContentLoaded', () => {
   const classSelect = document.getElementById('class-select');
   const valueSelect = document.getElementById('value-select');
 
+  // Construye opciones únicas y formateadas por tipo
+  function buildOptionsFor(attr){
+    const raw = (window.availableFilters && window.availableFilters[attr]) ? [...window.availableFilters[attr]] : [];
+    const unique = new Map(); // slug => display
+
+    raw.forEach(v=>{
+      if (!v) return;
+      const base = v.toString().trim();
+      if (!base) return;
+
+      // “control”: descarta los que empiezan con "Efecto"
+      if (attr === 'control' && /^\s*efecto\b/i.test(base)) return;
+
+      const slug = slugify(base);
+      if (!slug) return;
+
+      // Mostrar con primera letra mayúscula
+      const display = capFirst(base);
+
+      if (!unique.has(slug)) unique.set(slug, display);
+    });
+
+    return Array.from(unique.entries())
+      .sort((a,b)=>a[1].localeCompare(b[1], 'es', { sensitivity:'base' }))
+      .map(([slug, display]) => ({ value: slug, label: display }));
+  }
+
   classSelect.addEventListener('change', ()=>{
     const attr = classSelect.value || '';
     state.classAttr = attr;
@@ -342,11 +332,12 @@ document.addEventListener('DOMContentLoaded', () => {
     valueSelect.innerHTML = '<option value="">Selecciona valor…</option>';
     valueSelect.disabled = true;
 
-    if(attr && window.availableFilters && window.availableFilters[attr]){
-      window.availableFilters[attr].forEach(v=>{
+    if (attr) {
+      const items = buildOptionsFor(attr);
+      items.forEach(({value,label})=>{
         const opt = document.createElement('option');
-        opt.value = slugify(v);
-        opt.textContent = v;
+        opt.value = value;
+        opt.textContent = label;
         valueSelect.appendChild(opt);
       });
       valueSelect.disabled = false;
@@ -371,7 +362,7 @@ document.addEventListener('DOMContentLoaded', () => {
     quickSelect.addEventListener('change', e=>{
       const id = e.target.value;
       if(!id) return;
-      const card = grid.querySelector(`.p-card-wrap[data-id="${id}"]`); // <-- fix del selector
+      const card = grid.querySelector(`.p-card-wrap[data-id="${id}"]`);
       if(card){
         card.scrollIntoView({behavior:'smooth', block:'center'});
         const btn = card.querySelector('.p-view');
@@ -381,7 +372,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // === Filtro inicial desde ?class=&value= ===
+  // Filtro inicial desde ?class=&value=
   (function applyInitialFilter(){
     const init = (window.initialFilter || {});
     if (!init.class || !init.value) return;
@@ -439,7 +430,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function openModal(){ hasBootstrap ? modal.show() : fallbackOpen(); }
   function closeModal(){ hasBootstrap ? modal.hide() : fallbackClose(); }
 
-  // Fallback puro si no hay Bootstrap
+  // Fallback sin Bootstrap
   function fallbackOpen(){
     modalEl.classList.add('vanilla-open','show');
     modalEl.style.display='block';
@@ -459,7 +450,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.style.overflow='';
   }
 
-  // Cerrar al pulsar la X (funciona con o sin Bootstrap)
+  // Cerrar
   modalEl.addEventListener('click', (e)=>{
     if (e.target.closest('[data-bs-dismiss="modal"]')) {
       e.preventDefault();
@@ -473,42 +464,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const splitControl = (t)=>{
     t = (t || '').trim();
     if (!t) return [];
-    if (isEfecto(t)) return [t.replace(/\s*[.;,]\s*$/,'')]; // un solo bullet
+    if (isEfecto(t)) return [t.replace(/\s*[.;,]\s*$/,'')]; // un solo bullet si es "Efecto…"
     return t.split(',').map(s=>s.trim()).filter(Boolean).map(s=>s.replace(/\s*[.;,]\s*$/,''));
   };
 
-  // Abrir modal con datos de la card
-  grid.addEventListener('click', (e)=>{
-    const btn = e.target.closest('.p-view');
-    if(!btn) return;
-    const wrap = btn.closest('.p-card-wrap'); if(!wrap) return;
-
-    const data = JSON.parse(wrap.dataset.json || '{}');
-
-    // IMAGEN siempre desde fotoProducto
-    setSrc('#d-botella', data.fotoProducto || '');
-
-    // Texto
-    setText('#d-titulo', data.nombre || '');
-    setText('#d-cat', [data.segmento, data.categoria].filter(Boolean).join(' • ') || '—');
-    setText('#d-registro',     data.registro || '—');
-    setText('#d-contenido',    data.contenido || '—');
-    setText('#d-dosis',        data.dosisSugerida || '—');
-    setText('#d-intervalo',    data.intervaloAplicacion || '—');
-    setText('#d-presentacion', data.presentacion || '—');
-
-    // Listas
-    fillList('#d-control',  splitControl(data.controla || ''));
-    fillList('#d-cultivos', (data.usoRecomendado || '').split(',').map(s=>s.trim()).filter(Boolean));
-
-    // PDFs
-    toggleLink(document.getElementById('d-ficha'), normalizePath(data.fichaTecnica || ''));
-    toggleLink(document.getElementById('d-hoja'),  normalizePath(data.hojaSeguridad || ''));
-
-    openModal();
-  });
-
-  // Helpers
+  // Helpers de UI
   function setText(sel, v){ const el = document.querySelector(sel); if(el) el.textContent = v; }
   function setSrc(sel, path){
     const el = document.querySelector(sel); if(!el) return;
@@ -525,11 +485,73 @@ document.addEventListener('DOMContentLoaded', () => {
       el.appendChild(li);
     });
   }
+  function fillChips(sel, arr){
+    const el = document.querySelector(sel); if(!el) return;
+    el.innerHTML = '';
+    (arr || []).forEach(t=>{
+      const li = document.createElement('li');
+      li.className = 'chip';
+      li.textContent = t;
+      el.appendChild(li);
+    });
+  }
   function toggleLink(aEl, url){
     if(!aEl) return;
     if(url){ aEl.href = isAbsUrl(url) ? url : (assetRoot + url); aEl.classList.remove('d-none'); }
     else { aEl.classList.add('d-none'); aEl.removeAttribute('href'); }
   }
+
+  // Carga imagen de marca: /img/marcas/NOMBRE EN MAYUSCULA.png
+  function setBrandImage(productName){
+    const el = document.getElementById('d-marca');
+    if(!el){ return; }
+    const clean = (productName || '')
+      .toString()
+      .toUpperCase()
+      .replace(/\s+/g,' ')
+      .trim();
+    if(!clean){ el.classList.add('d-none'); return; }
+
+    // encodeURIComponent para soportar espacios y acentos en la URL
+    const url = assetRoot + 'img/marcas/' + encodeURIComponent(clean) + '.png';
+    el.src = url;
+    el.onload  = () => el.classList.remove('d-none');
+    el.onerror = () => el.classList.add('d-none');
+  }
+
+  // Abrir modal con datos de la card
+  grid.addEventListener('click', (e)=>{
+    const btn = e.target.closest('.p-view');
+    if(!btn) return;
+    const wrap = btn.closest('.p-card-wrap'); if(!wrap) return;
+
+    const data = JSON.parse(wrap.dataset.json || '{}');
+
+    // IMÁGENES
+    setSrc('#d-botella', data.fotoProducto || '');
+    setBrandImage(data.nombre || '');
+
+    // Texto
+    setText('#d-titulo', data.nombre || '');
+    setText('#d-cat', [data.segmento, data.categoria].filter(Boolean).join(' • ') || '—');
+    setText('#d-registro',     data.registro || '—');
+    setText('#d-contenido',    data.contenido || '—');
+    setText('#d-dosis',        data.dosisSugerida || '—');
+    setText('#d-intervalo',    data.intervaloAplicacion || '—');
+
+    // Presentación -> chips
+    fillChips('#d-presentacion', (data.presentacion || '').split(',').map(s=>s.trim()).filter(Boolean));
+
+    // Listas
+    fillList('#d-control',  splitControl(data.controla || ''));
+    fillList('#d-cultivos', (data.usoRecomendado || '').split(',').map(s=>s.trim()).filter(Boolean));
+
+    // PDFs
+    toggleLink(document.getElementById('d-ficha'), normalizePath(data.fichaTecnica || ''));
+    toggleLink(document.getElementById('d-hoja'),  normalizePath(data.hojaSeguridad || ''));
+
+    openModal();
+  });
 });
 </script>
 @endpush
