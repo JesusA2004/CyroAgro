@@ -102,29 +102,42 @@
     </div>
   </section>
 
-  <!-- DOCUMENTACIÓN TÉCNICA -->
+  <!-- DOCUMENTACIÓN TÉCNICA (ACTUALIZADA) -->
   <section id="accesos" class="py-6">
     <div class="container">
       <div class="text-center mb-4">
         <h2 class="display-6 fw-bold mb-2 reveal">Documentación técnica</h2>
-        <p class="text-muted reveal">Consulta fichas, hojas de seguridad y registros</p>
+        <p class="text-muted reveal">Consulta fichas y hojas de seguridad</p>
       </div>
 
-      <div class="row g-4 justify-content-center">
-        @foreach ([
-          ['title'=>'Hojas de seguridad','icon'=>'fa-lock'],
-          ['title'=>'Hojas técnicas','icon'=>'fa-file-alt'],
-          ['title'=>'Registros COFEPRIS','icon'=>'fa-book'],
-          ['title'=>'Registros OMRI','icon'=>'fa-seedling'],
-        ] as $i => $item)
-        <div class="col-12 col-sm-6 col-lg-3">
-          <button type="button" class="quick-link reveal hover-shift as-button" style="--d:{{ $i * 80 }}ms" data-maintenance="true" aria-haspopup="dialog">
-            <span class="ql-icon"><i class="fas {{ $item['icon'] }}"></i></span>
-            <span class="ql-text">{{ $item['title'] }}</span>
-            <span class="ql-arrow"><i class="fas fa-arrow-right"></i></span>
-          </button>
+      @php
+        use Illuminate\Support\Facades\Route;
+        $urlFichas = Route::has('fichasTecnicas.index') ? route('fichasTecnicas.index') : url('/fichas-tecnicas');
+        $urlHojas  = Route::has('hojasSeguridad.index') ? route('hojasSeguridad.index') : url('/hojas-seguridad');
+      @endphp
+
+      <div class="row g-4 justify-content-center quick-links-grid">
+        <div class="col-12 col-md-6 col-xl-5">
+          <a href="{{ $urlHojas }}" class="quick-link quick-link--xl reveal hover-shift tilt-ql" style="--d:0ms">
+            <span class="ql-icon ql-icon--xl"><i class="fas fa-lock"></i></span>
+            <span class="ql-text">
+              <span class="ql-title">Hojas de seguridad</span>
+              <span class="ql-desc">Descarga SDS por producto</span>
+            </span>
+            <span class="ql-arrow ql-arrow--xl"><i class="fas fa-arrow-right"></i></span>
+          </a>
         </div>
-        @endforeach
+
+        <div class="col-12 col-md-6 col-xl-5">
+          <a href="{{ $urlFichas }}" class="quick-link quick-link--xl reveal hover-shift tilt-ql" style="--d:80ms">
+            <span class="ql-icon ql-icon--xl"><i class="fas fa-file-alt"></i></span>
+            <span class="ql-text">
+              <span class="ql-title">Hojas técnicas</span>
+              <span class="ql-desc">Especificaciones y uso recomendado</span>
+            </span>
+            <span class="ql-arrow ql-arrow--xl"><i class="fas fa-arrow-right"></i></span>
+          </a>
+        </div>
       </div>
     </div>
   </section>
@@ -174,10 +187,40 @@ function positionFeaturedBottles() {
   strip.style.right = 'auto';
   strip.style.transform = 'translateX(-50%)';
 }
+
+/* === Micro-interacciones para los 2 botones grandes === */
+function initQuickLinks() {
+  document.querySelectorAll('.tilt-ql').forEach(el => {
+    el.addEventListener('mousemove', (e) => {
+      const r = el.getBoundingClientRect();
+      const dx = (e.clientX - r.left) / r.width - 0.5;
+      const dy = (e.clientY - r.top) / r.height - 0.5;
+      el.style.transform = `translateY(-2px) rotateX(${dy*3}deg) rotateY(${dx*-3}deg)`;
+    });
+    el.addEventListener('mouseleave', () => {
+      el.style.transform = '';
+    });
+
+    // Ripple
+    el.addEventListener('click', (e) => {
+      const ripple = document.createElement('span');
+      ripple.className = 'ripple';
+      const rect = el.getBoundingClientRect();
+      const size = Math.max(rect.width, rect.height);
+      ripple.style.width = ripple.style.height = size + 'px';
+      ripple.style.left = (e.clientX - rect.left - size/2) + 'px';
+      ripple.style.top  = (e.clientY - rect.top  - size/2) + 'px';
+      el.appendChild(ripple);
+      setTimeout(() => ripple.remove(), 600);
+    });
+  });
+}
+
 document.addEventListener('DOMContentLoaded', function(){
   revealOnScroll(); window.addEventListener('scroll', revealOnScroll);
   initTiltEffect();
   positionFeaturedBottles(); window.addEventListener('resize', positionFeaturedBottles);
+  initQuickLinks();
 });
 </script>
 @endpush

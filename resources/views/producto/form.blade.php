@@ -116,7 +116,7 @@
                             onclick="document.getElementById('fichaTecnicaInput').click()">
                         <i class="bi bi-file-earmark-pdf-fill {{ ($fichaOk || old('fichaTecnica')) ? 'text-danger' : 'text-dark' }}" style="font-size:1.8rem;"></i>
                         <span id="fichaTecnicaLabel" class="small text-truncate" style="max-width: 75%;">
-                            {{ $fichaOk ? basename($fichaPath) : (old('fichaTecnica') ? basename(old('fichaTecnica')) : 'Sin archivo (máx. 20 MB)') }}
+                            {{ $fichaOk ? basename($fichaPath) : (old('fichaTecnica') ? basename(old('fichaTecnica')) : 'Sin archivo') }}
                         </span>
                     </button>
                     {{-- X visible si ya hay archivo existente --}}
@@ -131,7 +131,8 @@
                     <a id="fichaLink" href="#" class="d-inline-block mt-2 small d-none" target="_blank">Abrir archivo actual</a>
                 @endif
 
-                <small class="text-muted d-block mt-1">Solo PDF. Límite: 20 MB</small>
+                <small id="fichaHelp" class="text-muted d-block mt-1">Solo PDF.</small>
+                <div id="fichaHint" class="form-text text-danger d-none"></div>
 
                 @error('fichaTecnica_file')
                     <div class="invalid-feedback d-block">{{ $message }}</div>
@@ -154,7 +155,7 @@
                             onclick="document.getElementById('hojaSeguridadInput').click()">
                         <i class="bi bi-file-earmark-pdf-fill {{ ($hojaOk || old('hojaSeguridad')) ? 'text-danger' : 'text-dark' }}" style="font-size:1.8rem;"></i>
                         <span id="hojaSeguridadLabel" class="small text-truncate" style="max-width: 75%;">
-                            {{ $hojaOk ? basename($hojaPath) : (old('hojaSeguridad') ? basename(old('hojaSeguridad')) : 'Sin archivo (máx. 20 MB)') }}
+                            {{ $hojaOk ? basename($hojaPath) : (old('hojaSeguridad') ? basename(old('hojaSeguridad')) : 'Sin archivo') }}
                         </span>
                     </button>
                     <button type="button" id="clearHojaBtn"
@@ -168,7 +169,8 @@
                     <a id="hojaLink" href="#" class="d-inline-block mt-2 small d-none" target="_blank">Abrir archivo actual</a>
                 @endif
 
-                <small class="text-muted d-block mt-1">Solo PDF. Límite: 20 MB</small>
+                <small id="hojaHelp" class="text-muted d-block mt-1">Solo PDF.</small>
+                <div id="hojaHint" class="form-text text-danger d-none"></div>
 
                 @error('hojaSeguridad_file')
                     <div class="invalid-feedback d-block">{{ $message }}</div>
@@ -200,7 +202,7 @@
                         <label for="foto" class="image-upload-label">Cambiar imagen</label>
                     </div>
                     <input type="file" name="foto" id="foto" class="custom-file-input" accept="image/*" data-max-bytes="{{ 5 * 1024 * 1024 }}">
-                    <small class="text-muted d-block mt-1 text-center">Imagen máx. 5 MB</small>
+                    <small id="imgHelp" class="text-muted d-block mt-1 text-center">Imagen (JPG/PNG/WEBP).</small>
                 </div>
 
                 @error('foto')
@@ -212,7 +214,7 @@
         {{-- Botón --}}
         <div class="row mt-4">
             <div class="col-12 text-center">
-                <button type="submit" class="btn btn-primary px-5 py-2 shadow">Guardar</button>
+                <button type="submit" class="btn btn-primary px-5 py-2 shadow" id="submitBtn">Guardar</button>
                 <div id="pesoTotalHint" class="small text-muted mt-2"></div>
             </div>
         </div>
@@ -250,16 +252,45 @@
     z-index: 2;
   }
   #pesoTotalHint.text-danger { font-weight: 600; }
+  /* feedback de botón deshabilitado */
+  #submitBtn[disabled] { opacity: .7; cursor: not-allowed; }
 </style>
 @endpush
+
+@php
+  // Convierte shorthand de php.ini (8M, 128M, 1G) a bytes
+  function cyr_bytes_from_shorthand($val) {
+      $val = trim($val);
+      $last = strtolower(substr($val, -1));
+      $n = (int)$val;
+      switch ($last) {
+          case 'g': return $n * 1024 * 1024 * 1024;
+          case 'm': return $n * 1024 * 1024;
+          case 'k': return $n * 1024;
+          default:  return (int)$val;
+      }
+  }
+  $postMaxBytes = cyr_bytes_from_shorthand(ini_get('post_max_size') ?: '8M');
+@endphp
 
 @push('scripts')
 <script>
 /* ================== LÍMITES CONFIGURABLES ================== */
+window.SERVER_POST_MAX_BYTES = {{ $postMaxBytes }};
+
+// Metas de UI (asegúrate de que estén por DEBAJO del post_max_size real)
+const UI_LIMITS = {
+  pdfMaxBytesTarget: 7 * 1024 * 1024,   // 7 MB por PDF (ajústalo si quieres)
+  imgMaxBytesTarget: 5 * 1024 * 1024,   // 5 MB imagen
+  totalMaxBytesTarget: 10 * 1024 * 1024 // 10 MB total
+};
+
+// Límites efectivos = mínimo entre metas y post_max_size - margen
+const SERVER_POST = Math.max(0, (window.SERVER_POST_MAX_BYTES || (8*1024*1024)) - (256*1024)); // margen 256 KB
 const LIMITS = {
-  pdfMaxBytes: 20 * 1024 * 1024,   // 20 MB por PDF
-  imgMaxBytes: 5  * 1024 * 1024,   // 5 MB imagen
-  totalMaxBytes: 30 * 1024 * 1024  // 30 MB suma de archivos del form
+  pdfMaxBytes: Math.min(UI_LIMITS.pdfMaxBytesTarget, SERVER_POST),
+  imgMaxBytes: Math.min(UI_LIMITS.imgMaxBytesTarget, SERVER_POST),
+  totalMaxBytes: Math.min(UI_LIMITS.totalMaxBytesTarget, Math.max(0, SERVER_POST - (512*1024))) // deja ~512KB de aire
 };
 /* =========================================================== */
 
@@ -279,6 +310,14 @@ const removeHojaFlag  = document.getElementById('removeHojaFlag');
 
 const fichaLink = document.getElementById('fichaLink');
 const hojaLink  = document.getElementById('hojaLink');
+
+const fichaHint = document.getElementById('fichaHint');
+const hojaHint  = document.getElementById('hojaHint');
+
+const submitBtn = document.getElementById('submitBtn');
+const fichaHelp = document.getElementById('fichaHelp');
+const hojaHelp  = document.getElementById('hojaHelp');
+const imgHelp   = document.getElementById('imgHelp');
 
 /* ======= Modal: show/hide robustos (con o sin Bootstrap JS) ======= */
 (function(){
@@ -379,7 +418,13 @@ function setPdfIconColor(labelSelector, hasFile){
   icon.classList.remove('text-dark','text-danger');
   icon.classList.add(hasFile ? 'text-danger' : 'text-dark');
 }
-function validateSingleFile(inputEl, maxBytes, labelEl, clearBtn, labelSelector, linkEl){
+function showInlineHint(el, msg) {
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.remove('d-none');
+  setTimeout(() => el.classList.add('d-none'), 5000);
+}
+function validateSingleFile(inputEl, maxBytes, labelEl, clearBtn, labelSelector, linkEl, hintEl){
   const f = inputEl?.files?.[0];
   if(!f) {
     if (labelEl) labelEl.textContent = 'Sin archivo';
@@ -389,7 +434,9 @@ function validateSingleFile(inputEl, maxBytes, labelEl, clearBtn, labelSelector,
     return 0;
   }
   if(f.size > maxBytes){
-    showLimitModal(`"${f.name}" pesa ${humanSize(f.size)} y supera el límite permitido (${humanSize(maxBytes)}).`);
+    const msg = `"${f.name}" pesa ${humanSize(f.size)} y supera el límite permitido (${humanSize(maxBytes)}).`;
+    showLimitModal(msg);
+    showInlineHint(hintEl, msg);
     inputEl.value = '';
     if(labelEl) labelEl.textContent = 'Sin archivo';
     if (clearBtn) clearBtn.classList.add('d-none');
@@ -416,26 +463,37 @@ function renderTotal(){
   if(totalHint){
     const maxTxt = humanSize(LIMITS.totalMaxBytes);
     totalHint.textContent = sum ? `Peso total adjunto: ${humanSize(sum)} (máx. ${maxTxt})` : '';
-    totalHint.classList.toggle('text-danger', sum > LIMITS.totalMaxBytes);
+    const tooHeavy = sum > LIMITS.totalMaxBytes;
+    totalHint.classList.toggle('text-danger', tooHeavy);
   }
+  // Deshabilitar botón si cualquier archivo excede o si el total excede
+  const anyTooBig =
+    (fichaInput?.files?.[0]?.size || 0) > LIMITS.pdfMaxBytes ||
+    (hojaInput?.files?.[0]?.size  || 0) > LIMITS.pdfMaxBytes ||
+    (fotoInput?.files?.[0]?.size  || 0) > LIMITS.imgMaxBytes ||
+    currentTotalBytes() > LIMITS.totalMaxBytes;
+  submitBtn?.toggleAttribute('disabled', !!anyTooBig);
 }
 
-/* ===== eventos de cambio ===== */
-fichaInput?.addEventListener('change', () => {
-  validateSingleFile(fichaInput, LIMITS.pdfMaxBytes, fichaLbl, clearFichaBtn, '#fichaTecnicaLabel', fichaLink);
-  renderTotal();
-});
-hojaInput?.addEventListener('change', () => {
-  validateSingleFile(hojaInput, LIMITS.pdfMaxBytes, hojaLbl, clearHojaBtn, '#hojaSeguridadLabel', hojaLink);
-  renderTotal();
-});
-fotoInput?.addEventListener('change', () => {
-  const f = fotoInput?.files?.[0];
-  if (f && f.size > LIMITS.imgMaxBytes){
-    showLimitModal(`La imagen seleccionada pesa ${humanSize(f.size)} y supera el límite (${humanSize(LIMITS.imgMaxBytes)}).`, 'Imagen demasiado pesada');
-    fotoInput.value = '';
-  }
-  renderTotal();
+/* ===== listeners en change + input para feedback inmediato ===== */
+['change','input'].forEach(evt => {
+  fichaInput?.addEventListener(evt, () => {
+    validateSingleFile(fichaInput, LIMITS.pdfMaxBytes, fichaLbl, clearFichaBtn, '#fichaTecnicaLabel', fichaLink, fichaHint);
+    renderTotal();
+  });
+  hojaInput?.addEventListener(evt, () => {
+    validateSingleFile(hojaInput, LIMITS.pdfMaxBytes, hojaLbl, clearHojaBtn, '#hojaSeguridadLabel', hojaLink, hojaHint);
+    renderTotal();
+  });
+  fotoInput?.addEventListener(evt, () => {
+    const f = fotoInput?.files?.[0];
+    if (f && f.size > LIMITS.imgMaxBytes){
+      const msg = `La imagen seleccionada pesa ${humanSize(f.size)} y supera el límite (${humanSize(LIMITS.imgMaxBytes)}).`;
+      showLimitModal(msg, 'Imagen demasiado pesada');
+      fotoInput.value = '';
+    }
+    renderTotal();
+  });
 });
 
 /* ===== X para limpiar PDFs (y marcar borrado del existente) ===== */
@@ -462,13 +520,22 @@ clearHojaBtn?.addEventListener('click', () => {
 
 /* ===== bloqueo al enviar si se excede ===== */
 (function(){
+  // Actualiza textos de ayuda con los límites efectivos
+  if (fichaHelp) fichaHelp.textContent = `Solo PDF. Límite: ${humanSize(LIMITS.pdfMaxBytes)} por archivo.`;
+  if (hojaHelp)  hojaHelp.textContent  = `Solo PDF. Límite: ${humanSize(LIMITS.pdfMaxBytes)} por archivo.`;
+  if (imgHelp)   imgHelp.textContent   = `Imagen (JPG/PNG/WEBP). Límite: ${humanSize(LIMITS.imgMaxBytes)}.`;
+
   const form = document.querySelector('form[action="{{ route('producto.store') }}"]')
              || document.querySelector('form[action^="{{ url('/producto') }}"]')
              || document.querySelector('form[method="POST"]');
 
   if(!form) return;
 
+  // Estado inicial del botón y avisos
+  renderTotal();
+
   form.addEventListener('submit', (e) => {
+    // Valida individuales
     if (fichaInput?.files?.length && fichaInput.files[0].size > LIMITS.pdfMaxBytes) {
       e.preventDefault(); showLimitModal(`La ficha técnica supera el límite de ${humanSize(LIMITS.pdfMaxBytes)}.`); return;
     }
@@ -478,6 +545,7 @@ clearHojaBtn?.addEventListener('click', () => {
     if (fotoInput?.files?.length && fotoInput.files[0].size > LIMITS.imgMaxBytes) {
       e.preventDefault(); showLimitModal(`La imagen supera el límite de ${humanSize(LIMITS.imgMaxBytes)}.`, 'Imagen demasiado pesada'); return;
     }
+    // Valida total
     const sum = currentTotalBytes();
     if (sum > LIMITS.totalMaxBytes) {
       e.preventDefault(); showLimitModal(`El peso total de archivos (${humanSize(sum)}) supera el máximo permitido (${humanSize(LIMITS.totalMaxBytes)}). Comprime o elimina adjuntos.`, 'Límite total excedido'); return;

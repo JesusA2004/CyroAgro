@@ -157,13 +157,46 @@ img{max-width:100%;height:auto;}
   transition:transform .3s, box-shadow .3s, border-color .3s; border:1px solid #e5e7eb;
 }
 .feature-card:hover{transform:translateY(-4px);box-shadow:0 18px 40px rgba(0,0,0,.08);}
+
 .quick-link{
   display:flex;align-items:center;gap:12px;background:var(--card);padding:18px 20px;
   border-radius:16px;border:1px solid #e5e7eb;text-decoration:none;color:#0f172a;
   transition:transform .25s,box-shadow .25s,border-color .25s,translate .25s;
+  position:relative; overflow:hidden;
 }
 .quick-link:hover{transform:translateY(-3px);translate:2px -2px;box-shadow:0 12px 28px rgba(0,0,0,.08);border-color:#d1d5db;}
 
+/* ===== Variante XL para los 2 botones ===== */
+.quick-links-grid{ max-width: 1080px; margin-inline:auto; }
+.quick-link--xl{
+  padding: clamp(22px, 3.5vw, 32px) clamp(22px, 3.5vw, 32px);
+  border-radius: 18px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.05);
+}
+.ql-icon{display:grid;place-items:center;width:42px;height:42px;border-radius:12px;background:#f3faf6;}
+.ql-icon i{font-size:1.1rem;color:var(--brand);}
+.ql-text{display:flex;flex-direction:column;gap:2px;flex:1 1 auto;min-width:0;}
+.ql-title{font-weight:800;letter-spacing:.2px;}
+.ql-desc{font-size:.925rem;color:var(--muted);}
+.ql-arrow{margin-left:auto;display:grid;place-items:center;width:38px;height:38px;border-radius:12px;border:1px solid #e8efe9;}
+.ql-arrow i{transition:transform .25s;}
+.quick-link:hover .ql-arrow i{transform:translateX(3px);}
+
+.ql-icon--xl{ width:60px; height:60px; border-radius:16px; }
+.ql-icon--xl i{ font-size:1.35rem; }
+.ql-arrow--xl{ width:48px; height:48px; border-radius:14px; }
+
+/* Ripple para los quick-links */
+.ripple{
+  position:absolute; border-radius:50%;
+  background:rgba(25,135,84,.18); transform:scale(0);
+  animation:ripple .6s ease-out forwards; pointer-events:none;
+}
+@keyframes ripple{
+  to{ transform:scale(2.6); opacity:0; }
+}
+
+/* ===== Stats ===== */
 .stat{background:#fff;border:1px solid #e5e7eb;border-radius:18px;padding:26px 20px;}
 .stat-num{font-size:2.4rem;line-height:1;font-weight:900;color:#198754;}
 .stat-label{color:#6b7280;}

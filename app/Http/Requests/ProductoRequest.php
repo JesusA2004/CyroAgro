@@ -30,8 +30,8 @@ class ProductoRequest extends FormRequest
             'hojaSeguridad'        => ['nullable','string'],
 
             // Archivos (opcionales)
-            'fichaTecnica_file'    => ['nullable','file','mimes:pdf','max:51200'],   // 10 MB
-            'hojaSeguridad_file'   => ['nullable','file','mimes:pdf','max:51200'],
+            'fichaTecnica_file'  => ['nullable','file','mimes:pdf','max:7168'], // 7 MB
+            'hojaSeguridad_file' => ['nullable','file','mimes:pdf','max:7168'], // 7 MB
             'foto'                 => ['nullable','image','mimes:jpg,jpeg,png,webp','max:5120'], // 5 MB
         ];
     }
