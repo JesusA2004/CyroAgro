@@ -9,6 +9,32 @@ use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\ProductPublicController;
 use App\Http\Controllers\Admin\FeaturedProductController;
 
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\ResetPasswordController;
+
+/**
+ * ======================================
+ * RESTABLECER CONTRASEÑA POR CORREO
+ * ======================================
+ */
+
+// Formulario para solicitar el enlace (email)
+Route::get('password/forgot', [ForgotPasswordController::class, 'showLinkRequestForm'])
+    ->name('password.request');
+
+// Envía el correo con el enlace de recuperación
+Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])
+    ->name('password.email');
+
+// Vista del formulario para restablecer contraseña (al hacer clic en el correo)
+Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])
+    ->name('password.reset');
+
+// Procesa el cambio de contraseña (nuevo password)
+Route::post('password/reset', [ResetPasswordController::class, 'reset'])
+    ->name('password.update');
+
+
 /**
  * ======================
  * PÁGINAS PÚBLICAS
